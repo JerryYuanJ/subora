@@ -1,0 +1,151 @@
+import SwiftUI
+
+/// 订阅卡片组件
+/// 显示订阅信息，支持左滑操作（编辑、删除、归档）
+struct SubscriptionCard: View {
+    let subscription: Subscription
+    let onEdit: () -> Void
+    let onArchive: () -> Void
+    let onDelete: () -> Void
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // 分类颜色指示器
+            if let category = subscription.category {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(category.color)
+                    .frame(width: 4)
+            }
+            
+            VStack(alignment: .leading, spacing: 6) {
+                // 订阅名称和分类
+                HStack {
+                    Text(subscription.name)
+                        .font(.headline)
+                    
+                    if let category = subscription.category {
+                        CategoryBadge(category: category)
+                    }
+                    
+                    Spacer()
+                }
+                
+                // 金额和周期
+                Text(formatAmount())
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                // 下次续费日期
+                HStack {
+                    Text("下次续费: \(formatDate(subscription.nextBillingDate))")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    // 倒计时
+                    if let daysUntil = daysUntilRenewal() {
+                        Text(daysUntil > 0 ? "\(daysUntil)天后" : "今天")
+                            .font(.caption)
+                            .foregroundColor(daysUntil <= 3 ? .red : .secondary)
+                    }
+                }
+            }
+            
+            // 右箭头
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                onDelete()
+            } label: {
+                Label("删除", systemImage: "trash")
+            }
+            
+            Button {
+                onArchive()
+            } label: {
+                Label(subscription.archived ? "取消归档" : "归档", systemImage: "archivebox")
+            }
+            .tint(.orange)
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func formatAmount() -> String {
+        let formattedAmount = CurrencyFormatter.format(
+            amount: subscription.amount,
+            currency: subscription.currency
+        )
+        let cycleText = formatBillingCycle()
+        return "\(formattedAmount) / \(cycleText)"
+    }
+    
+    private func formatBillingCycle() -> String {
+        let cycle = subscription.billingCycle
+        let unit = subscription.billingCycleUnit
+        
+        if cycle == 1 {
+            switch unit {
+            case .day: return "日"
+            case .week: return "周"
+            case .month: return "月"
+            case .year: return "年"
+            }
+        } else {
+            switch unit {
+            case .day: return "\(cycle)天"
+            case .week: return "\(cycle)周"
+            case .month: return "\(cycle)个月"
+            case .year: return "\(cycle)年"
+            }
+        }
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        formatter.locale = Locale(identifier: "zh_CN")
+        return formatter.string(from: date)
+    }
+    
+    private func daysUntilRenewal() -> Int? {
+        Calendar.current.dateComponents(
+            [.day],
+            from: Date(),
+            to: subscription.nextBillingDate
+        ).day
+    }
+}
+
+#Preview {
+    let category = Category(name: "娱乐", colorHex: "#FF5733")
+    let subscription = Subscription(
+        name: "Netflix",
+        description: "流媒体视频服务",
+        category: category,
+        firstPaymentDate: Date(),
+        billingCycle: 1,
+        billingCycleUnit: .month,
+        amount: 15.99,
+        currency: "USD"
+    )
+    
+    return List {
+        SubscriptionCard(
+            subscription: subscription,
+            onEdit: {},
+            onArchive: {},
+            onDelete: {}
+        )
+    }
+    .listStyle(.plain)
+}

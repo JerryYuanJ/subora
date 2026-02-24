@@ -1,0 +1,225 @@
+/* 
+  Localizable.strings (Japanese)
+  subscription-tracker
+  
+  Created by Kiro on 2026/2/24.
+*/
+
+// MARK: - Tab Bar
+"tab.dashboard" = "ダッシュボード";
+"tab.subscriptions" = "サブスクリプション";
+"tab.categories" = "カテゴリ";
+"tab.settings" = "設定";
+"tab.insights" = "インサイト";
+
+// MARK: - Common
+"common.cancel" = "キャンセル";
+"common.save" = "保存";
+"common.delete" = "削除";
+"common.edit" = "編集";
+"common.done" = "完了";
+"common.close" = "閉じる";
+
+// MARK: - Category
+"category.add_title" = "カテゴリを追加";
+"category.edit_title" = "カテゴリを編集";
+"category.section_basic" = "基本情報";
+"category.section_color" = "色";
+"category.name_placeholder" = "カテゴリ名";
+"category.description_placeholder" = "説明（任意）";
+"category.empty" = "カテゴリがありません";
+"category.empty_hint" = "右上の+をタップしてカテゴリを追加";
+"category.subscription_count" = "%d 件のサブスクリプション";
+"category.delete_confirm_title" = "削除の確認";
+"category.delete_confirm_message" = "このカテゴリを削除してもよろしいですか？関連するサブスクリプションはカテゴリなしになります。";
+"category.save_success" = "保存しました";
+"category.create_success" = "作成しました";
+"category.save_failed" = "保存に失敗しました：%@";
+"category.delete_success" = "削除しました";
+"category.delete_failed" = "削除に失敗しました：%@";
+
+// MARK: - Dashboard
+"dashboard.title" = "ダッシュボード";
+"dashboard.monthly_expenses" = "今月の支出";
+"dashboard.no_subscriptions" = "サブスクリプションがありません";
+"dashboard.trend" = "支出トレンド";
+"dashboard.no_trend_data" = "トレンドデータがありません";
+"dashboard.no_trend_hint" = "サブスクリプションを追加すると支出トレンドが表示されます";
+"dashboard.upcoming_renewals" = "更新予定（30日以内）";
+"dashboard.no_upcoming" = "更新予定のサブスクリプションがありません";
+
+// MARK: - Subscription List
+"subscriptions.title" = "サブスクリプション";
+"subscriptions.search_placeholder" = "サブスクリプションを検索...";
+"subscriptions.filter_all" = "すべて";
+"subscriptions.empty" = "サブスクリプションがありません";
+
+// MARK: - Add/Edit Subscription
+"subscription.add_title" = "サブスクリプションを追加";
+"subscription.edit_title" = "サブスクリプションを編集";
+"subscription.section_basic" = "基本情報";
+"subscription.name_placeholder" = "サブスクリプション名";
+"subscription.description_placeholder" = "説明（任意）";
+"subscription.section_category" = "カテゴリー";
+"subscription.category_picker" = "カテゴリーを選択";
+"subscription.no_category" = "カテゴリーなし";
+"subscription.section_billing" = "請求情報";
+"subscription.first_payment_date" = "初回支払日";
+"subscription.amount" = "金額";
+"subscription.amount_placeholder" = "0.00";
+"subscription.section_notification" = "通知設定";
+"subscription.enable_notification" = "通知を有効にする";
+"subscription.notify_days_before" = "%d日前に通知";
+"subscription.button_cancel" = "キャンセル";
+"subscription.button_save" = "保存";
+
+// MARK: - Billing Cycle
+"billing_cycle.every" = "毎";
+"billing_cycle.unit" = "単位";
+"billing_cycle.day" = "日";
+"billing_cycle.week" = "週";
+"billing_cycle.month" = "月";
+"billing_cycle.year" = "年";
+
+// MARK: - Paywall
+"paywall.title" = "Proバージョンにアップグレード";
+"paywall.subtitle" = "すべての機能を解除、無制限のサブスクリプション管理";
+"paywall.feature_unlimited_subscriptions" = "無制限のサブスクリプション";
+"paywall.feature_unlimited_subscriptions_desc" = "無制限のサブスクリプション記録を作成";
+"paywall.feature_unlimited_categories" = "無制限のカテゴリー";
+"paywall.feature_unlimited_categories_desc" = "無制限のカスタムカテゴリーを作成";
+"paywall.feature_icloud_sync" = "iCloud同期";
+"paywall.feature_icloud_sync_desc" = "すべてのデバイス間でデータを同期";
+"paywall.feature_smart_notifications" = "スマート通知";
+"paywall.feature_smart_notifications_desc" = "更新リマインダーをカスタマイズ";
+"paywall.feature_advanced_stats" = "高度な統計";
+"paywall.feature_advanced_stats_desc" = "詳細な支出トレンドと分析を表示";
+"paywall.feature_theme_customization" = "テーマのカスタマイズ";
+"paywall.feature_theme_customization_desc" = "アプリのテーマカラーをカスタマイズ";
+"paywall.button_purchase" = "Proバージョンを購入";
+"paywall.button_restore" = "購入を復元";
+"paywall.button_close" = "閉じる";
+
+// MARK: - Settings
+"settings.title" = "設定";
+"settings.section_appearance" = "外観";
+"settings.dark_mode" = "ダークモード";
+"settings.dark_mode_system" = "システム";
+"settings.dark_mode_light" = "ライト";
+"settings.dark_mode_dark" = "ダーク";
+"settings.theme_color" = "テーマカラー";
+"settings.section_defaults" = "デフォルト設定";
+"settings.default_currency" = "デフォルト通貨";
+"settings.notification_time" = "通知時刻";
+"settings.section_data" = "データ";
+"settings.icloud_sync" = "iCloud同期";
+"settings.category_management" = "カテゴリー管理";
+"settings.section_pro" = "Proバージョン";
+"settings.pro_purchased" = "Proバージョンを購入済み";
+"settings.upgrade_to_pro" = "Proにアップグレード";
+"settings.restore_purchases" = "購入を復元";
+"settings.section_about" = "について";
+"settings.version" = "バージョン";
+
+// MARK: - Color Picker
+"color_picker.title" = "色を選択";
+"color.red" = "赤";
+"color.orange" = "オレンジ";
+"color.yellow" = "黄色";
+"color.green" = "緑";
+"color.blue" = "青";
+"color.purple" = "紫";
+"color.pink_purple" = "ピンクパープル";
+"color.pink" = "ピンク";
+"color.brown" = "茶色";
+"color.gray" = "グレー";
+"color.cyan" = "シアン";
+"color.sky_blue" = "スカイブルー";
+
+// MARK: - Loading & Toast
+"loading.default" = "読み込み中...";
+"loading.saving" = "保存中...";
+"toast.save_success" = "保存に成功しました";
+"toast.purchase_success" = "購入に成功しました！";
+"toast.restore_success" = "復元に成功しました！";
+"toast.purchase_failed" = "購入に失敗しました：%@";
+"toast.restore_failed" = "復元に失敗しました：%@";
+
+// MARK: - Validation Errors
+"validation.name_empty" = "名前を入力してください";
+"validation.name_too_long" = "名前は50文字以内にしてください";
+"validation.amount_invalid" = "金額は0より大きい必要があります";
+"validation.billing_cycle_invalid" = "請求サイクルは0より大きい必要があります";
+"validation.first_payment_future" = "初回支払日は未来の日付にできません";
+"validation.currency_unsupported" = "サポートされていない通貨タイプ";
+"validation.notify_days_invalid" = "通知日数は0より大きい必要があります";
+
+// MARK: - App Errors
+"error.data_not_found" = "データが見つかりません";
+"error.data_save_failed" = "保存に失敗しました：%@";
+"error.data_load_failed" = "読み込みに失敗しました：%@";
+"error.invalid_data" = "無効なデータ：%@";
+"error.subscription_limit" = "無料版は最大3つのサブスクリプションをサポートします";
+"error.category_limit" = "無料版は最大3つのカテゴリーをサポートします";
+"error.notification_permission" = "設定で通知を有効にしてください";
+"error.notification_schedule" = "通知設定に失敗しました";
+"error.sync_failed" = "同期に失敗しました：%@";
+"error.network_unavailable" = "ネットワークが利用できません";
+"error.icloud_unavailable" = "iCloudが利用できません";
+"error.purchase_failed" = "購入に失敗しました：%@";
+"error.purchase_cancelled" = "購入がキャンセルされました";
+"error.restore_failed" = "購入の復元に失敗しました";
+
+// MARK: - Subscription List
+"subscriptions.next_renewal" = "次回更新: %@";
+
+// MARK: - Subscription Detail
+"subscription_detail.category" = "カテゴリー";
+"subscription_detail.amount" = "金額";
+"subscription_detail.billing_cycle" = "請求サイクル";
+"subscription_detail.first_payment" = "初回支払日";
+"subscription_detail.next_renewal" = "次回更新日";
+"subscription_detail.days_until" = "更新まで";
+"subscription_detail.payment_count" = "支払回数";
+"subscription_detail.total_paid" = "合計支払額";
+"subscription_detail.notification" = "通知";
+"subscription_detail.notification_enabled" = "有効";
+"subscription_detail.notification_disabled" = "無効";
+"subscription_detail.notification_time" = "通知時刻";
+"subscription_detail.archive" = "アーカイブ";
+"subscription_detail.unarchive" = "アーカイブ解除";
+"subscription_detail.delete" = "削除";
+"subscription_detail.delete_confirm_title" = "削除の確認";
+"subscription_detail.delete_confirm_message" = "このサブスクリプションを削除してもよろしいですか？この操作は取り消せません。";
+"subscription_detail.archived" = "アーカイブしました";
+"subscription_detail.unarchived" = "アーカイブを解除しました";
+"subscription_detail.delete_success" = "削除しました";
+"subscription_detail.save_success" = "保存しました";
+"subscription_detail.operation_failed" = "操作に失敗しました：%@";
+"subscription_detail.save_failed" = "保存に失敗しました：%@";
+"subscription_detail.section_basic" = "基本情報";
+"subscription_detail.section_billing" = "請求情報";
+"subscription_detail.section_stats" = "統計";
+"subscription_detail.section_notification" = "通知設定";
+"subscription_detail.name" = "サブスクリプション名";
+"subscription_detail.description" = "説明";
+"subscription_detail.days_suffix" = "日";
+"subscription_detail.times_suffix" = "回";
+"subscription_detail.edit" = "編集";
+"subscription_detail.cancel" = "キャンセル";
+"subscription_detail.save" = "保存";
+"subscription_detail.enable_notification" = "通知を有効にする";
+"subscription_detail.notify_days_before" = "%d日前に通知";
+
+// MARK: - Settings
+"settings.language" = "言語";
+"settings.language_zh" = "简体中文";
+"settings.language_en" = "English";
+"settings.language_ja" = "日本語";
+
+// MARK: - Insights
+"insights.active_subscriptions" = "アクティブ";
+"insights.upcoming_renewals_count" = "更新予定";
+"insights.new_this_month" = "今月の新規";
+"insights.average_cost" = "平均費用";
+"insights.days_suffix" = "日";

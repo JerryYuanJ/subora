@@ -1,0 +1,221 @@
+/* 
+  Localizable.strings (Chinese Simplified)
+  subscription-tracker
+  
+  Created by Kiro on 2026/2/24.
+*/
+
+// MARK: - Tab Bar
+"tab.dashboard" = "Dashboard";
+"tab.subscriptions" = "订阅";
+"tab.categories" = "分类";
+"tab.settings" = "设置";
+"tab.insights" = "Insights";
+
+// MARK: - Common
+"common.cancel" = "取消";
+"common.save" = "保存";
+"common.delete" = "删除";
+"common.edit" = "编辑";
+"common.done" = "完成";
+"common.close" = "关闭";
+
+// MARK: - Category
+"category.add_title" = "添加分类";
+"category.edit_title" = "编辑分类";
+"category.section_basic" = "基本信息";
+"category.section_color" = "颜色";
+"category.name_placeholder" = "分类名称";
+"category.description_placeholder" = "描述（可选）";
+"category.empty" = "暂无分类";
+"category.empty_hint" = "点击右上角添加分类";
+"category.subscription_count" = "%d 个订阅";
+"category.delete_confirm_title" = "确认删除";
+"category.delete_confirm_message" = "确定要删除这个分类吗？关联的订阅将不再有分类。";
+"category.save_success" = "保存成功";
+"category.create_success" = "创建成功";
+"category.save_failed" = "保存失败：%@";
+"category.delete_success" = "删除成功";
+"category.delete_failed" = "删除失败：%@";
+
+// MARK: - Dashboard
+"dashboard.title" = "Dashboard";
+"dashboard.monthly_expenses" = "本月支出";
+"dashboard.no_subscriptions" = "暂无订阅";
+"dashboard.trend" = "支出趋势";
+"dashboard.no_trend_data" = "暂无趋势数据";
+"dashboard.no_trend_hint" = "添加订阅后即可查看支出趋势";
+"dashboard.upcoming_renewals" = "即将到期 (30天内)";
+"dashboard.no_upcoming" = "暂无即将到期的订阅";
+
+// MARK: - Subscription List
+"subscriptions.title" = "订阅";
+"subscriptions.search_placeholder" = "搜索订阅...";
+"subscriptions.filter_all" = "全部";
+"subscriptions.empty" = "暂无订阅";
+"subscriptions.next_renewal" = "下次续费: %@";
+
+// MARK: - Subscription Detail
+"subscription_detail.category" = "分类";
+"subscription_detail.amount" = "金额";
+"subscription_detail.billing_cycle" = "计费周期";
+"subscription_detail.first_payment" = "首次付款日期";
+"subscription_detail.next_renewal" = "下次续费日期";
+"subscription_detail.days_until" = "距离续费";
+"subscription_detail.payment_count" = "已支付次数";
+"subscription_detail.total_paid" = "历史总支出";
+"subscription_detail.notification" = "提醒";
+"subscription_detail.notification_enabled" = "已启用";
+"subscription_detail.notification_disabled" = "已关闭";
+"subscription_detail.notification_time" = "提醒时间";
+"subscription_detail.archive" = "归档订阅";
+"subscription_detail.unarchive" = "取消归档";
+"subscription_detail.delete" = "删除订阅";
+"subscription_detail.delete_confirm_title" = "确认删除";
+"subscription_detail.delete_confirm_message" = "确定要删除这个订阅吗？此操作无法撤销。";
+"subscription_detail.archived" = "已归档";
+"subscription_detail.unarchived" = "已取消归档";
+"subscription_detail.delete_success" = "删除成功";
+"subscription_detail.save_success" = "保存成功";
+"subscription_detail.operation_failed" = "操作失败：%@";
+"subscription_detail.save_failed" = "保存失败：%@";
+"subscription_detail.section_basic" = "基本信息";
+"subscription_detail.section_billing" = "计费信息";
+"subscription_detail.section_stats" = "统计信息";
+"subscription_detail.section_notification" = "提醒设置";
+"subscription_detail.name" = "订阅名称";
+"subscription_detail.description" = "描述";
+"subscription_detail.days_suffix" = "天";
+"subscription_detail.times_suffix" = "次";
+"subscription_detail.edit" = "编辑";
+"subscription_detail.cancel" = "取消";
+"subscription_detail.save" = "保存";
+"subscription_detail.enable_notification" = "启用提醒";
+"subscription_detail.notify_days_before" = "提前 %d 天提醒";
+
+// MARK: - Add/Edit Subscription
+"subscription.add_title" = "添加订阅";
+"subscription.edit_title" = "编辑订阅";
+"subscription.section_basic" = "基本信息";
+"subscription.name_placeholder" = "订阅名称";
+"subscription.description_placeholder" = "描述（可选）";
+"subscription.section_category" = "分类";
+"subscription.category_picker" = "选择分类";
+"subscription.no_category" = "无分类";
+"subscription.section_billing" = "计费信息";
+"subscription.first_payment_date" = "首次付款日期";
+"subscription.amount" = "金额";
+"subscription.amount_placeholder" = "0.00";
+"subscription.section_notification" = "提醒设置";
+"subscription.enable_notification" = "启用提醒";
+"subscription.notify_days_before" = "提前 %d 天提醒";
+"subscription.button_cancel" = "取消";
+"subscription.button_save" = "保存";
+
+// MARK: - Billing Cycle
+"billing_cycle.every" = "每";
+"billing_cycle.unit" = "单位";
+"billing_cycle.day" = "日";
+"billing_cycle.week" = "周";
+"billing_cycle.month" = "月";
+"billing_cycle.year" = "年";
+
+// MARK: - Paywall
+"paywall.title" = "升级到 Pro 版本";
+"paywall.subtitle" = "解锁所有功能，无限制管理订阅";
+"paywall.feature_unlimited_subscriptions" = "无限订阅";
+"paywall.feature_unlimited_subscriptions_desc" = "创建无限数量的订阅记录";
+"paywall.feature_unlimited_categories" = "无限分类";
+"paywall.feature_unlimited_categories_desc" = "创建无限数量的自定义分类";
+"paywall.feature_icloud_sync" = "iCloud 同步";
+"paywall.feature_icloud_sync_desc" = "在所有设备间同步数据";
+"paywall.feature_smart_notifications" = "智能提醒";
+"paywall.feature_smart_notifications_desc" = "自定义续费提醒通知";
+"paywall.feature_advanced_stats" = "高级统计";
+"paywall.feature_advanced_stats_desc" = "查看详细的支出趋势和分析";
+"paywall.feature_theme_customization" = "主题定制";
+"paywall.feature_theme_customization_desc" = "自定义应用主题颜色";
+"paywall.button_purchase" = "购买 Pro 版本";
+"paywall.button_restore" = "恢复购买";
+"paywall.button_close" = "关闭";
+
+// MARK: - Settings
+"settings.title" = "设置";
+"settings.section_appearance" = "外观";
+"settings.dark_mode" = "深色模式";
+"settings.dark_mode_system" = "跟随系统";
+"settings.dark_mode_light" = "浅色";
+"settings.dark_mode_dark" = "深色";
+"settings.language" = "语言";
+"settings.language_zh" = "简体中文";
+"settings.language_en" = "English";
+"settings.language_ja" = "日本語";
+"settings.theme_color" = "主题颜色";
+"settings.section_defaults" = "默认设置";
+"settings.default_currency" = "默认货币";
+"settings.notification_time" = "通知时间";
+"settings.section_data" = "数据";
+"settings.icloud_sync" = "iCloud 同步";
+"settings.category_management" = "分类管理";
+"settings.section_pro" = "Pro 版本";
+"settings.pro_purchased" = "已购买 Pro 版本";
+"settings.upgrade_to_pro" = "升级到 Pro";
+"settings.restore_purchases" = "恢复购买";
+"settings.section_about" = "关于";
+"settings.version" = "版本";
+
+// MARK: - Color Picker
+"color_picker.title" = "选择颜色";
+"color.red" = "红色";
+"color.orange" = "橙色";
+"color.yellow" = "黄色";
+"color.green" = "绿色";
+"color.blue" = "蓝色";
+"color.purple" = "紫色";
+"color.pink_purple" = "粉紫";
+"color.pink" = "粉红";
+"color.brown" = "棕色";
+"color.gray" = "灰色";
+"color.cyan" = "青色";
+"color.sky_blue" = "天蓝";
+
+// MARK: - Loading & Toast
+"loading.default" = "加载中...";
+"loading.saving" = "保存中...";
+"toast.save_success" = "保存成功";
+"toast.purchase_success" = "购买成功！";
+"toast.restore_success" = "恢复成功！";
+"toast.purchase_failed" = "购买失败：%@";
+"toast.restore_failed" = "恢复失败：%@";
+
+// MARK: - Validation Errors
+"validation.name_empty" = "名称不能为空";
+"validation.name_too_long" = "名称不能超过 50 个字符";
+"validation.amount_invalid" = "金额必须大于 0";
+"validation.billing_cycle_invalid" = "计费周期必须大于 0";
+"validation.first_payment_future" = "首次付款日期不能是未来日期";
+"validation.currency_unsupported" = "不支持的货币类型";
+"validation.notify_days_invalid" = "提醒天数必须大于 0";
+
+// MARK: - App Errors
+"error.data_not_found" = "未找到数据";
+"error.data_save_failed" = "保存失败：%@";
+"error.data_load_failed" = "加载失败：%@";
+"error.invalid_data" = "无效的数据：%@";
+"error.subscription_limit" = "免费版最多支持 3 个订阅";
+"error.category_limit" = "免费版最多支持 3 个分类";
+"error.notification_permission" = "请在设置中开启通知权限";
+"error.notification_schedule" = "通知设置失败";
+"error.sync_failed" = "同步失败：%@";
+"error.network_unavailable" = "网络不可用";
+"error.icloud_unavailable" = "iCloud 不可用";
+"error.purchase_failed" = "购买失败：%@";
+"error.purchase_cancelled" = "购买已取消";
+"error.restore_failed" = "恢复购买失败";
+
+// MARK: - Insights
+"insights.active_subscriptions" = "活跃订阅";
+"insights.upcoming_renewals_count" = "即将到期";
+"insights.new_this_month" = "本月新增";
+"insights.average_cost" = "平均费用";
+"insights.days_suffix" = "天";
