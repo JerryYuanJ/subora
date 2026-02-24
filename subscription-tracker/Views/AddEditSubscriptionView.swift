@@ -31,9 +31,9 @@ struct AddEditSubscriptionView: View {
         NavigationStack {
             Form {
                 // Basic info section
-                Section("基本信息") {
-                    TextField("订阅名称", text: $viewModel.subscription.name)
-                    TextField("描述（可选）", text: Binding(
+                Section(L10n.Subscription.sectionBasic) {
+                    TextField(L10n.Subscription.namePlaceholder, text: $viewModel.subscription.name)
+                    TextField(L10n.Subscription.descriptionPlaceholder, text: Binding(
                         get: { viewModel.subscription.subscriptionDescription ?? "" },
                         set: { viewModel.subscription.subscriptionDescription = $0.isEmpty ? nil : $0 }
                     ))
@@ -46,9 +46,9 @@ struct AddEditSubscriptionView: View {
                 }
                 
                 // Category section
-                Section("分类") {
-                    Picker("选择分类", selection: $viewModel.subscription.category) {
-                        Text("无分类").tag(nil as Category?)
+                Section(L10n.Subscription.sectionCategory) {
+                    Picker(L10n.Subscription.categoryPicker, selection: $viewModel.subscription.category) {
+                        Text(L10n.Subscription.noCategory).tag(nil as Category?)
                         ForEach(categories) { category in
                             HStack {
                                 Circle()
@@ -62,9 +62,9 @@ struct AddEditSubscriptionView: View {
                 }
                 
                 // Billing info section
-                Section("计费信息") {
+                Section(L10n.Subscription.sectionBilling) {
                     DatePicker(
-                        "首次付款日期",
+                        L10n.Subscription.firstPaymentDate,
                         selection: $viewModel.subscription.firstPaymentDate,
                         displayedComponents: .date
                     )
@@ -75,9 +75,9 @@ struct AddEditSubscriptionView: View {
                     )
                     
                     HStack {
-                        Text("金额")
+                        Text(L10n.Subscription.amount)
                         Spacer()
-                        TextField("0.00", value: Binding(
+                        TextField(L10n.Subscription.amountPlaceholder, value: Binding(
                             get: { Double(truncating: viewModel.subscription.amount as NSNumber) },
                             set: { viewModel.subscription.amount = Decimal($0) }
                         ), format: .number)
@@ -96,12 +96,12 @@ struct AddEditSubscriptionView: View {
                 }
                 
                 // Notification section
-                Section("提醒设置") {
-                    Toggle("启用提醒", isOn: $viewModel.subscription.notify)
+                Section(L10n.Subscription.sectionNotification) {
+                    Toggle(L10n.Subscription.enableNotification, isOn: $viewModel.subscription.notify)
                     
                     if viewModel.subscription.notify {
                         Stepper(value: $viewModel.subscription.notifyDaysBefore, in: 1...30) {
-                            Text("提前 \(viewModel.subscription.notifyDaysBefore) 天提醒")
+                            Text(L10n.Subscription.notifyDaysBefore(viewModel.subscription.notifyDaysBefore))
                         }
                     }
                 }
@@ -109,13 +109,13 @@ struct AddEditSubscriptionView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
+                    Button(L10n.Subscription.buttonCancel) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button(L10n.Subscription.buttonSave) {
                         Task {
                             await saveSubscription()
                         }
@@ -125,7 +125,7 @@ struct AddEditSubscriptionView: View {
             }
             .overlay {
                 if viewModel.isSaving {
-                    LoadingOverlay(message: "保存中...")
+                    LoadingOverlay(message: L10n.Loading.saving)
                 }
             }
             .sheet(isPresented: $showPaywall) {
@@ -140,7 +140,7 @@ struct AddEditSubscriptionView: View {
     private func saveSubscription() async {
         do {
             try await viewModel.save()
-            toast = .success("保存成功")
+            toast = .success(L10n.Toast.saveSuccess)
             
             // Dismiss after a short delay
             try? await Task.sleep(nanoseconds: 500_000_000)

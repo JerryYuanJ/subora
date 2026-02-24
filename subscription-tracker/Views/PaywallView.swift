@@ -136,7 +136,7 @@ struct PaywallView: View {
         defer { isPurchasing = false }
         
         do {
-            try await paywallService.purchaseProVersion()
+            _ = try await paywallService.purchaseProVersion()
             toast = .success("购买成功！")
             
             // Dismiss after a short delay
@@ -152,7 +152,7 @@ struct PaywallView: View {
         defer { isPurchasing = false }
         
         do {
-            try await paywallService.restorePurchases()
+            _ = try await paywallService.restorePurchases()
             toast = .success("恢复成功！")
             
             // Dismiss after a short delay

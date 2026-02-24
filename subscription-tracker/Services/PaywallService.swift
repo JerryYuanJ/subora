@@ -10,7 +10,6 @@ import SwiftUI
 import Combine
 
 /// Service for managing free/Pro user limits and StoreKit purchases
-@MainActor
 class PaywallService: ObservableObject {
     
     // MARK: - Singleton
@@ -57,6 +56,7 @@ class PaywallService: ObservableObject {
     
     /// Purchase Pro version (placeholder for StoreKit integration)
     /// - Returns: True if purchase succeeded, false otherwise
+    @MainActor
     func purchaseProVersion() async throws -> Bool {
         // TODO: Implement StoreKit purchase flow
         // For now, just simulate success
@@ -67,6 +67,7 @@ class PaywallService: ObservableObject {
     
     /// Restore previous purchases (placeholder for StoreKit integration)
     /// - Returns: True if restore succeeded, false otherwise
+    @MainActor
     func restorePurchases() async throws -> Bool {
         // TODO: Implement StoreKit restore flow
         return false

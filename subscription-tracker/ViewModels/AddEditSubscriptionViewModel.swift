@@ -45,11 +45,11 @@ class AddEditSubscriptionViewModel: ObservableObject {
     init(
         subscription: Subscription? = nil,
         subscriptionService: SubscriptionService,
-        paywallService: PaywallService = .shared
+        paywallService: PaywallService? = nil
     ) {
         self.isEditMode = subscription != nil
         self.subscriptionService = subscriptionService
-        self.paywallService = paywallService
+        self.paywallService = paywallService ?? PaywallService.shared
         
         // Use existing subscription or create new one with defaults
         if let existingSubscription = subscription {

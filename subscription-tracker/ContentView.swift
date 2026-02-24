@@ -53,4 +53,5 @@ struct ContentView: View {
     return ContentView()
         .modelContainer(container)
         .environmentObject(PaywallService.shared)
+        .environmentObject(AppSettings())
 }

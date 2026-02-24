@@ -29,24 +29,23 @@ struct ToastView: View {
     }
     
     var body: some View {
-        HStack(spacing: 12) {
+        VStack(spacing: 12) {
             Image(systemName: type.icon)
-                .font(.title3)
+                .font(.system(size: 44))
                 .foregroundColor(type.color)
             
             Text(message)
                 .font(.subheadline)
-                .foregroundColor(.primary)
-            
-            Spacer()
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
         }
-        .padding()
+        .padding(.horizontal, 24)
+        .padding(.vertical, 20)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black.opacity(0.75))
         )
-        .padding(.horizontal)
+        .frame(minWidth: 150, maxWidth: 250)
     }
 }
 
@@ -56,13 +55,12 @@ struct ToastModifier: ViewModifier {
     @Binding var toast: Toast?
     
     func body(content: Content) -> some View {
-        ZStack {
-            content
-            
-            if let toast = toast {
-                VStack {
+        content
+            .overlay(alignment: .center) {
+                if let toast = toast {
                     ToastView(message: toast.message, type: toast.type)
-                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .transition(.scale.combined(with: .opacity))
+                        .zIndex(999)
                         .onAppear {
                             DispatchQueue.main.asyncAfter(deadline: .now() + toast.duration) {
                                 withAnimation {
@@ -70,13 +68,9 @@ struct ToastModifier: ViewModifier {
                                 }
                             }
                         }
-                    
-                    Spacer()
                 }
-                .padding(.top, 50)
-                .animation(.spring(), value: toast)
             }
-        }
+            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: toast?.message)
     }
 }
 

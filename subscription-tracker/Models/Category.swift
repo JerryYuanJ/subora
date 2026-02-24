@@ -34,6 +34,6 @@ final class Category {
     }
     
     var color: Color {
-        Color(hex: colorHex) ?? .blue
+        Color(hex: colorHex)
     }
 }

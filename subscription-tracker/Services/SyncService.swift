@@ -37,8 +37,9 @@ class SyncService {
     /// 设置网络监控
     private func setupNetworkMonitoring() {
         networkMonitor.pathUpdateHandler = { [weak self] path in
+            guard let self = self else { return }
             Task { @MainActor in
-                self?.isNetworkAvailable = path.status == .satisfied
+                self.isNetworkAvailable = path.status == .satisfied
             }
         }
         let queue = DispatchQueue(label: "NetworkMonitor")

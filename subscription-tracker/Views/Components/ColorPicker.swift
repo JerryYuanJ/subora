@@ -62,7 +62,7 @@ private struct ColorButton: View {
         Button(action: action) {
             ZStack {
                 Circle()
-                    .fill(Color(hex: colorHex) ?? .gray)
+                    .fill(Color(hex: colorHex))
                     .frame(width: 50, height: 50)
                 
                 if isSelected {

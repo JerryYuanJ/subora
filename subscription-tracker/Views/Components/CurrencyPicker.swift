@@ -13,13 +13,10 @@ struct CurrencyPicker: View {
     @Binding var selectedCurrency: String
     
     var body: some View {
-        Picker("货币", selection: $selectedCurrency) {
+        Picker(L10n.Subscription.currency, selection: $selectedCurrency) {
             ForEach(CurrencyFormatter.supportedCurrencies, id: \.self) { currency in
-                HStack {
-                    Text(CurrencyFormatter.symbol(for: currency))
-                    Text(currency)
-                }
-                .tag(currency)
+                Text("\(currency) (\(CurrencyFormatter.symbol(for: currency)))")
+                    .tag(currency)
             }
         }
         .pickerStyle(.menu)

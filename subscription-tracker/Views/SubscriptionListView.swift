@@ -24,16 +24,47 @@ struct SubscriptionListView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Search bar
-                searchBar
-                
-                // Category filters
-                categoryFilters
-                
                 // Subscription list
                 subscriptionList
             }
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Menu {
+                        Button {
+                            viewModel.selectedCategory = nil
+                            viewModel.applyFilters()
+                        } label: {
+                            HStack {
+                                Text(L10n.Subscriptions.filterAll)
+                                if viewModel.selectedCategory == nil {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                        
+                        ForEach(categories) { category in
+                            Button {
+                                viewModel.selectedCategory = category
+                                viewModel.applyFilters()
+                            } label: {
+                                HStack {
+                                    Text(category.name)
+                                    if viewModel.selectedCategory?.id == category.id {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text(viewModel.selectedCategory?.name ?? L10n.Subscriptions.filterAll)
+                                .font(.headline)
+                            Image(systemName: "chevron.down")
+                                .font(.caption)
+                        }
+                    }
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showAddSubscription = true
@@ -58,65 +89,6 @@ struct SubscriptionListView: View {
     }
     
     // MARK: - View Components
-    
-    private var searchBar: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
-            
-            TextField(L10n.Subscriptions.searchPlaceholder, text: $viewModel.searchQuery)
-                .textFieldStyle(.plain)
-                .onChange(of: viewModel.searchQuery) { _, _ in
-                    viewModel.applyFilters()
-                }
-            
-            if !viewModel.searchQuery.isEmpty {
-                Button {
-                    viewModel.searchQuery = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
-                }
-            }
-        }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(10)
-        .padding(.horizontal)
-        .padding(.top)
-    }
-    
-    private var categoryFilters: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                // All button
-                Button {
-                    viewModel.selectedCategory = nil
-                    viewModel.applyFilters()
-                } label: {
-                    Text(L10n.Subscriptions.filterAll)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(viewModel.selectedCategory == nil ? Color.blue : Color(.systemGray5))
-                        .foregroundColor(viewModel.selectedCategory == nil ? .white : .primary)
-                        .cornerRadius(20)
-                }
-                
-                // Category buttons
-                ForEach(categories) { category in
-                    Button {
-                        viewModel.selectedCategory = category
-                        viewModel.applyFilters()
-                    } label: {
-                        CategoryBadge(category: category)
-                            .opacity(viewModel.selectedCategory?.id == category.id ? 1.0 : 0.6)
-                    }
-                }
-            }
-            .padding(.horizontal)
-        }
-        .padding(.vertical, 8)
-    }
     
     private var subscriptionList: some View {
         Group {

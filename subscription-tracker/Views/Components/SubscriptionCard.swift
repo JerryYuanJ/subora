@@ -37,7 +37,7 @@ struct SubscriptionCard: View {
                 
                 // 下次续费日期
                 HStack {
-                    Text("下次续费: \(formatDate(subscription.nextBillingDate))")
+                    Text(L10n.Subscriptions.nextRenewal(formatDate(subscription.nextBillingDate)))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
@@ -45,7 +45,7 @@ struct SubscriptionCard: View {
                     
                     // 倒计时
                     if let daysUntil = daysUntilRenewal() {
-                        Text(daysUntil > 0 ? "\(daysUntil)天后" : "今天")
+                        Text(daysUntil > 0 ? "\(daysUntil)\(L10n.Insights.daysSuffix)" : L10n.Subscriptions.today)
                             .font(.caption)
                             .foregroundColor(daysUntil <= 3 ? .red : .secondary)
                     }
@@ -65,13 +65,13 @@ struct SubscriptionCard: View {
             Button(role: .destructive) {
                 onDelete()
             } label: {
-                Label("删除", systemImage: "trash")
+                Label(L10n.Common.delete, systemImage: "trash")
             }
             
             Button {
                 onArchive()
             } label: {
-                Label(subscription.archived ? "取消归档" : "归档", systemImage: "archivebox")
+                Label(subscription.archived ? L10n.SubscriptionDetail.unarchive : L10n.SubscriptionDetail.archive, systemImage: "archivebox")
             }
             .tint(.orange)
         }
@@ -89,31 +89,15 @@ struct SubscriptionCard: View {
     }
     
     private func formatBillingCycle() -> String {
-        let cycle = subscription.billingCycle
         let unit = subscription.billingCycleUnit
         
-        if cycle == 1 {
-            switch unit {
-            case .day: return "日"
-            case .week: return "周"
-            case .month: return "月"
-            case .year: return "年"
-            }
-        } else {
-            switch unit {
-            case .day: return "\(cycle)天"
-            case .week: return "\(cycle)周"
-            case .month: return "\(cycle)个月"
-            case .year: return "\(cycle)年"
-            }
-        }
+        return unit.displayName
     }
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
-        formatter.locale = Locale(identifier: "zh_CN")
         return formatter.string(from: date)
     }
     

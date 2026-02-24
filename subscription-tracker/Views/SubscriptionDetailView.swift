@@ -102,7 +102,7 @@ struct SubscriptionDetailView: View {
                             Text(L10n.SubscriptionDetail.category)
                                 .foregroundColor(.secondary)
                             Spacer()
-                            CategoryBadge(category: category)
+                            CategoryBadge(category: category, isCompact: false)
                         }
                     }
                 }
@@ -178,7 +178,7 @@ struct SubscriptionDetailView: View {
             }
             
             // 操作按钮
-            VStack(spacing: 12) {
+            HStack(spacing: 12) {
                 Button {
                     Task {
                         await archiveSubscription()
@@ -189,7 +189,7 @@ struct SubscriptionDetailView: View {
                         systemImage: "archivebox"
                     )
                     .frame(maxWidth: .infinity)
-                    .padding()
+                    .padding(.vertical, 12)
                     .background(Color.orange)
                     .foregroundColor(.white)
                     .cornerRadius(12)
@@ -198,9 +198,9 @@ struct SubscriptionDetailView: View {
                 Button {
                     showDeleteConfirmation = true
                 } label: {
-                    Label(L10n.SubscriptionDetail.delete, systemImage: "trash")
+                    Label(L10n.Common.delete, systemImage: "trash")
                         .frame(maxWidth: .infinity)
-                        .padding()
+                        .padding(.vertical, 12)
                         .background(Color.red)
                         .foregroundColor(.white)
                         .cornerRadius(12)
@@ -360,9 +360,9 @@ struct SubscriptionDetailView: View {
         let unit = viewModel.subscription.billingCycleUnit
         
         if cycle == 1 {
-            return "每\(unit.displayName)"
+            return "\(L10n.BillingCycle.every) \(unit.displayName)"
         } else {
-            return "每 \(cycle) \(unit.displayName)"
+            return "\(L10n.BillingCycle.every) \(cycle) \(unit.displayName)"
         }
     }
     
@@ -370,7 +370,6 @@ struct SubscriptionDetailView: View {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
-        formatter.locale = Locale(identifier: "zh_CN")
         return formatter.string(from: date)
     }
 }

@@ -23,12 +23,12 @@ class SubscriptionService {
     
     init(
         modelContext: ModelContext,
-        paywallService: PaywallService = .shared,
-        notificationService: NotificationService = .shared
+        paywallService: PaywallService? = nil,
+        notificationService: NotificationService? = nil
     ) {
         self.modelContext = modelContext
-        self.paywallService = paywallService
-        self.notificationService = notificationService
+        self.paywallService = paywallService ?? PaywallService.shared
+        self.notificationService = notificationService ?? NotificationService.shared
     }
     
     // MARK: - CRUD Operations

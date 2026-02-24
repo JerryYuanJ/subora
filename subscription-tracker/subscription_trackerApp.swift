@@ -14,15 +14,6 @@ struct subscription_trackerApp: App {
     
     @StateObject private var appSettings = AppSettings()
     
-    init() {
-        // Apply saved language on app launch
-        if let savedLanguages = UserDefaults.standard.array(forKey: "AppleLanguages") as? [String],
-           let language = savedLanguages.first {
-            UserDefaults.standard.set([language], forKey: "AppleLanguages")
-            UserDefaults.standard.synchronize()
-        }
-    }
-    
     var body: some Scene {
         WindowGroup {
             ContentView()

@@ -19,9 +19,9 @@ class CategoryService {
     
     // MARK: - Initialization
     
-    init(modelContext: ModelContext, paywallService: PaywallService = .shared) {
+    init(modelContext: ModelContext, paywallService: PaywallService? = nil) {
         self.modelContext = modelContext
-        self.paywallService = paywallService
+        self.paywallService = paywallService ?? PaywallService.shared
     }
     
     // MARK: - Create

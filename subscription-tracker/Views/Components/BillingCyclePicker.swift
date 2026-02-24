@@ -14,25 +14,24 @@ struct BillingCyclePicker: View {
     @Binding var unit: BillingCycleUnit
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack {
+            Text(L10n.BillingCycle.every)
+            
             // 周期数值选择器
             Stepper(value: $cycle, in: 1...99) {
-                HStack {
-                    Text("每")
-                    Text("\(cycle)")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                }
+                Text("\(cycle)")
+                    .font(.headline)
+                    .foregroundColor(.primary)
             }
             
             // 单位选择器
-            Picker("单位", selection: $unit) {
+            Picker("", selection: $unit) {
                 ForEach(BillingCycleUnit.allCases, id: \.self) { unit in
                     Text(unit.displayName).tag(unit)
                 }
             }
             .pickerStyle(.menu)
-            .frame(maxWidth: 100)
+            .labelsHidden()
         }
     }
 }

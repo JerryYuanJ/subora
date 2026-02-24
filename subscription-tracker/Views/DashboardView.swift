@@ -34,6 +34,7 @@ struct DashboardView: View {
                     upcomingRenewalsSection
                 }
                 .padding()
+                .padding(.top, -8)
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

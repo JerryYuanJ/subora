@@ -61,6 +61,8 @@ struct CategoryManagementView: View {
                     }
                 }
             }
+            .listStyle(.insetGrouped)
+            .padding(.top, -20)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -88,8 +90,8 @@ struct CategoryManagementView: View {
             } message: {
                 Text(L10n.Category.deleteConfirmMessage)
             }
-            .toast($toast)
         }
+        .toast($toast)
     }
     
     // MARK: - Actions
@@ -116,25 +118,28 @@ private struct CategoryRow: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            // Color indicator
-            Circle()
-                .fill(category.color)
-                .frame(width: 40, height: 40)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(category.name)
-                    .font(.headline)
+            HStack(spacing: 12) {
+                // Color indicator - vertical bar
+                Rectangle()
+                    .fill(category.color)
+                    .frame(width: 4, height: 44)
+                    .cornerRadius(2)
                 
-                if let description = category.categoryDescription {
-                    Text(description)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(category.name)
+                        .font(.headline)
+                    
+                    if let description = category.categoryDescription {
+                        Text(description)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                    
+                    Text(L10n.Category.subscriptionCount(subscriptionCount))
                         .font(.caption)
                         .foregroundColor(.secondary)
-                        .lineLimit(1)
                 }
-                
-                Text(L10n.Category.subscriptionCount(subscriptionCount))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
             
             Spacer()
@@ -208,8 +213,8 @@ struct AddEditCategoryView: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
             }
-            .toast($toast)
         }
+        .toast($toast)
     }
     
     private func saveCategory() async {

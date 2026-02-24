@@ -24,12 +24,9 @@ struct InsightsView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 20) {
                     // Total spending card
                     totalSpendingCard
-                    
-                    // Statistics grid
-                    statisticsGrid
                     
                     // Trend chart
                     trendChartCard
@@ -38,15 +35,16 @@ struct InsightsView: View {
                     upcomingRenewalsCard
                 }
                 .padding()
+                .padding(.top, -8)
             }
             .background(Color(.systemGroupedBackground))
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showAddSubscription = true
                     } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title3)
+                        Image(systemName: "plus")
                     }
                 }
             }
@@ -74,237 +72,198 @@ struct InsightsView: View {
     // MARK: - Total Spending Card
     
     private var totalSpendingCard: some View {
-        VStack(spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(L10n.Dashboard.monthlyExpenses)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    
-                    if let firstCurrency = viewModel.monthlyExpenses.keys.sorted().first,
-                       let amount = viewModel.monthlyExpenses[firstCurrency] {
-                        Text(CurrencyFormatter.format(amount: amount, currency: firstCurrency))
-                            .font(.system(size: 36, weight: .bold, design: .rounded))
-                            .foregroundColor(.primary)
-                    } else {
-                        Text("$0.00")
-                            .font(.system(size: 36, weight: .bold, design: .rounded))
+        HStack(spacing: 0) {
+            // Left accent bar
+            Rectangle()
+                .fill(Color(hex: "#4C8DFF"))
+                .frame(width: 4)
+            
+            VStack(spacing: 16) {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(L10n.Dashboard.monthlyExpenses)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
                             .foregroundColor(.secondary)
+                        
+                        if let firstCurrency = viewModel.monthlyExpenses.keys.sorted().first,
+                           let amount = viewModel.monthlyExpenses[firstCurrency] {
+                            Text(CurrencyFormatter.format(amount: amount, currency: firstCurrency))
+                                .font(.system(size: 36, weight: .bold, design: .rounded))
+                                .foregroundColor(.primary)
+                        } else {
+                            Text("$0.00")
+                                .font(.system(size: 36, weight: .bold, design: .rounded))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    ZStack {
+                        Circle()
+                            .fill(Color(hex: "#4C8DFF").opacity(0.15))
+                            .frame(width: 56, height: 56)
+                        
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .font(.system(size: 24))
+                            .foregroundColor(Color(hex: "#4C8DFF"))
                     }
                 }
                 
-                Spacer()
-                
-                Image(systemName: "chart.line.uptrend.xyaxis.circle.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            }
-            
-            // Additional currencies
-            if viewModel.monthlyExpenses.count > 1 {
-                Divider()
-                
-                VStack(spacing: 8) {
-                    ForEach(Array(viewModel.monthlyExpenses.keys.sorted().dropFirst()), id: \.self) { currency in
-                        if let amount = viewModel.monthlyExpenses[currency] {
-                            HStack {
-                                Text(currency)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                                Text(CurrencyFormatter.format(amount: amount, currency: currency))
-                                    .font(.headline)
-                                    .fontWeight(.semibold)
+                // Additional currencies
+                if viewModel.monthlyExpenses.count > 1 {
+                    Divider()
+                        .padding(.vertical, 4)
+                    
+                    VStack(spacing: 10) {
+                        ForEach(Array(viewModel.monthlyExpenses.keys.sorted().dropFirst()), id: \.self) { currency in
+                            if let amount = viewModel.monthlyExpenses[currency] {
+                                HStack {
+                                    Text(currency)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
+                                    Text(CurrencyFormatter.format(amount: amount, currency: currency))
+                                        .font(.headline)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.primary)
+                                }
                             }
                         }
                     }
                 }
             }
+            .padding(24)
         }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
-        )
-    }
-    
-    // MARK: - Statistics Grid
-    
-    private var statisticsGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-            StatCard(
-                title: L10n.Insights.activeSubscriptions,
-                value: "\(viewModel.activeSubscriptionsCount)",
-                icon: "checkmark.circle.fill",
-                color: .green
-            )
-            
-            StatCard(
-                title: L10n.Insights.upcomingRenewalsCount,
-                value: "\(viewModel.upcomingRenewals.count)",
-                icon: "clock.fill",
-                color: .orange
-            )
-            
-            StatCard(
-                title: L10n.Insights.newThisMonth,
-                value: "\(viewModel.newThisMonth)",
-                icon: "plus.circle.fill",
-                color: .blue
-            )
-            
-            StatCard(
-                title: L10n.Insights.averageCost,
-                value: viewModel.averageSubscriptionCost,
-                icon: "chart.bar.fill",
-                color: .purple
-            )
-        }
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
     }
     
     // MARK: - Trend Chart Card
     
     private var trendChartCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(L10n.Dashboard.trend)
-                .font(.title3)
-                .fontWeight(.bold)
+        HStack(spacing: 0) {
+            // Left accent bar
+            Rectangle()
+                .fill(Color(hex: "#34C759"))
+                .frame(width: 4)
             
-            if viewModel.trendData.isEmpty {
-                VStack(spacing: 16) {
-                    Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 50))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.blue.opacity(0.6), .purple.opacity(0.6)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Text(L10n.Dashboard.trend)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
                     
-                    VStack(spacing: 8) {
-                        Text(L10n.Dashboard.noTrendData)
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-                        Text(L10n.Dashboard.noTrendHint)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
+                    Spacer()
                 }
-                .frame(height: 200)
-                .frame(maxWidth: .infinity)
-            } else {
-                TrendChart(trendData: viewModel.trendData)
+                
+                if viewModel.trendData.isEmpty {
+                    VStack(spacing: 16) {
+                        ZStack {
+                            Circle()
+                                .fill(Color(hex: "#34C759").opacity(0.15))
+                                .frame(width: 80, height: 80)
+                            
+                            Image(systemName: "chart.line.uptrend.xyaxis")
+                                .font(.system(size: 36))
+                                .foregroundColor(Color(hex: "#34C759"))
+                        }
+                        
+                        VStack(spacing: 6) {
+                            Text(L10n.Dashboard.noTrendData)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                            Text(L10n.Dashboard.noTrendHint)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                    }
                     .frame(height: 200)
+                    .frame(maxWidth: .infinity)
+                } else {
+                    TrendChart(trendData: viewModel.trendData)
+                        .frame(height: 220)
+                        .padding(.top, 8)
+                }
             }
+            .padding(24)
         }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
-        )
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
     }
     
     // MARK: - Upcoming Renewals Card
     
     private var upcomingRenewalsCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text(L10n.Dashboard.upcomingRenewals)
-                    .font(.title3)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                if !viewModel.upcomingRenewals.isEmpty {
-                    Text("\(viewModel.upcomingRenewals.count)")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule()
-                                .fill(Color.orange)
-                        )
-                }
-            }
+        HStack(spacing: 0) {
+            // Left accent bar
+            Rectangle()
+                .fill(Color(hex: "#FF9F0A"))
+                .frame(width: 4)
             
-            if viewModel.upcomingRenewals.isEmpty {
-                VStack(spacing: 12) {
-                    Image(systemName: "calendar.badge.checkmark")
-                        .font(.system(size: 40))
-                        .foregroundColor(.green.opacity(0.6))
-                    Text(L10n.Dashboard.noUpcoming)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Text(L10n.Dashboard.upcomingRenewals)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                    
+                    if !viewModel.upcomingRenewals.isEmpty {
+                        Text("\(viewModel.upcomingRenewals.count)")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(Color(hex: "#FF9F0A"))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule()
+                                    .fill(Color(hex: "#FF9F0A").opacity(0.15))
+                            )
+                    }
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-            } else {
-                VStack(spacing: 12) {
-                    ForEach(viewModel.upcomingRenewals.prefix(5)) { subscription in
-                        NavigationLink(destination: SubscriptionDetailView(subscription: subscription, modelContext: modelContext)) {
-                            UpcomingRenewalRow(subscription: subscription)
+                
+                if viewModel.upcomingRenewals.isEmpty {
+                    VStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(Color(hex: "#FF9F0A").opacity(0.15))
+                                .frame(width: 64, height: 64)
+                            
+                            Image(systemName: "calendar.badge.checkmark")
+                                .font(.system(size: 28))
+                                .foregroundColor(Color(hex: "#FF9F0A"))
                         }
-                        .buttonStyle(.plain)
+                        
+                        Text(L10n.Dashboard.noUpcoming)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+                } else {
+                    VStack(spacing: 10) {
+                        ForEach(viewModel.upcomingRenewals.prefix(5)) { subscription in
+                            NavigationLink(destination: SubscriptionDetailView(subscription: subscription, modelContext: modelContext)) {
+                                UpcomingRenewalRow(subscription: subscription)
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
                 }
             }
+            .padding(24)
         }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
-        )
-    }
-}
-
-// MARK: - Stat Card Component
-
-struct StatCard: View {
-    let title: String
-    let value: String
-    let icon: String
-    let color: Color
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.title2)
-                    .foregroundColor(color)
-                
-                Spacer()
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(value)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
-                    .foregroundColor(.primary)
-                
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
-        )
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
     }
 }
 
@@ -317,22 +276,12 @@ struct UpcomingRenewalRow: View {
         Calendar.current.dateComponents([.day], from: Date(), to: subscription.nextBillingDate).day ?? 0
     }
     
-    var urgencyColor: Color {
-        if daysUntilRenewal <= 3 {
-            return .red
-        } else if daysUntilRenewal <= 7 {
-            return .orange
-        } else {
-            return .blue
-        }
-    }
-    
     var body: some View {
         HStack(spacing: 12) {
             // Category color indicator
             Circle()
-                .fill(subscription.category?.color ?? Color.gray)
-                .frame(width: 12, height: 12)
+                .fill(subscription.category?.color ?? .gray.opacity(0.5))
+                .frame(width: 10, height: 10)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(subscription.name)
@@ -351,12 +300,12 @@ struct UpcomingRenewalRow: View {
                 Text("\(daysUntilRenewal)\(L10n.Insights.daysSuffix)")
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
+                    .foregroundColor(Color(hex: "#FF9F0A"))
+                    .padding(.horizontal, 10)
                     .padding(.vertical, 4)
                     .background(
                         Capsule()
-                            .fill(urgencyColor)
+                            .fill(Color(hex: "#FF9F0A").opacity(0.15))
                     )
                 
                 Text(formatDate(subscription.nextBillingDate))
@@ -364,10 +313,10 @@ struct UpcomingRenewalRow: View {
                     .foregroundColor(.secondary)
             }
         }
-        .padding(12)
+        .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.secondarySystemBackground))
+                .fill(Color(hex: "#F5F5F7"))
         )
     }
     

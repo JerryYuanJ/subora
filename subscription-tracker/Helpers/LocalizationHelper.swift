@@ -73,6 +73,7 @@ enum L10n {
         static let searchPlaceholder = NSLocalizedString("subscriptions.search_placeholder", comment: "Search placeholder")
         static let filterAll = NSLocalizedString("subscriptions.filter_all", comment: "All filter button")
         static let empty = NSLocalizedString("subscriptions.empty", comment: "Empty subscriptions message")
+        static let today = NSLocalizedString("subscriptions.today", comment: "Today")
         static func nextRenewal(_ date: String) -> String {
             String(format: NSLocalizedString("subscriptions.next_renewal", comment: "Next renewal"), date)
         }
@@ -147,6 +148,7 @@ enum L10n {
         static let firstPaymentDate = NSLocalizedString("subscription.first_payment_date", comment: "First payment date label")
         static let amount = NSLocalizedString("subscription.amount", comment: "Amount label")
         static let amountPlaceholder = NSLocalizedString("subscription.amount_placeholder", comment: "Amount placeholder")
+        static let currency = NSLocalizedString("subscription.currency", comment: "Currency label")
         static let sectionNotification = NSLocalizedString("subscription.section_notification", comment: "Notification section")
         static let enableNotification = NSLocalizedString("subscription.enable_notification", comment: "Enable notification toggle")
         static func notifyDaysBefore(_ days: Int) -> String {

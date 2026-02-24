@@ -26,15 +26,6 @@ class SettingsViewModel: ObservableObject {
     /// Error message for display
     @Published var errorMessage: String?
     
-    /// Selected language
-    @Published var selectedLanguage: String = Locale.current.language.languageCode?.identifier ?? "en" {
-        didSet {
-            Task {
-                await updateLanguage(selectedLanguage)
-            }
-        }
-    }
-    
     // MARK: - Dependencies
     
     private let modelContext: ModelContext
@@ -60,10 +51,6 @@ class SettingsViewModel: ObservableObject {
             
             if let existingSettings = settings.first {
                 userSettings = existingSettings
-                // Load saved language
-                if let savedLanguage = existingSettings.language {
-                    selectedLanguage = savedLanguage
-                }
                 Logger.app.info("User settings loaded successfully")
             } else {
                 // Create default settings if none exist
@@ -232,21 +219,5 @@ class SettingsViewModel: ObservableObject {
     /// Get current sync status
     func getSyncStatus() -> SyncStatus {
         return syncService.getSyncStatus()
-    }
-    
-    /// Update app language
-    /// - Parameter languageCode: Language code (e.g., "zh-Hans", "en", "ja")
-    func updateLanguage(_ languageCode: String) async {
-        guard let settings = userSettings else { return }
-        
-        // Save to UserSettings
-        settings.language = languageCode
-        settings.updatedAt = Date()
-        try? modelContext.save()
-        
-        // Save to UserDefaults
-        UserDefaults.standard.set([languageCode], forKey: "AppleLanguages")
-        UserDefaults.standard.synchronize()
-        Logger.app.info("Language updated to: \(languageCode)")
     }
 }

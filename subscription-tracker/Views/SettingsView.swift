@@ -125,12 +125,37 @@ struct SettingsView: View {
                 Text(L10n.Settings.darkModeDark).tag(DarkModeOption.dark)
             }
             
-            // Language picker
-            Picker(L10n.Settings.language, selection: $viewModel.selectedLanguage) {
-                Text(L10n.Settings.languageZh).tag("zh-Hans")
-                Text(L10n.Settings.languageEn).tag("en")
-                Text(L10n.Settings.languageJa).tag("ja")
+            // Language - opens system settings
+            Button {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    Task { @MainActor in
+                        UIApplication.shared.open(url)
+                    }
+                }
+            } label: {
+                HStack {
+                    Text(L10n.Settings.language)
+                    Spacer()
+                    Text(currentLanguageDisplayName())
+                        .foregroundColor(.secondary)
+                    Image(systemName: "arrow.up.forward.square")
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+                }
             }
+        }
+    }
+    
+    // Get current language display name
+    private func currentLanguageDisplayName() -> String {
+        let languageCode = Locale.current.language.languageCode?.identifier ?? "en"
+        switch languageCode {
+        case "zh":
+            return L10n.Settings.languageZh
+        case "ja":
+            return L10n.Settings.languageJa
+        default:
+            return L10n.Settings.languageEn
         }
     }
     
@@ -194,6 +219,22 @@ struct SettingsView: View {
                     }
                 }
             }
+            
+            #if DEBUG
+            // Development test button to toggle Pro status
+            Button {
+                paywallService.isProUser.toggle()
+            } label: {
+                HStack {
+                    Image(systemName: "hammer.fill")
+                        .foregroundColor(.orange)
+                    Text("Toggle Pro Status (Dev Only)")
+                    Spacer()
+                    Text(paywallService.isProUser ? "ON" : "OFF")
+                        .foregroundColor(.secondary)
+                }
+            }
+            #endif
         }
     }
     
@@ -223,4 +264,5 @@ enum DarkModeOption {
     
     return SettingsView(modelContext: container.mainContext)
         .environmentObject(PaywallService.shared)
+        .environmentObject(AppSettings())
 }

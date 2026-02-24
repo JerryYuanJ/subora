@@ -54,6 +54,7 @@
 "subscriptions.filter_all" = "全部";
 "subscriptions.empty" = "暂无订阅";
 "subscriptions.next_renewal" = "下次续费: %@";
+"subscriptions.today" = "今天";
 
 // MARK: - Subscription Detail
 "subscription_detail.category" = "分类";
@@ -68,9 +69,9 @@
 "subscription_detail.notification_enabled" = "已启用";
 "subscription_detail.notification_disabled" = "已关闭";
 "subscription_detail.notification_time" = "提醒时间";
-"subscription_detail.archive" = "归档订阅";
+"subscription_detail.archive" = "归档";
 "subscription_detail.unarchive" = "取消归档";
-"subscription_detail.delete" = "删除订阅";
+"subscription_detail.delete" = "删除";
 "subscription_detail.delete_confirm_title" = "确认删除";
 "subscription_detail.delete_confirm_message" = "确定要删除这个订阅吗？此操作无法撤销。";
 "subscription_detail.archived" = "已归档";
@@ -106,6 +107,7 @@
 "subscription.first_payment_date" = "首次付款日期";
 "subscription.amount" = "金额";
 "subscription.amount_placeholder" = "0.00";
+"subscription.currency" = "货币";
 "subscription.section_notification" = "提醒设置";
 "subscription.enable_notification" = "启用提醒";
 "subscription.notify_days_before" = "提前 %d 天提醒";

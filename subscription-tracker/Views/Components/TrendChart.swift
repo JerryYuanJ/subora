@@ -45,10 +45,6 @@ struct TrendChart: View {
                 legendView
             }
         }
-        .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
     
     // MARK: - Chart View
