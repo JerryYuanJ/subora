@@ -13,6 +13,7 @@ struct AddEditSubscriptionView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var paywallService: PaywallService
     @StateObject private var viewModel: AddEditSubscriptionViewModel
     @Query private var categories: [Category]
     
@@ -97,11 +98,25 @@ struct AddEditSubscriptionView: View {
                 
                 // Notification section
                 Section(L10n.Subscription.sectionNotification) {
-                    Toggle(L10n.Subscription.enableNotification, isOn: $viewModel.subscription.notify)
-                    
-                    if viewModel.subscription.notify {
-                        Stepper(value: $viewModel.subscription.notifyDaysBefore, in: 1...30) {
-                            Text(L10n.Subscription.notifyDaysBefore(viewModel.subscription.notifyDaysBefore))
+                    if paywallService.isProUser {
+                        Toggle(L10n.Subscription.enableNotification, isOn: $viewModel.subscription.notify)
+                        
+                        if viewModel.subscription.notify {
+                            Stepper(value: $viewModel.subscription.notifyDaysBefore, in: 0...30) {
+                                Text(L10n.Subscription.notifyDaysBefore(viewModel.subscription.notifyDaysBefore))
+                            }
+                        }
+                    } else {
+                        Button {
+                            showPaywall = true
+                        } label: {
+                            HStack {
+                                Text(L10n.Subscription.enableNotification)
+                                Spacer()
+                                Image(systemName: "crown.fill")
+                                    .font(.caption)
+                                    .foregroundColor(.yellow)
+                            }
                         }
                     }
                 }
@@ -130,6 +145,7 @@ struct AddEditSubscriptionView: View {
             }
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
+                    .environmentObject(paywallService)
             }
             .toast($toast)
         }

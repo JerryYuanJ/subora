@@ -12,26 +12,47 @@ import Combine
 @main
 struct subscription_trackerApp: App {
     
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var appSettings = AppSettings()
+    @StateObject private var notificationManager = NotificationManager()
+    
+    // 创建不使用 CloudKit 的 ModelContainer
+    let sharedModelContainer: ModelContainer = {
+        let schema = Schema([
+            Subscription.self,
+            Category.self,
+            UserSettings.self,
+        ])
+        
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            cloudKitDatabase: .none  // 禁用 CloudKit
+        )
+
+        do {
+            let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+            print("✅ SwiftData ModelContainer initialized successfully (CloudKit disabled)")
+            return container
+        } catch {
+            fatalError("❌ Could not create ModelContainer: \(error)")
+        }
+    }()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(PaywallService.shared)
                 .environmentObject(appSettings)
+                .environmentObject(notificationManager)
                 .preferredColorScheme(appSettings.colorScheme)
+                .onAppear {
+                    Task {
+                        await notificationManager.requestPermissionIfNeeded()
+                    }
+                }
         }
-        .modelContainer(for: [Subscription.self, Category.self, UserSettings.self]) { result in
-            switch result {
-            case .success(_):
-                // 配置 CloudKit 同步（可选）
-                // 注意：实际的 iCloud 同步开关由 UserSettings.iCloudSync 控制
-                // SwiftData 会自动处理 CloudKit 集成
-                print("SwiftData ModelContainer initialized successfully")
-            case .failure(let error):
-                print("Failed to initialize ModelContainer: \(error.localizedDescription)")
-            }
-        }
+        .modelContainer(sharedModelContainer)
     }
 }
 
@@ -59,6 +80,53 @@ class AppSettings: ObservableObject {
         } else {
             UserDefaults.standard.removeObject(forKey: "darkMode")
             colorScheme = nil
+        }
+    }
+}
+
+
+// MARK: - Notification Manager
+
+@MainActor
+class NotificationManager: ObservableObject {
+    @Published var authorizationStatus: UNAuthorizationStatus = .notDetermined
+    
+    private let notificationService = NotificationService.shared
+    
+    init() {
+        Task {
+            await checkAuthorizationStatus()
+        }
+    }
+    
+    func checkAuthorizationStatus() async {
+        authorizationStatus = await notificationService.checkAuthorizationStatus()
+    }
+    
+    func requestPermissionIfNeeded() async {
+        let status = await notificationService.checkAuthorizationStatus()
+        authorizationStatus = status
+        
+        // Only request if not determined yet
+        if status == .notDetermined {
+            let granted = await notificationService.requestAuthorization()
+            if granted {
+                authorizationStatus = .authorized
+            } else {
+                authorizationStatus = .denied
+            }
+        }
+    }
+    
+    func requestPermission() async -> Bool {
+        let granted = await notificationService.requestAuthorization()
+        await checkAuthorizationStatus()
+        return granted
+    }
+    
+    func openSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
         }
     }
 }

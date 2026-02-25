@@ -93,7 +93,7 @@ struct TrendChart: View {
                 AxisGridLine()
             }
         }
-        .chartLegend(position: .bottom, alignment: .center)
+        .chartLegend(.hidden)
         .frame(height: 200)
     }
     

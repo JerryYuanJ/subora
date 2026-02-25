@@ -220,4 +220,23 @@ class SettingsViewModel: ObservableObject {
     func getSyncStatus() -> SyncStatus {
         return syncService.getSyncStatus()
     }
+    
+    /// Manually trigger sync
+    func manualSync() async throws {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            try await syncService.syncNow()
+            Logger.app.info("Manual sync completed successfully")
+        } catch let error as AppError {
+            errorMessage = error.errorDescription
+            Logger.app.error("Manual sync failed: \(error.localizedDescription)")
+            throw error
+        } catch {
+            errorMessage = "手动同步失败"
+            Logger.app.error("Manual sync failed: \(error.localizedDescription)")
+            throw AppError.syncFailed(reason: error.localizedDescription)
+        }
+    }
 }

@@ -10,11 +10,11 @@ import SwiftData
 
 @Model
 final class Subscription {
-    @Attribute(.unique) var id: UUID
+    var id: UUID
     var name: String
     var subscriptionDescription: String?
     var category: Category?
-    var firstPaymentDate: Date
+    var firstPaymentDate: Date  
     var billingCycle: Int
     var billingCycleUnit: BillingCycleUnit
     var amount: Decimal

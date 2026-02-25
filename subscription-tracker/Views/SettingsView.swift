@@ -15,6 +15,11 @@ struct SettingsView: View {
     @StateObject private var viewModel: SettingsViewModel
     @EnvironmentObject private var paywallService: PaywallService
     @EnvironmentObject private var appSettings: AppSettings
+    @EnvironmentObject private var notificationManager: NotificationManager
+    @State private var showClearDataConfirmation = false
+    @State private var showPaywall = false
+    @State private var showNotificationPermissionAlert = false
+    @State private var toast: Toast?
     
     // Computed properties for bindings
     var darkModeSelection: Binding<DarkModeOption> {
@@ -64,6 +69,8 @@ struct SettingsView: View {
             set: { newValue in
                 Task {
                     try? await viewModel.updateDefaultNotifyTime(newValue)
+                    // Reschedule all notifications with new time
+                    await rescheduleAllNotifications(newTime: newValue)
                 }
             }
         )
@@ -88,11 +95,8 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // Appearance section
-                appearanceSection
-                
-                // Default settings section
-                defaultSettingsSection
+                // Settings section (merged appearance + defaults)
+                settingsSection
                 
                 // Data section
                 dataSection
@@ -111,15 +115,38 @@ struct SettingsView: View {
                     LoadingOverlay(message: "加载中...")
                 }
             }
+            .alert(L10n.Settings.clearDataConfirmTitle, isPresented: $showClearDataConfirmation) {
+                Button(L10n.Common.cancel, role: .cancel) { }
+                Button(L10n.Settings.clearData, role: .destructive) {
+                    Task {
+                        await clearAllData()
+                    }
+                }
+            } message: {
+                Text(L10n.Settings.clearDataConfirmMessage)
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
+                    .environmentObject(paywallService)
+            }
+            .alert(L10n.NotificationContent.permissionRequired, isPresented: $showNotificationPermissionAlert) {
+                Button(L10n.Common.cancel, role: .cancel) { }
+                Button(L10n.NotificationContent.goToSettings) {
+                    notificationManager.openSettings()
+                }
+            } message: {
+                Text(L10n.NotificationContent.permissionMessage)
+            }
         }
+        .toast($toast)
     }
     
     // MARK: - View Components
     
-    private var appearanceSection: some View {
-        Section(L10n.Settings.sectionAppearance) {
-            // Dark mode picker
-            Picker(L10n.Settings.darkMode, selection: darkModeSelection) {
+    private var settingsSection: some View {
+        Section(L10n.Settings.sectionSettings) {
+            // Theme (Dark mode picker)
+            Picker(L10n.Settings.theme, selection: darkModeSelection) {
                 Text(L10n.Settings.darkModeSystem).tag(DarkModeOption.system)
                 Text(L10n.Settings.darkModeLight).tag(DarkModeOption.light)
                 Text(L10n.Settings.darkModeDark).tag(DarkModeOption.dark)
@@ -143,6 +170,50 @@ struct SettingsView: View {
                         .font(.caption)
                 }
             }
+            
+            // Default notification time picker with Pro badge
+            if paywallService.isProUser && notificationManager.authorizationStatus == .authorized {
+                // Pro user with permission - show date picker
+                DatePicker(
+                    L10n.Settings.notificationTime,
+                    selection: defaultNotifyTime,
+                    displayedComponents: .hourAndMinute
+                )
+            } else {
+                // Non-Pro or no permission - show button
+                Button {
+                    if !paywallService.isProUser {
+                        showPaywall = true
+                    } else if notificationManager.authorizationStatus != .authorized {
+                        showNotificationPermissionAlert = true
+                    }
+                } label: {
+                    HStack {
+                        Text(L10n.Settings.notificationTime)
+                        Spacer()
+                        if !paywallService.isProUser {
+                            Image(systemName: "crown.fill")
+                                .font(.caption)
+                                .foregroundColor(.yellow)
+                        } else if notificationManager.authorizationStatus == .denied {
+                            Image(systemName: "bell.slash.fill")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        } else if notificationManager.authorizationStatus == .notDetermined {
+                            Image(systemName: "bell.badge.fill")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                        }
+                    }
+                }
+            }
+            
+            // Default currency picker
+            Picker(L10n.Settings.defaultCurrency, selection: defaultCurrency) {
+                ForEach(CurrencyFormatter.supportedCurrencies, id: \.self) { currency in
+                    Text("\(currency) (\(CurrencyFormatter.symbol(for: currency)))").tag(currency)
+                }
+            }
         }
     }
     
@@ -159,28 +230,141 @@ struct SettingsView: View {
         }
     }
     
-    private var defaultSettingsSection: some View {
-        Section(L10n.Settings.sectionDefaults) {
-            // Default currency picker
-            Picker(L10n.Settings.defaultCurrency, selection: defaultCurrency) {
-                ForEach(CurrencyFormatter.supportedCurrencies, id: \.self) { currency in
-                    Text(currency).tag(currency)
+    private var dataSection: some View {
+        Section(L10n.Settings.sectionData) {
+            // iCloud sync toggle with Pro badge
+            if paywallService.isProUser {
+                Toggle(L10n.Settings.iCloudSync, isOn: iCloudSync)
+                
+                // Sync status indicator
+                if viewModel.userSettings?.iCloudSync == true {
+                    HStack {
+                        Text("同步状态")
+                        Spacer()
+                        syncStatusView
+                    }
+                    
+                    // Manual sync button
+                    Button {
+                        Task {
+                            await manualSync()
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.triangle.2.circlepath")
+                            Text("手动同步")
+                            Spacer()
+                            if viewModel.isLoading {
+                                ProgressView()
+                            }
+                        }
+                    }
+                    .disabled(viewModel.isLoading)
+                }
+            } else {
+                Button {
+                    showPaywall = true
+                } label: {
+                    HStack {
+                        Text(L10n.Settings.iCloudSync)
+                        Spacer()
+                        Image(systemName: "crown.fill")
+                            .font(.caption)
+                            .foregroundColor(.yellow)
+                    }
                 }
             }
             
-            // Default notification time picker
-            DatePicker(
-                L10n.Settings.notificationTime,
-                selection: defaultNotifyTime,
-                displayedComponents: .hourAndMinute
-            )
+            // Clear all data button
+            Button(role: .destructive) {
+                showClearDataConfirmation = true
+            } label: {
+                HStack {
+                    Text(L10n.Settings.clearData)
+                    Spacer()
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
+                }
+            }
         }
     }
     
-    private var dataSection: some View {
-        Section(L10n.Settings.sectionData) {
-            // iCloud sync toggle
-            Toggle(L10n.Settings.iCloudSync, isOn: iCloudSync)
+    private var syncStatusView: some View {
+        Group {
+            switch viewModel.getSyncStatus() {
+            case .syncing:
+                HStack(spacing: 4) {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                    Text("同步中...")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            case .synced:
+                HStack(spacing: 4) {
+                    Image(systemName: "checkmark.icloud.fill")
+                        .foregroundColor(.green)
+                    Text("已同步")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            case .error(let message):
+                HStack(spacing: 4) {
+                    Image(systemName: "exclamationmark.icloud.fill")
+                        .foregroundColor(.red)
+                    Text("错误")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
+            case .disabled:
+                HStack(spacing: 4) {
+                    Image(systemName: "icloud.slash.fill")
+                        .foregroundColor(.gray)
+                    Text("未启用")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+    }
+    
+    private func manualSync() async {
+        do {
+            try await viewModel.manualSync()
+            toast = .success("同步成功")
+        } catch {
+            toast = .error("同步失败: \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: - Actions
+    
+    private func clearAllData() async {
+        do {
+            // Fetch all subscriptions with all properties loaded
+            var subscriptionDescriptor = FetchDescriptor<Subscription>()
+            subscriptionDescriptor.propertiesToFetch = [\.name, \.amount, \.currency, \.billingCycle, \.billingCycleUnit]
+            let subscriptions = try modelContext.fetch(subscriptionDescriptor)
+            
+            // Delete all subscriptions
+            for subscription in subscriptions {
+                modelContext.delete(subscription)
+            }
+            
+            // Fetch all categories with all properties loaded
+            var categoryDescriptor = FetchDescriptor<Category>()
+            categoryDescriptor.propertiesToFetch = [\.name, \.colorHex]
+            let categories = try modelContext.fetch(categoryDescriptor)
+            
+            // Delete all categories
+            for category in categories {
+                modelContext.delete(category)
+            }
+            
+            try modelContext.save()
+            toast = .success(L10n.Settings.clearDataSuccess)
+        } catch {
+            toast = .error(L10n.Settings.clearDataFailed(error.localizedDescription))
         }
     }
     
@@ -191,6 +375,21 @@ struct SettingsView: View {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.green)
                     Text(L10n.Settings.proPurchased)
+                }
+                
+                // Test notification button (Pro users only)
+                if notificationManager.authorizationStatus == .authorized {
+                    Button {
+                        Task {
+                            await sendTestNotification()
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "bell.badge.fill")
+                                .foregroundColor(.blue)
+                            Text(L10n.NotificationContent.testNotification)
+                        }
+                    }
                 }
             } else {
                 Button {
@@ -246,6 +445,40 @@ struct SettingsView: View {
                 Text("1.0.0")
                     .foregroundColor(.secondary)
             }
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func rescheduleAllNotifications(newTime: Date) async {
+        let subscriptionService = SubscriptionService(modelContext: modelContext)
+        let subscriptions = subscriptionService.fetchActiveSubscriptions()
+        
+        await NotificationService.shared.rescheduleAllNotifications(
+            for: subscriptions,
+            notifyTime: newTime
+        )
+    }
+    
+    private func sendTestNotification() async {
+        // Create a test notification that fires in 5 seconds
+        let content = UNMutableNotificationContent()
+        content.title = L10n.NotificationContent.title
+        content.body = "This is a test notification. Your notifications are working!"
+        content.sound = .default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: "test-notification-\(UUID().uuidString)",
+            content: content,
+            trigger: trigger
+        )
+        
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+            toast = .success(L10n.NotificationContent.testSent)
+        } catch {
+            toast = .error("Failed to send test notification: \(error.localizedDescription)")
         }
     }
 }

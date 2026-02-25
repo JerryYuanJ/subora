@@ -96,9 +96,9 @@ struct DashboardView: View {
                     }
                 }
                 .padding()
-                .background(Color(.systemBackground))
+                .background(Color(.secondarySystemGroupedBackground))
                 .cornerRadius(12)
-                .shadow(radius: 2)
+                .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
             }
         }
     }
@@ -123,15 +123,15 @@ struct DashboardView: View {
                 .frame(height: 200)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color(.systemBackground))
+                .background(Color(.secondarySystemGroupedBackground))
                 .cornerRadius(12)
-                .shadow(radius: 2)
+                .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
             } else {
                 TrendChart(trendData: viewModel.trendData)
                     .padding()
-                    .background(Color(.systemBackground))
+                    .background(Color(.secondarySystemGroupedBackground))
                     .cornerRadius(12)
-                    .shadow(radius: 2)
+                    .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
             }
         }
     }

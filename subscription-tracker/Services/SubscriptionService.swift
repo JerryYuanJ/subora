@@ -31,6 +31,17 @@ class SubscriptionService {
         self.notificationService = notificationService ?? NotificationService.shared
     }
     
+    // MARK: - Helper Methods
+    
+    /// Get default notification time from user settings
+    private func getDefaultNotifyTime() -> Date {
+        let descriptor = FetchDescriptor<UserSettings>()
+        if let settings = try? modelContext.fetch(descriptor).first {
+            return settings.defaultNotifyTime
+        }
+        return Calendar.current.date(from: DateComponents(hour: 9, minute: 0)) ?? Date()
+    }
+    
     // MARK: - CRUD Operations
     
     /// Create a new subscription with free user limit check
@@ -61,7 +72,8 @@ class SubscriptionService {
         
         // Schedule notification if enabled
         if subscription.notify {
-            try? await notificationService.scheduleNotification(for: subscription)
+            let notifyTime = getDefaultNotifyTime()
+            try? await notificationService.scheduleNotification(for: subscription, notifyTime: notifyTime)
         }
         
         return true
@@ -84,7 +96,8 @@ class SubscriptionService {
         }
         
         // Update notification
-        try? await notificationService.updateNotification(for: subscription)
+        let notifyTime = getDefaultNotifyTime()
+        try? await notificationService.updateNotification(for: subscription, notifyTime: notifyTime)
     }
     
     /// Delete a subscription and cancel its notifications
@@ -151,7 +164,8 @@ class SubscriptionService {
         
         // Reschedule notification if enabled
         if subscription.notify {
-            try? await notificationService.scheduleNotification(for: subscription)
+            let notifyTime = getDefaultNotifyTime()
+            try? await notificationService.scheduleNotification(for: subscription, notifyTime: notifyTime)
         }
     }
     

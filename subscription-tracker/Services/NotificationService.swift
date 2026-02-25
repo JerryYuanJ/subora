@@ -75,7 +75,7 @@ class NotificationService {
         
         // Calculate notification date
         let nextBillingDate = subscription.nextBillingDate
-        let notificationDate = Calendar.current.date(
+        var notificationDate = Calendar.current.date(
             byAdding: .day,
             value: -subscription.notifyDaysBefore,
             to: nextBillingDate
@@ -92,10 +92,55 @@ class NotificationService {
         dateComponents.hour = timeComponents.hour
         dateComponents.minute = timeComponents.minute
         
-        // Create notification content
+        // Create the full notification date with time
+        guard var fullNotificationDate = Calendar.current.date(from: dateComponents) else {
+            Logger.notification.error("Failed to create notification date")
+            return
+        }
+        
+        // If notification date+time is in the past, calculate next billing cycle
+        if fullNotificationDate <= Date() {
+            Logger.notification.info("Notification date+time is in the past (\(fullNotificationDate)), calculating next cycle")
+            
+            // Calculate next billing date after current one
+            let nextNextBillingDate = BillingCalculator.addBillingCycle(
+                to: nextBillingDate,
+                cycle: subscription.billingCycle,
+                unit: subscription.billingCycleUnit
+            )
+            
+            // Calculate notification date for next cycle
+            notificationDate = Calendar.current.date(
+                byAdding: .day,
+                value: -subscription.notifyDaysBefore,
+                to: nextNextBillingDate
+            ) ?? nextNextBillingDate
+            
+            // Recombine with time
+            dateComponents = Calendar.current.dateComponents(
+                [.year, .month, .day],
+                from: notificationDate
+            )
+            dateComponents.hour = timeComponents.hour
+            dateComponents.minute = timeComponents.minute
+            
+            guard let newFullDate = Calendar.current.date(from: dateComponents) else {
+                Logger.notification.error("Failed to create next cycle notification date")
+                return
+            }
+            
+            fullNotificationDate = newFullDate
+            Logger.notification.info("Rescheduled to next cycle: \(fullNotificationDate)")
+        }
+        
+        // Create notification content with localized strings
         let content = UNMutableNotificationContent()
-        content.title = "订阅即将续费"
-        content.body = "\(subscription.name) 将在 \(subscription.notifyDaysBefore) 天后续费，金额为 \(formatAmount(subscription.amount, currency: subscription.currency))"
+        content.title = L10n.NotificationContent.title
+        content.body = L10n.NotificationContent.body(
+            subscription.name,
+            subscription.notifyDaysBefore,
+            formatAmount(subscription.amount, currency: subscription.currency)
+        )
         content.sound = .default
         content.badge = 1
         
@@ -120,7 +165,7 @@ class NotificationService {
         
         // Schedule notification
         try await notificationCenter.add(request)
-        Logger.notification.info("Successfully scheduled notification for subscription: \(subscription.id)")
+        Logger.notification.info("Successfully scheduled notification for subscription: \(subscription.id) at \(dateComponents)")
     }
     
     /// Update notification for a subscription
@@ -158,6 +203,28 @@ class NotificationService {
         notificationCenter.removeAllPendingNotificationRequests()
     }
     
+    // MARK: - Batch Operations
+    
+    /// Reschedule notifications for all subscriptions with notifications enabled
+    /// Useful when user changes default notification time
+    /// - Parameters:
+    ///   - subscriptions: Array of subscriptions to reschedule
+    ///   - notifyTime: The new notification time
+    func rescheduleAllNotifications(
+        for subscriptions: [Subscription],
+        notifyTime: Date
+    ) async {
+        Logger.notification.info("Rescheduling notifications for \(subscriptions.count) subscriptions")
+        
+        for subscription in subscriptions where subscription.notify {
+            do {
+                try await scheduleNotification(for: subscription, notifyTime: notifyTime)
+            } catch {
+                Logger.notification.error("Failed to reschedule notification for \(subscription.id): \(error.localizedDescription)")
+            }
+        }
+    }
+    
     // MARK: - Helper Methods
     
     /// Format amount with currency symbol
@@ -181,13 +248,16 @@ class NotificationService {
 enum NotificationError: LocalizedError {
     case authorizationDenied
     case schedulingFailed(String)
+    case proFeatureRequired
     
     var errorDescription: String? {
         switch self {
         case .authorizationDenied:
-            return "通知权限未授予，请在设置中开启通知权限"
+            return L10n.NotificationContent.permissionMessage
         case .schedulingFailed(let reason):
-            return "通知调度失败: \(reason)"
+            return "Notification scheduling failed: \(reason)"
+        case .proFeatureRequired:
+            return "Notifications are a Pro feature"
         }
     }
 }

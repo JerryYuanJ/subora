@@ -136,7 +136,7 @@ struct InsightsView: View {
             }
             .padding(24)
         }
-        .background(Color.white)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
     }
@@ -193,7 +193,7 @@ struct InsightsView: View {
             }
             .padding(24)
         }
-        .background(Color.white)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
     }
@@ -261,7 +261,7 @@ struct InsightsView: View {
             }
             .padding(24)
         }
-        .background(Color.white)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
     }
@@ -297,7 +297,8 @@ struct UpcomingRenewalRow: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 4) {
-                Text("\(daysUntilRenewal)\(L10n.Insights.daysSuffix)")
+                let dayText = daysUntilRenewal == 1 ? L10n.Insights.daysSuffixSingular : L10n.Insights.daysSuffix
+                Text("\(daysUntilRenewal) \(dayText)")
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(Color(hex: "#FF9F0A"))
@@ -316,7 +317,7 @@ struct UpcomingRenewalRow: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(hex: "#F5F5F7"))
+                .fill(Color(.tertiarySystemGroupedBackground))
         )
     }
     

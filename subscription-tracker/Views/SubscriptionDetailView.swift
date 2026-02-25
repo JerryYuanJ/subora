@@ -13,12 +13,14 @@ struct SubscriptionDetailView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var paywallService: PaywallService
     @StateObject private var viewModel: SubscriptionDetailViewModel
     @Query private var categories: [Category]
     
     @State private var isEditMode = false
     @State private var editedSubscription: Subscription
     @State private var showDeleteConfirmation = false
+    @State private var showPaywall = false
     @State private var toast: Toast?
     
     init(subscription: Subscription, modelContext: ModelContext) {
@@ -81,6 +83,10 @@ struct SubscriptionDetailView: View {
         } message: {
             Text(L10n.SubscriptionDetail.deleteConfirmMessage)
         }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+                .environmentObject(paywallService)
+        }
         .toast($toast)
     }
     
@@ -136,7 +142,7 @@ struct SubscriptionDetailView: View {
                     
                     InfoRow(
                         label: L10n.SubscriptionDetail.daysUntil,
-                        value: "\(viewModel.daysUntilRenewal)\(L10n.SubscriptionDetail.daysSuffix)",
+                        value: "\(viewModel.daysUntilRenewal) \(L10n.SubscriptionDetail.daysSuffix(viewModel.daysUntilRenewal))",
                         valueColor: viewModel.daysUntilRenewal <= 3 ? .red : nil
                     )
                 }
@@ -147,7 +153,7 @@ struct SubscriptionDetailView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     InfoRow(
                         label: L10n.SubscriptionDetail.paymentCount,
-                        value: "\(viewModel.paymentCount)\(L10n.SubscriptionDetail.timesSuffix)"
+                        value: "\(viewModel.paymentCount) \(L10n.SubscriptionDetail.timesSuffix(viewModel.paymentCount))"
                     )
                     
                     InfoRow(
@@ -268,11 +274,25 @@ struct SubscriptionDetailView: View {
             
             // 提醒设置
             Section(L10n.SubscriptionDetail.sectionNotification) {
-                Toggle(L10n.SubscriptionDetail.enableNotification, isOn: $editedSubscription.notify)
-                
-                if editedSubscription.notify {
-                    Stepper(value: $editedSubscription.notifyDaysBefore, in: 1...30) {
-                        Text(L10n.SubscriptionDetail.notifyDaysBefore(editedSubscription.notifyDaysBefore))
+                if paywallService.isProUser {
+                    Toggle(L10n.SubscriptionDetail.enableNotification, isOn: $editedSubscription.notify)
+                    
+                    if editedSubscription.notify {
+                        Stepper(value: $editedSubscription.notifyDaysBefore, in: 0...30) {
+                            Text(L10n.SubscriptionDetail.notifyDaysBefore(editedSubscription.notifyDaysBefore))
+                        }
+                    }
+                } else {
+                    Button {
+                        showPaywall = true
+                    } label: {
+                        HStack {
+                            Text(L10n.SubscriptionDetail.enableNotification)
+                            Spacer()
+                            Image(systemName: "crown.fill")
+                                .font(.caption)
+                                .foregroundColor(.yellow)
+                        }
                     }
                 }
             }
@@ -286,7 +306,7 @@ struct SubscriptionDetailView: View {
             content()
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(Color(.secondarySystemGroupedBackground))
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
@@ -356,14 +376,7 @@ struct SubscriptionDetailView: View {
     // MARK: - Helper Methods
     
     private func formatBillingCycle() -> String {
-        let cycle = viewModel.subscription.billingCycle
-        let unit = viewModel.subscription.billingCycleUnit
-        
-        if cycle == 1 {
-            return "\(L10n.BillingCycle.every) \(unit.displayName)"
-        } else {
-            return "\(L10n.BillingCycle.every) \(cycle) \(unit.displayName)"
-        }
+        L10n.BillingCycle.formatCycle(viewModel.subscription.billingCycle, viewModel.subscription.billingCycleUnit)
     }
     
     private func formatDate(_ date: Date) -> String {
@@ -411,6 +424,7 @@ private struct InfoRow: View {
     
     return NavigationStack {
         SubscriptionDetailView(subscription: subscription, modelContext: container.mainContext)
+            .environmentObject(PaywallService.shared)
     }
 }
 

@@ -24,15 +24,19 @@ struct BillingCalculator {
         let calendar = Calendar.current
         let now = Date()
         
-        // 如果首次付款日期在未来，直接返回
-        if firstPaymentDate > now {
+        // 获取今天的开始时间（忽略时分秒）
+        let today = calendar.startOfDay(for: now)
+        let firstPaymentDay = calendar.startOfDay(for: firstPaymentDate)
+        
+        // 如果首次付款日期在今天或未来，直接返回
+        if firstPaymentDay >= today {
             return firstPaymentDate
         }
         
-        var currentDate = firstPaymentDate
+        var currentDate = firstPaymentDay
         
-        // 循环计算直到找到未来的日期
-        while currentDate <= now {
+        // 循环计算直到找到今天或未来的日期
+        while currentDate < today {
             currentDate = addBillingCycle(to: currentDate, cycle: cycle, unit: unit, calendar: calendar)
         }
         
@@ -92,6 +96,27 @@ struct BillingCalculator {
         case .year:
             // 每年 -> 每月：金额 * 周期 / 12
             return (amount * cycleDecimal) / 12
+        }
+    }
+    
+    // MARK: - Public Helpers
+    
+    /// 添加一个计费周期到指定日期
+    public static func addBillingCycle(
+        to date: Date,
+        cycle: Int,
+        unit: BillingCycleUnit
+    ) -> Date {
+        let calendar = Calendar.current
+        switch unit {
+        case .day:
+            return calendar.date(byAdding: .day, value: cycle, to: date) ?? date
+        case .week:
+            return calendar.date(byAdding: .weekOfYear, value: cycle, to: date) ?? date
+        case .month:
+            return addMonths(to: date, months: cycle, calendar: calendar)
+        case .year:
+            return addYears(to: date, years: cycle, calendar: calendar)
         }
     }
     

@@ -45,7 +45,8 @@ struct SubscriptionCard: View {
                     
                     // 倒计时
                     if let daysUntil = daysUntilRenewal() {
-                        Text(daysUntil > 0 ? "\(daysUntil)\(L10n.Insights.daysSuffix)" : L10n.Subscriptions.today)
+                        let dayText = daysUntil == 1 ? L10n.Insights.daysSuffixSingular : L10n.Insights.daysSuffix
+                        Text(daysUntil > 0 ? "\(daysUntil) \(dayText)" : L10n.Subscriptions.today)
                             .font(.caption)
                             .foregroundColor(daysUntil <= 3 ? .red : .secondary)
                     }
@@ -58,8 +59,10 @@ struct SubscriptionCard: View {
                 .foregroundColor(.secondary)
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.secondarySystemGroupedBackground))
+        )
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             Button(role: .destructive) {
@@ -89,9 +92,7 @@ struct SubscriptionCard: View {
     }
     
     private func formatBillingCycle() -> String {
-        let unit = subscription.billingCycleUnit
-        
-        return unit.displayName
+        L10n.BillingCycle.formatCycle(subscription.billingCycle, subscription.billingCycleUnit)
     }
     
     private func formatDate(_ date: Date) -> String {

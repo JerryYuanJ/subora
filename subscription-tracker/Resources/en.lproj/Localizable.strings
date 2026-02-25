@@ -84,17 +84,17 @@
 
 // MARK: - Paywall
 "paywall.title" = "Upgrade to Pro";
-"paywall.subtitle" = "Unlock all features, unlimited subscriptions";
+"paywall.subtitle" = "Unlock unlimited subscriptions and premium features";
 "paywall.feature_unlimited_subscriptions" = "Unlimited Subscriptions";
-"paywall.feature_unlimited_subscriptions_desc" = "Create unlimited subscription records";
+"paywall.feature_unlimited_subscriptions_desc" = "Create unlimited subscription records without restrictions";
 "paywall.feature_unlimited_categories" = "Unlimited Categories";
-"paywall.feature_unlimited_categories_desc" = "Create unlimited custom categories";
+"paywall.feature_unlimited_categories_desc" = "Organize with unlimited custom categories";
 "paywall.feature_icloud_sync" = "iCloud Sync";
-"paywall.feature_icloud_sync_desc" = "Sync data across all devices";
-"paywall.feature_smart_notifications" = "Smart Notifications";
-"paywall.feature_smart_notifications_desc" = "Customize renewal reminders";
-"paywall.feature_advanced_stats" = "Advanced Statistics";
-"paywall.feature_advanced_stats_desc" = "View detailed spending trends and analysis";
+"paywall.feature_icloud_sync_desc" = "Keep your data safe and synced across all your devices";
+"paywall.feature_smart_notifications" = "Smart Reminders";
+"paywall.feature_smart_notifications_desc" = "Never miss a payment with customizable renewal reminders";
+"paywall.feature_advanced_stats" = "Advanced Analytics";
+"paywall.feature_advanced_stats_desc" = "Visualize spending trends with detailed charts and insights";
 "paywall.feature_theme_customization" = "Theme Customization";
 "paywall.feature_theme_customization_desc" = "Customize app theme colors";
 "paywall.button_purchase" = "Purchase Pro Version";
@@ -103,6 +103,8 @@
 
 // MARK: - Settings
 "settings.title" = "Settings";
+"settings.section_settings" = "Settings";
+"settings.theme" = "Theme";
 "settings.section_appearance" = "Appearance";
 "settings.dark_mode" = "Dark Mode";
 "settings.dark_mode_system" = "System";
@@ -114,6 +116,11 @@
 "settings.notification_time" = "Notification Time";
 "settings.section_data" = "Data";
 "settings.icloud_sync" = "iCloud Sync";
+"settings.clear_data" = "Clear All Data";
+"settings.clear_data_confirm_title" = "Clear All Data?";
+"settings.clear_data_confirm_message" = "This will delete all subscriptions and categories. This action cannot be undone.";
+"settings.clear_data_success" = "All data cleared successfully";
+"settings.clear_data_failed" = "Failed to clear data: %@";
 "settings.category_management" = "Category Management";
 "settings.section_pro" = "Pro Version";
 "settings.pro_purchased" = "Pro Version Purchased";
@@ -160,8 +167,8 @@
 "error.data_save_failed" = "Save failed: %@";
 "error.data_load_failed" = "Load failed: %@";
 "error.invalid_data" = "Invalid data: %@";
-"error.subscription_limit" = "Free version supports up to 3 subscriptions";
-"error.category_limit" = "Free version supports up to 3 categories";
+"error.subscription_limit" = "Free version supports up to 5 subscriptions. Upgrade to Pro for unlimited subscriptions!";
+"error.category_limit" = "Free version supports up to 5 categories. Upgrade to Pro for unlimited categories!";
 "error.notification_permission" = "Please enable notifications in Settings";
 "error.notification_schedule" = "Notification setup failed";
 "error.sync_failed" = "Sync failed: %@";
@@ -225,3 +232,34 @@
 "settings.language_zh" = "简体中文";
 "settings.language_en" = "English";
 "settings.language_ja" = "日本語";
+
+// MARK: - Notifications
+"notification.title" = "Subscription Renewal Reminder";
+"notification.body" = "%@ will renew in %d days for %@";
+"notification.permission_required" = "Notification Permission Required";
+"notification.permission_message" = "Please enable notifications in Settings to receive renewal reminders";
+"notification.go_to_settings" = "Go to Settings";
+"notification.test_notification" = "Test Notification";
+"notification.test_sent" = "Test notification sent";
+"notification.scheduled_success" = "Notification scheduled successfully";
+"notification.cancelled_success" = "Notification cancelled";
+
+// MARK: - Pluralization
+"days.singular" = "day";
+"days.plural" = "days";
+"times.singular" = "time";
+"times.plural" = "times";
+"subscription.notify_same_day" = "On the same day";
+"subscription.notify_days_before_singular" = "Notify 1 day before";
+"subscription.notify_days_before_zero" = "Notify on renewal day";
+
+// MARK: - Billing Cycle Display
+"billing_cycle.recurring" = "Recurring";
+"billing_cycle.daily" = "Daily";
+"billing_cycle.weekly" = "Weekly";
+"billing_cycle.monthly" = "Monthly";
+"billing_cycle.yearly" = "Yearly";
+"billing_cycle.every_x_days" = "Every %d days";
+"billing_cycle.every_x_weeks" = "Every %d weeks";
+"billing_cycle.every_x_months" = "Every %d months";
+"billing_cycle.every_x_years" = "Every %d years";

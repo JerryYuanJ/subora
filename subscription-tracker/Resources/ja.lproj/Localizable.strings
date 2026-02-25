@@ -67,6 +67,7 @@
 "subscription.first_payment_date" = "初回支払日";
 "subscription.amount" = "金額";
 "subscription.amount_placeholder" = "0.00";
+"subscription.currency" = "通貨";
 "subscription.section_notification" = "通知設定";
 "subscription.enable_notification" = "通知を有効にする";
 "subscription.notify_days_before" = "%d日前に通知";
@@ -83,17 +84,17 @@
 
 // MARK: - Paywall
 "paywall.title" = "Proバージョンにアップグレード";
-"paywall.subtitle" = "すべての機能を解除、無制限のサブスクリプション管理";
+"paywall.subtitle" = "無制限のサブスクリプションとプレミアム機能を解除";
 "paywall.feature_unlimited_subscriptions" = "無制限のサブスクリプション";
-"paywall.feature_unlimited_subscriptions_desc" = "無制限のサブスクリプション記録を作成";
+"paywall.feature_unlimited_subscriptions_desc" = "制限なしで無制限のサブスクリプション記録を作成";
 "paywall.feature_unlimited_categories" = "無制限のカテゴリー";
-"paywall.feature_unlimited_categories_desc" = "無制限のカスタムカテゴリーを作成";
+"paywall.feature_unlimited_categories_desc" = "無制限のカスタムカテゴリーで整理";
 "paywall.feature_icloud_sync" = "iCloud同期";
-"paywall.feature_icloud_sync_desc" = "すべてのデバイス間でデータを同期";
-"paywall.feature_smart_notifications" = "スマート通知";
-"paywall.feature_smart_notifications_desc" = "更新リマインダーをカスタマイズ";
-"paywall.feature_advanced_stats" = "高度な統計";
-"paywall.feature_advanced_stats_desc" = "詳細な支出トレンドと分析を表示";
+"paywall.feature_icloud_sync_desc" = "すべてのデバイス間でデータを安全に同期";
+"paywall.feature_smart_notifications" = "スマートリマインダー";
+"paywall.feature_smart_notifications_desc" = "カスタマイズ可能な更新リマインダーで支払いを見逃さない";
+"paywall.feature_advanced_stats" = "高度な分析";
+"paywall.feature_advanced_stats_desc" = "詳細なチャートとインサイトで支出トレンドを可視化";
 "paywall.feature_theme_customization" = "テーマのカスタマイズ";
 "paywall.feature_theme_customization_desc" = "アプリのテーマカラーをカスタマイズ";
 "paywall.button_purchase" = "Proバージョンを購入";
@@ -102,6 +103,8 @@
 
 // MARK: - Settings
 "settings.title" = "設定";
+"settings.section_settings" = "設定";
+"settings.theme" = "テーマ";
 "settings.section_appearance" = "外観";
 "settings.dark_mode" = "ダークモード";
 "settings.dark_mode_system" = "システム";
@@ -113,6 +116,11 @@
 "settings.notification_time" = "通知時刻";
 "settings.section_data" = "データ";
 "settings.icloud_sync" = "iCloud同期";
+"settings.clear_data" = "すべてのデータを削除";
+"settings.clear_data_confirm_title" = "すべてのデータを削除しますか？";
+"settings.clear_data_confirm_message" = "すべてのサブスクリプションとカテゴリーが削除されます。この操作は取り消せません。";
+"settings.clear_data_success" = "すべてのデータを削除しました";
+"settings.clear_data_failed" = "データの削除に失敗しました：%@";
 "settings.category_management" = "カテゴリー管理";
 "settings.section_pro" = "Proバージョン";
 "settings.pro_purchased" = "Proバージョンを購入済み";
@@ -120,6 +128,10 @@
 "settings.restore_purchases" = "購入を復元";
 "settings.section_about" = "について";
 "settings.version" = "バージョン";
+"settings.language" = "言語";
+"settings.language_zh" = "简体中文";
+"settings.language_en" = "English";
+"settings.language_ja" = "日本語";
 
 // MARK: - Color Picker
 "color_picker.title" = "色を選択";
@@ -159,8 +171,8 @@
 "error.data_save_failed" = "保存に失敗しました：%@";
 "error.data_load_failed" = "読み込みに失敗しました：%@";
 "error.invalid_data" = "無効なデータ：%@";
-"error.subscription_limit" = "無料版は最大3つのサブスクリプションをサポートします";
-"error.category_limit" = "無料版は最大3つのカテゴリーをサポートします";
+"error.subscription_limit" = "無料版は最大5つのサブスクリプションをサポートします。Proにアップグレードして無制限に！";
+"error.category_limit" = "無料版は最大5つのカテゴリーをサポートします。Proにアップグレードして無制限に！";
 "error.notification_permission" = "設定で通知を有効にしてください";
 "error.notification_schedule" = "通知設定に失敗しました";
 "error.sync_failed" = "同期に失敗しました：%@";
@@ -172,6 +184,7 @@
 
 // MARK: - Subscription List
 "subscriptions.next_renewal" = "次回更新: %@";
+"subscriptions.today" = "今日";
 
 // MARK: - Subscription Detail
 "subscription_detail.category" = "カテゴリー";
@@ -223,3 +236,34 @@
 "insights.new_this_month" = "今月の新規";
 "insights.average_cost" = "平均費用";
 "insights.days_suffix" = "日";
+
+// MARK: - Notifications
+"notification.title" = "サブスクリプション更新リマインダー";
+"notification.body" = "%@ は %d 日後に %@ で更新されます";
+"notification.permission_required" = "通知権限が必要です";
+"notification.permission_message" = "更新リマインダーを受け取るには、設定で通知を有効にしてください";
+"notification.go_to_settings" = "設定へ";
+"notification.test_notification" = "テスト通知";
+"notification.test_sent" = "テスト通知を送信しました";
+"notification.scheduled_success" = "通知が正常に設定されました";
+"notification.cancelled_success" = "通知がキャンセルされました";
+
+// MARK: - Pluralization
+"days.singular" = "日";
+"days.plural" = "日";
+"times.singular" = "回";
+"times.plural" = "回";
+"subscription.notify_same_day" = "当日通知";
+"subscription.notify_days_before_singular" = "1日前に通知";
+"subscription.notify_days_before_zero" = "更新日に通知";
+
+// MARK: - Billing Cycle Display
+"billing_cycle.recurring" = "周期";
+"billing_cycle.daily" = "毎日";
+"billing_cycle.weekly" = "毎週";
+"billing_cycle.monthly" = "毎月";
+"billing_cycle.yearly" = "毎年";
+"billing_cycle.every_x_days" = "%d日ごと";
+"billing_cycle.every_x_weeks" = "%d週間ごと";
+"billing_cycle.every_x_months" = "%dヶ月ごと";
+"billing_cycle.every_x_years" = "%d年ごと";

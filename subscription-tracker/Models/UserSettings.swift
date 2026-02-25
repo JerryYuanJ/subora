@@ -10,7 +10,7 @@ import SwiftData
 
 @Model
 final class UserSettings {
-    @Attribute(.unique) var id: UUID
+    var id: UUID
     var darkMode: Bool?
     var themeColor: String
     var defaultCurrency: String

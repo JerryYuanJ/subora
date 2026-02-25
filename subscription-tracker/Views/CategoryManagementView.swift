@@ -13,7 +13,6 @@ struct CategoryManagementView: View {
     
     @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel: CategoryViewModel
-    @Query private var categories: [Category]
     
     @State private var showAddCategory = false
     @State private var editingCategory: Category?
@@ -29,7 +28,7 @@ struct CategoryManagementView: View {
     var body: some View {
         NavigationStack {
             List {
-                if categories.isEmpty {
+                if viewModel.categories.isEmpty {
                     VStack(spacing: 16) {
                         Image(systemName: "folder")
                             .font(.system(size: 60))
@@ -44,8 +43,8 @@ struct CategoryManagementView: View {
                     .frame(maxWidth: .infinity)
                     .listRowBackground(Color.clear)
                 } else {
-                    ForEach(categories) { category in
-                        CategoryRow(category: category)
+                    ForEach(viewModel.categories) { category in
+                        CategoryRow(category: category, modelContext: modelContext)
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 editingCategory = category
@@ -78,8 +77,22 @@ struct CategoryManagementView: View {
             .sheet(item: $editingCategory) { category in
                 AddEditCategoryView(category: category, modelContext: modelContext)
             }
+            .onChange(of: showAddCategory) { _, newValue in
+                if !newValue {
+                    // Sheet 关闭后刷新列表
+                    viewModel.loadCategories()
+                }
+            }
+            .onChange(of: editingCategory) { _, newValue in
+                if newValue == nil {
+                    // Sheet 关闭后刷新列表
+                    viewModel.loadCategories()
+                }
+            }
             .alert(L10n.Category.deleteConfirmTitle, isPresented: $showDeleteConfirmation) {
-                Button(L10n.Common.cancel, role: .cancel) { }
+                Button(L10n.Common.cancel, role: .cancel) {
+                    categoryToDelete = nil
+                }
                 Button(L10n.Common.delete, role: .destructive) {
                     if let category = categoryToDelete {
                         Task {
@@ -89,6 +102,15 @@ struct CategoryManagementView: View {
                 }
             } message: {
                 Text(L10n.Category.deleteConfirmMessage)
+            }
+            .onChange(of: showDeleteConfirmation) { _, newValue in
+                if !newValue {
+                    // Clear categoryToDelete when alert is dismissed
+                    categoryToDelete = nil
+                }
+            }
+            .task {
+                viewModel.loadCategories()
             }
         }
         .toast($toast)
@@ -100,8 +122,10 @@ struct CategoryManagementView: View {
         do {
             try await viewModel.delete(category)
             toast = .success(L10n.Category.deleteSuccess)
+            categoryToDelete = nil
         } catch {
             toast = .error(L10n.Category.deleteFailed(error.localizedDescription))
+            categoryToDelete = nil
         }
     }
 }
@@ -110,6 +134,8 @@ struct CategoryManagementView: View {
 
 private struct CategoryRow: View {
     let category: Category
+    let modelContext: ModelContext
+    
     @Query private var subscriptions: [Subscription]
     
     var subscriptionCount: Int {
@@ -212,6 +238,7 @@ struct AddEditCategoryView: View {
             }
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
+                    .environmentObject(PaywallService.shared)
             }
         }
         .toast($toast)

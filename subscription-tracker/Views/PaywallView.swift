@@ -26,11 +26,11 @@ struct PaywallView: View {
                             .font(.system(size: 60))
                             .foregroundColor(.yellow)
                         
-                        Text("升级到 Pro 版本")
+                        Text(L10n.Paywall.title)
                             .font(.title)
                             .fontWeight(.bold)
                         
-                        Text("解锁所有功能，无限制管理订阅")
+                        Text(L10n.Paywall.subtitle)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -41,38 +41,32 @@ struct PaywallView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         FeatureRow(
                             icon: "infinity",
-                            title: "无限订阅",
-                            description: "创建无限数量的订阅记录"
+                            title: L10n.Paywall.featureUnlimitedSubscriptions,
+                            description: L10n.Paywall.featureUnlimitedSubscriptionsDesc
                         )
                         
                         FeatureRow(
                             icon: "folder.fill",
-                            title: "无限分类",
-                            description: "创建无限数量的自定义分类"
-                        )
-                        
-                        FeatureRow(
-                            icon: "icloud.fill",
-                            title: "iCloud 同步",
-                            description: "在所有设备间同步数据"
+                            title: L10n.Paywall.featureUnlimitedCategories,
+                            description: L10n.Paywall.featureUnlimitedCategoriesDesc
                         )
                         
                         FeatureRow(
                             icon: "bell.fill",
-                            title: "智能提醒",
-                            description: "自定义续费提醒通知"
+                            title: L10n.Paywall.featureSmartNotifications,
+                            description: L10n.Paywall.featureSmartNotificationsDesc
                         )
                         
                         FeatureRow(
-                            icon: "chart.line.uptrend.xyaxis",
-                            title: "高级统计",
-                            description: "查看详细的支出趋势和分析"
+                            icon: "icloud.fill",
+                            title: L10n.Paywall.featureiCloudSync,
+                            description: L10n.Paywall.featureiCloudSyncDesc
                         )
                         
                         FeatureRow(
-                            icon: "paintbrush.fill",
-                            title: "主题定制",
-                            description: "自定义应用主题颜色"
+                            icon: "chart.bar.fill",
+                            title: L10n.Paywall.featureAdvancedStats,
+                            description: L10n.Paywall.featureAdvancedStatsDesc
                         )
                     }
                     .padding(.horizontal)
@@ -89,7 +83,7 @@ struct PaywallView: View {
                                     ProgressView()
                                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 } else {
-                                    Text("购买 Pro 版本")
+                                    Text(L10n.Paywall.buttonPurchase)
                                         .fontWeight(.semibold)
                                 }
                             }
@@ -106,7 +100,7 @@ struct PaywallView: View {
                                 await restorePurchases()
                             }
                         } label: {
-                            Text("恢复购买")
+                            Text(L10n.Paywall.buttonRestore)
                                 .font(.subheadline)
                                 .foregroundColor(.blue)
                         }
@@ -120,7 +114,7 @@ struct PaywallView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("关闭") {
+                    Button(L10n.Paywall.buttonClose) {
                         dismiss()
                     }
                 }
@@ -137,13 +131,13 @@ struct PaywallView: View {
         
         do {
             _ = try await paywallService.purchaseProVersion()
-            toast = .success("购买成功！")
+            toast = .success(L10n.Toast.purchaseSuccess)
             
             // Dismiss after a short delay
             try? await Task.sleep(nanoseconds: 1_000_000_000)
             dismiss()
         } catch {
-            toast = .error("购买失败：\(error.localizedDescription)")
+            toast = .error(L10n.Toast.purchaseFailed(error.localizedDescription))
         }
     }
     
@@ -153,13 +147,13 @@ struct PaywallView: View {
         
         do {
             _ = try await paywallService.restorePurchases()
-            toast = .success("恢复成功！")
+            toast = .success(L10n.Toast.restoreSuccess)
             
             // Dismiss after a short delay
             try? await Task.sleep(nanoseconds: 1_000_000_000)
             dismiss()
         } catch {
-            toast = .error("恢复失败：\(error.localizedDescription)")
+            toast = .error(L10n.Toast.restoreFailed(error.localizedDescription))
         }
     }
 }

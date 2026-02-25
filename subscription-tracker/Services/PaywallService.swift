@@ -22,8 +22,8 @@ class PaywallService: ObservableObject {
     
     // MARK: - Constants
     
-    private let freeSubscriptionLimit = 3
-    private let freeCategoryLimit = 3
+    private let freeSubscriptionLimit = 5
+    private let freeCategoryLimit = 5
     
     private init() {
         // Load Pro status from UserDefaults
@@ -36,20 +36,28 @@ class PaywallService: ObservableObject {
     /// - Parameter currentCount: Current number of active subscriptions
     /// - Returns: True if user can create subscription, false otherwise
     func canCreateSubscription(currentCount: Int) -> Bool {
+        #if DEBUG
+        return true  // 开发模式下无限制
+        #else
         if isProUser {
             return true
         }
         return currentCount < freeSubscriptionLimit
+        #endif
     }
     
     /// Check if user can create a new category
     /// - Parameter currentCount: Current number of categories
     /// - Returns: True if user can create category, false otherwise
     func canCreateCategory(currentCount: Int) -> Bool {
+        #if DEBUG
+        return true  // 开发模式下无限制
+        #else
         if isProUser {
             return true
         }
         return currentCount < freeCategoryLimit
+        #endif
     }
     
     // MARK: - Purchase Management

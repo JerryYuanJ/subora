@@ -114,14 +114,24 @@ enum L10n {
         static let sectionNotification = NSLocalizedString("subscription_detail.section_notification", comment: "Notification section")
         static let name = NSLocalizedString("subscription_detail.name", comment: "Name label")
         static let description = NSLocalizedString("subscription_detail.description", comment: "Description label")
-        static let daysSuffix = NSLocalizedString("subscription_detail.days_suffix", comment: "Days suffix")
-        static let timesSuffix = NSLocalizedString("subscription_detail.times_suffix", comment: "Times suffix")
+        static func daysSuffix(_ count: Int) -> String {
+            count == 1 ? NSLocalizedString("days.singular", comment: "day") : NSLocalizedString("days.plural", comment: "days")
+        }
+        static func timesSuffix(_ count: Int) -> String {
+            count == 1 ? NSLocalizedString("times.singular", comment: "time") : NSLocalizedString("times.plural", comment: "times")
+        }
         static let edit = NSLocalizedString("subscription_detail.edit", comment: "Edit button")
         static let cancel = NSLocalizedString("subscription_detail.cancel", comment: "Cancel button")
         static let save = NSLocalizedString("subscription_detail.save", comment: "Save button")
         static let enableNotification = NSLocalizedString("subscription_detail.enable_notification", comment: "Enable notification")
         static func notifyDaysBefore(_ days: Int) -> String {
-            String(format: NSLocalizedString("subscription_detail.notify_days_before", comment: "Notify days before"), days)
+            if days == 0 {
+                return NSLocalizedString("subscription.notify_days_before_zero", comment: "Notify on renewal day")
+            } else if days == 1 {
+                return NSLocalizedString("subscription.notify_days_before_singular", comment: "Notify 1 day before")
+            } else {
+                return String(format: NSLocalizedString("subscription_detail.notify_days_before", comment: "Notify days before"), days)
+            }
         }
     }
     
@@ -131,7 +141,8 @@ enum L10n {
         static let upcomingRenewalsCount = NSLocalizedString("insights.upcoming_renewals_count", comment: "Upcoming renewals count")
         static let newThisMonth = NSLocalizedString("insights.new_this_month", comment: "New this month")
         static let averageCost = NSLocalizedString("insights.average_cost", comment: "Average cost")
-        static let daysSuffix = NSLocalizedString("insights.days_suffix", comment: "Days suffix")
+        static let daysSuffix = NSLocalizedString("days.plural", comment: "Days suffix")
+        static let daysSuffixSingular = NSLocalizedString("days.singular", comment: "Day suffix")
     }
     
     // MARK: - Add/Edit Subscription
@@ -152,7 +163,13 @@ enum L10n {
         static let sectionNotification = NSLocalizedString("subscription.section_notification", comment: "Notification section")
         static let enableNotification = NSLocalizedString("subscription.enable_notification", comment: "Enable notification toggle")
         static func notifyDaysBefore(_ days: Int) -> String {
-            String(format: NSLocalizedString("subscription.notify_days_before", comment: "Notify days before"), days)
+            if days == 0 {
+                return NSLocalizedString("subscription.notify_days_before_zero", comment: "Notify on renewal day")
+            } else if days == 1 {
+                return NSLocalizedString("subscription.notify_days_before_singular", comment: "Notify 1 day before")
+            } else {
+                return String(format: NSLocalizedString("subscription.notify_days_before", comment: "Notify days before"), days)
+            }
         }
         static let buttonCancel = NSLocalizedString("subscription.button_cancel", comment: "Cancel button")
         static let buttonSave = NSLocalizedString("subscription.button_save", comment: "Save button")
@@ -166,6 +183,35 @@ enum L10n {
         static let week = NSLocalizedString("billing_cycle.week", comment: "Week unit")
         static let month = NSLocalizedString("billing_cycle.month", comment: "Month unit")
         static let year = NSLocalizedString("billing_cycle.year", comment: "Year unit")
+        
+        // Display formats
+        static let recurring = NSLocalizedString("billing_cycle.recurring", comment: "Recurring")
+        static let daily = NSLocalizedString("billing_cycle.daily", comment: "Daily")
+        static let weekly = NSLocalizedString("billing_cycle.weekly", comment: "Weekly")
+        static let monthly = NSLocalizedString("billing_cycle.monthly", comment: "Monthly")
+        static let yearly = NSLocalizedString("billing_cycle.yearly", comment: "Yearly")
+        
+        static func formatCycle(_ cycle: Int, _ unit: BillingCycleUnit) -> String {
+            if cycle == 1 {
+                switch unit {
+                case .day: return daily
+                case .week: return weekly
+                case .month: return monthly
+                case .year: return yearly
+                }
+            } else {
+                switch unit {
+                case .day:
+                    return String(format: NSLocalizedString("billing_cycle.every_x_days", comment: "Every X days"), cycle)
+                case .week:
+                    return String(format: NSLocalizedString("billing_cycle.every_x_weeks", comment: "Every X weeks"), cycle)
+                case .month:
+                    return String(format: NSLocalizedString("billing_cycle.every_x_months", comment: "Every X months"), cycle)
+                case .year:
+                    return String(format: NSLocalizedString("billing_cycle.every_x_years", comment: "Every X years"), cycle)
+                }
+            }
+        }
     }
     
     // MARK: - Paywall
@@ -192,6 +238,8 @@ enum L10n {
     // MARK: - Settings
     enum Settings {
         static let title = NSLocalizedString("settings.title", comment: "Settings title")
+        static let sectionSettings = NSLocalizedString("settings.section_settings", comment: "Settings section")
+        static let theme = NSLocalizedString("settings.theme", comment: "Theme label")
         static let sectionAppearance = NSLocalizedString("settings.section_appearance", comment: "Appearance section")
         static let darkMode = NSLocalizedString("settings.dark_mode", comment: "Dark mode label")
         static let darkModeSystem = NSLocalizedString("settings.dark_mode_system", comment: "System dark mode option")
@@ -207,6 +255,13 @@ enum L10n {
         static let notificationTime = NSLocalizedString("settings.notification_time", comment: "Notification time label")
         static let sectionData = NSLocalizedString("settings.section_data", comment: "Data section")
         static let iCloudSync = NSLocalizedString("settings.icloud_sync", comment: "iCloud sync label")
+        static let clearData = NSLocalizedString("settings.clear_data", comment: "Clear data button")
+        static let clearDataConfirmTitle = NSLocalizedString("settings.clear_data_confirm_title", comment: "Clear data confirm title")
+        static let clearDataConfirmMessage = NSLocalizedString("settings.clear_data_confirm_message", comment: "Clear data confirm message")
+        static let clearDataSuccess = NSLocalizedString("settings.clear_data_success", comment: "Clear data success message")
+        static func clearDataFailed(_ error: String) -> String {
+            String(format: NSLocalizedString("settings.clear_data_failed", comment: "Clear data failed"), error)
+        }
         static let categoryManagement = NSLocalizedString("settings.category_management", comment: "Category management label")
         static let sectionPro = NSLocalizedString("settings.section_pro", comment: "Pro section")
         static let proPurchased = NSLocalizedString("settings.pro_purchased", comment: "Pro purchased message")
@@ -291,5 +346,20 @@ enum L10n {
         }
         static let purchaseCancelled = NSLocalizedString("error.purchase_cancelled", comment: "Purchase cancelled error")
         static let restoreFailed = NSLocalizedString("error.restore_failed", comment: "Restore failed error")
+    }
+    
+    // MARK: - Notifications (Push Notifications)
+    enum NotificationContent {
+        static let title = NSLocalizedString("notification.title", comment: "Notification title")
+        static func body(_ name: String, _ days: Int, _ amount: String) -> String {
+            String(format: NSLocalizedString("notification.body", comment: "Notification body"), name, days, amount)
+        }
+        static let permissionRequired = NSLocalizedString("notification.permission_required", comment: "Permission required")
+        static let permissionMessage = NSLocalizedString("notification.permission_message", comment: "Permission message")
+        static let goToSettings = NSLocalizedString("notification.go_to_settings", comment: "Go to settings")
+        static let testNotification = NSLocalizedString("notification.test_notification", comment: "Test notification")
+        static let testSent = NSLocalizedString("notification.test_sent", comment: "Test sent")
+        static let scheduledSuccess = NSLocalizedString("notification.scheduled_success", comment: "Scheduled success")
+        static let cancelledSuccess = NSLocalizedString("notification.cancelled_success", comment: "Cancelled success")
     }
 }
