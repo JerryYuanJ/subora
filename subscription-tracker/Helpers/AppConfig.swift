@@ -33,4 +33,33 @@ enum AppConfig {
     static var fullVersion: String {
         "\(appVersion) (\(buildNumber))"
     }
+    
+    static var appName: String {
+        Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String ??
+        Bundle.main.infoDictionary?["CFBundleName"] as? String ?? "Subora"
+    }
+}
+
+// MARK: - App Icon Helper
+
+import UIKit
+
+extension AppConfig {
+    /// 获取 App Icon 图片
+    static var appIcon: UIImage? {
+        // 方法1: 从 Assets 获取
+        if let image = UIImage(named: "AppIcon") {
+            return image
+        }
+        
+        // 方法2: 从 Bundle 获取
+        guard let iconsDictionary = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any],
+              let primaryIconsDictionary = iconsDictionary["CFBundlePrimaryIcon"] as? [String: Any],
+              let iconFiles = primaryIconsDictionary["CFBundleIconFiles"] as? [String],
+              let lastIcon = iconFiles.last else {
+            return nil
+        }
+        
+        return UIImage(named: lastIcon)
+    }
 }

@@ -642,10 +642,25 @@ struct SettingsView: View {
         let message = L10n.Settings.shareMessage
         guard let appURL = URL(string: AppConfig.appStoreURL) else { return }
         
+        // 使用自定义的 Activity Item Source 来更好地控制分享内容
+        let shareItem = AppShareActivityItemSource(
+            message: message,
+            url: appURL,
+            icon: AppConfig.appIcon
+        )
+        
         let activityViewController = UIActivityViewController(
-            activityItems: [message, appURL],
+            activityItems: [shareItem],
             applicationActivities: nil
         )
+        
+        // 排除一些不需要的分享选项（可选）
+        activityViewController.excludedActivityTypes = [
+            .addToReadingList,
+            .assignToContact,
+            .openInIBooks,
+            .markupAsPDF
+        ]
         
         // 获取当前的 window scene
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
