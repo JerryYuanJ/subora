@@ -73,6 +73,8 @@ enum L10n {
         static let title = NSLocalizedString("subscriptions.title", comment: "Subscriptions title")
         static let searchPlaceholder = NSLocalizedString("subscriptions.search_placeholder", comment: "Search placeholder")
         static let filterAll = NSLocalizedString("subscriptions.filter_all", comment: "All filter button")
+        static let filterActive = NSLocalizedString("subscriptions.filter_active", comment: "Active filter button")
+        static let filterArchived = NSLocalizedString("subscriptions.filter_archived", comment: "Archived filter button")
         static let empty = NSLocalizedString("subscriptions.empty", comment: "Empty subscriptions message")
         static let today = NSLocalizedString("subscriptions.today", comment: "Today")
         static func nextRenewal(_ date: String) -> String {

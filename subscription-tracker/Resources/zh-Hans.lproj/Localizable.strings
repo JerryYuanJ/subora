@@ -46,6 +46,8 @@
 "subscriptions.title" = "订阅";
 "subscriptions.search_placeholder" = "搜索订阅";
 "subscriptions.filter_all" = "全部";
+"subscriptions.filter_active" = "活跃";
+"subscriptions.filter_archived" = "已归档";
 "subscriptions.empty" = "暂无订阅";
 "subscriptions.today" = "今天";
 "subscriptions.next_renewal" = "下次续费：%@";

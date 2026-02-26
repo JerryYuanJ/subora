@@ -46,6 +46,8 @@
 "subscriptions.title" = "サブスクリプション";
 "subscriptions.search_placeholder" = "サブスクリプションを検索";
 "subscriptions.filter_all" = "すべて";
+"subscriptions.filter_active" = "アクティブ";
+"subscriptions.filter_archived" = "アーカイブ済み";
 "subscriptions.empty" = "サブスクリプションがありません";
 "subscriptions.today" = "今日";
 "subscriptions.next_renewal" = "次回更新：%@";

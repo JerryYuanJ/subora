@@ -31,12 +31,13 @@ struct SubscriptionListView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Menu {
                         Button {
+                            viewModel.showArchived = false
                             viewModel.selectedCategory = nil
                             viewModel.applyFilters()
                         } label: {
                             HStack {
                                 Text(L10n.Subscriptions.filterAll)
-                                if viewModel.selectedCategory == nil {
+                                if !viewModel.showArchived && viewModel.selectedCategory == nil {
                                     Image(systemName: "checkmark")
                                 }
                             }
@@ -44,20 +45,36 @@ struct SubscriptionListView: View {
                         
                         ForEach(categories) { category in
                             Button {
+                                viewModel.showArchived = false
                                 viewModel.selectedCategory = category
                                 viewModel.applyFilters()
                             } label: {
                                 HStack {
                                     Text(category.name)
-                                    if viewModel.selectedCategory?.id == category.id {
+                                    if !viewModel.showArchived && viewModel.selectedCategory?.id == category.id {
                                         Image(systemName: "checkmark")
                                     }
                                 }
                             }
                         }
+                        
+                        Divider()
+                        
+                        Button {
+                            viewModel.showArchived = true
+                            viewModel.selectedCategory = nil
+                            viewModel.applyFilters()
+                        } label: {
+                            HStack {
+                                Text(L10n.Subscriptions.filterArchived)
+                                if viewModel.showArchived {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
                     } label: {
                         HStack(spacing: 4) {
-                            Text(viewModel.selectedCategory?.name ?? L10n.Subscriptions.filterAll)
+                            Text(viewModel.showArchived ? L10n.Subscriptions.filterArchived : (viewModel.selectedCategory?.name ?? L10n.Subscriptions.filterAll))
                                 .font(.headline)
                             Image(systemName: "chevron.down")
                                 .font(.caption)

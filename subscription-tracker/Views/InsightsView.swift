@@ -44,6 +44,30 @@ struct InsightsView: View {
             .background(Color(.systemGroupedBackground))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Menu {
+                        ForEach(InsightsFilterType.allCases, id: \.self) { filterType in
+                            Button {
+                                viewModel.filterType = filterType
+                            } label: {
+                                HStack {
+                                    Text(filterType.title)
+                                    if viewModel.filterType == filterType {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text(viewModel.filterType.title)
+                                .font(.headline)
+                            Image(systemName: "chevron.down")
+                                .font(.caption)
+                        }
+                    }
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showCardManagement = true

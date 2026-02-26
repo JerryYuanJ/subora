@@ -9,6 +9,21 @@ import Foundation
 import SwiftUI
 import Combine
 
+/// Filter type for Insights view
+enum InsightsFilterType: String, CaseIterable {
+    case active = "active"
+    case archived = "archived"
+    case all = "all"
+    
+    var title: String {
+        switch self {
+        case .active: return L10n.Subscriptions.filterActive
+        case .archived: return L10n.Subscriptions.filterArchived
+        case .all: return L10n.Subscriptions.filterAll
+        }
+    }
+}
+
 /// Card types available in Insights view
 enum InsightCardType: String, CaseIterable, Identifiable {
     case monthlyExpenses = "monthly_expenses"
@@ -74,6 +89,13 @@ class InsightsViewModel: ObservableObject {
     
     // MARK: - Published Properties
     
+    @Published var filterType: InsightsFilterType = .active {
+        didSet {
+            Task {
+                await loadData()
+            }
+        }
+    }
     @Published var visibleCards: Set<InsightCardType> = []
     @Published var monthlyExpenses: [String: Decimal] = [:]
     @Published var yearlyExpenses: [String: Decimal] = [:]
@@ -133,29 +155,29 @@ class InsightsViewModel: ObservableObject {
         isLoading = true
         
         do {
-            let subscriptions = subscriptionService.fetchActiveSubscriptions()
-            print("📊 InsightsViewModel: Fetched \(subscriptions.count) subscriptions")
+            let subscriptions = getFilteredSubscriptions()
+            print("📊 InsightsViewModel: Fetched \(subscriptions.count) subscriptions with filter: \(filterType.rawValue)")
             
             // Monthly expenses
-            monthlyExpenses = calculateMonthlyExpensesByCurrency()
+            monthlyExpenses = calculateMonthlyExpensesByCurrency(subscriptions: subscriptions)
             
             // Yearly expenses
-            yearlyExpenses = calculateYearlyExpensesByCurrency()
+            yearlyExpenses = calculateYearlyExpensesByCurrency(subscriptions: subscriptions)
             
             // Recent trend (6 months)
-            recentTrendData = subscriptionService.calculateMonthlyTrend(months: 6)
+            recentTrendData = calculateMonthlyTrend(subscriptions: subscriptions, months: 6)
             
             // All-time trend
-            allTimeTrendData = calculateAllTimeTrend()
+            allTimeTrendData = calculateAllTimeTrend(subscriptions: subscriptions)
             
             // Top 5 spending
-            topSpendingData = calculateTopSpending(limit: 5)
+            topSpendingData = calculateTopSpending(subscriptions: subscriptions, limit: 5)
             
             // Upcoming renewals
-            upcomingRenewals = subscriptionService.fetchUpcomingRenewals(days: 30)
+            upcomingRenewals = calculateUpcomingRenewals(subscriptions: subscriptions, days: 30)
             
             // Category breakdown
-            categoryBreakdown = calculateCategoryBreakdown()
+            categoryBreakdown = calculateCategoryBreakdown(subscriptions: subscriptions)
             
             print("✅ InsightsViewModel: Data loaded successfully")
         } catch {
@@ -166,36 +188,91 @@ class InsightsViewModel: ObservableObject {
         print("✅ InsightsViewModel: loadData completed, isLoading = false")
     }
     
+    // MARK: - Private Helpers
+    
+    private func getFilteredSubscriptions() -> [Subscription] {
+        switch filterType {
+        case .active:
+            return subscriptionService.fetchActiveSubscriptions()
+        case .archived:
+            return subscriptionService.fetchArchivedSubscriptions()
+        case .all:
+            return subscriptionService.fetchActiveSubscriptions() + subscriptionService.fetchArchivedSubscriptions()
+        }
+    }
+    
     // MARK: - Private Calculations
     
-    private func calculateMonthlyExpensesByCurrency() -> [String: Decimal] {
-        let subscriptions = subscriptionService.fetchActiveSubscriptions()
+    private func calculateMonthlyExpensesByCurrency(subscriptions: [Subscription]) -> [String: Decimal] {
         let currencies = Set(subscriptions.map { $0.currency })
         
         var result: [String: Decimal] = [:]
         for currency in currencies {
-            let total = subscriptionService.calculateMonthlyTotal(currency: currency)
+            let total = subscriptions
+                .filter { $0.currency == currency }
+                .reduce(Decimal(0)) { $0 + $1.monthlyEquivalent }
             result[currency] = total
         }
         
         return result
     }
     
-    private func calculateYearlyExpensesByCurrency() -> [String: Decimal] {
-        let subscriptions = subscriptionService.fetchActiveSubscriptions()
+    private func calculateYearlyExpensesByCurrency(subscriptions: [Subscription]) -> [String: Decimal] {
         let currencies = Set(subscriptions.map { $0.currency })
         
         var result: [String: Decimal] = [:]
         for currency in currencies {
-            let monthlyTotal = subscriptionService.calculateMonthlyTotal(currency: currency)
+            let monthlyTotal = subscriptions
+                .filter { $0.currency == currency }
+                .reduce(Decimal(0)) { $0 + $1.monthlyEquivalent }
             result[currency] = monthlyTotal * 12
         }
         
         return result
     }
     
-    private func calculateAllTimeTrend() -> [MonthlyExpense] {
-        let subscriptions = subscriptionService.fetchActiveSubscriptions()
+    private func calculateMonthlyTrend(subscriptions: [Subscription], months: Int) -> [MonthlyExpense] {
+        guard !subscriptions.isEmpty else { return [] }
+        
+        let calendar = Calendar.current
+        let now = Date()
+        var result: [MonthlyExpense] = []
+        
+        // Use primary currency (first subscription's currency)
+        let primaryCurrency = subscriptions.first?.currency ?? "USD"
+        
+        for i in (0..<months).reversed() {
+            guard let monthDate = calendar.date(byAdding: .month, value: -i, to: now),
+                  let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: monthDate)),
+                  let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth) else {
+                continue
+            }
+            
+            // Calculate total for this month across all currencies (convert to primary currency)
+            var monthTotal = Decimal(0)
+            
+            for subscription in subscriptions {
+                // Only count subscriptions in primary currency for now
+                guard subscription.currency == primaryCurrency else { continue }
+                
+                // Check if subscription was active during this month
+                let subscriptionStart = subscription.firstPaymentDate
+                // For archived subscriptions, use updatedAt as end date; for active ones, use current date
+                let subscriptionEnd = subscription.archived ? subscription.updatedAt : now
+                
+                // If subscription overlaps with this month
+                if subscriptionStart <= endOfMonth && subscriptionEnd >= startOfMonth {
+                    monthTotal += subscription.monthlyEquivalent
+                }
+            }
+            
+            result.append(MonthlyExpense(month: monthDate, amount: monthTotal, currency: primaryCurrency))
+        }
+        
+        return result
+    }
+    
+    private func calculateAllTimeTrend(subscriptions: [Subscription]) -> [MonthlyExpense] {
         guard !subscriptions.isEmpty else { return [] }
         
         // Find earliest subscription date
@@ -207,12 +284,10 @@ class InsightsViewModel: ObservableObject {
         let components = calendar.dateComponents([.month], from: earliestDate, to: now)
         let monthCount = max((components.month ?? 0) + 1, 1)
         
-        return subscriptionService.calculateMonthlyTrend(months: monthCount)
+        return calculateMonthlyTrend(subscriptions: subscriptions, months: monthCount)
     }
     
-    private func calculateTopSpending(limit: Int) -> [TopSpendingItem] {
-        let subscriptions = subscriptionService.fetchActiveSubscriptions()
-        
+    private func calculateTopSpending(subscriptions: [Subscription], limit: Int) -> [TopSpendingItem] {
         // Group by subscription and calculate monthly equivalent
         var spendingMap: [String: (subscription: Subscription, amount: Decimal)] = [:]
         
@@ -234,9 +309,25 @@ class InsightsViewModel: ObservableObject {
         }
     }
     
-    private func calculateCategoryBreakdown() -> [CategoryExpense] {
-        let subscriptions = subscriptionService.fetchActiveSubscriptions()
+    private func calculateUpcomingRenewals(subscriptions: [Subscription], days: Int) -> [Subscription] {
+        let calendar = Calendar.current
+        let now = Date()
+        guard let futureDate = calendar.date(byAdding: .day, value: days, to: now) else {
+            return []
+        }
         
+        // Only show upcoming renewals for active subscriptions
+        let activeSubscriptions = subscriptions.filter { !$0.archived }
+        
+        return activeSubscriptions
+            .filter { subscription in
+                let nextBilling = subscription.nextBillingDate
+                return nextBilling >= now && nextBilling <= futureDate
+            }
+            .sorted { $0.nextBillingDate < $1.nextBillingDate }
+    }
+    
+    private func calculateCategoryBreakdown(subscriptions: [Subscription]) -> [CategoryExpense] {
         // Group by category
         var categoryMap: [String: (category: Category?, amount: Decimal, count: Int)] = [:]
         

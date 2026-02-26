@@ -46,6 +46,8 @@
 "subscriptions.title" = "Subscriptions";
 "subscriptions.search_placeholder" = "Search subscriptions";
 "subscriptions.filter_all" = "All";
+"subscriptions.filter_active" = "Active";
+"subscriptions.filter_archived" = "Archived";
 "subscriptions.empty" = "No subscriptions yet";
 "subscriptions.today" = "Today";
 "subscriptions.next_renewal" = "Next renewal: %@";
