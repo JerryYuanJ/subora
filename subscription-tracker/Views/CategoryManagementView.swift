@@ -194,10 +194,12 @@ struct AddEditCategoryView: View {
     
     let isEditMode: Bool
     let category: Category?
+    let onCategorySaved: ((Category) -> Void)?
     
-    init(category: Category? = nil, modelContext: ModelContext) {
+    init(category: Category? = nil, modelContext: ModelContext, onCategorySaved: ((Category) -> Void)? = nil) {
         self.category = category
         self.isEditMode = category != nil
+        self.onCategorySaved = onCategorySaved
         
         let categoryService = CategoryService(modelContext: modelContext)
         _viewModel = StateObject(wrappedValue: CategoryViewModel(categoryService: categoryService))
@@ -254,6 +256,10 @@ struct AddEditCategoryView: View {
                 
                 try await viewModel.update(category)
                 toast = .success(L10n.Category.saveSuccess)
+                
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                onCategorySaved?(category)
+                dismiss()
             } else {
                 // Create new category
                 let newCategory = Category(
@@ -265,14 +271,15 @@ struct AddEditCategoryView: View {
                 let success = try await viewModel.create(newCategory)
                 if success {
                     toast = .success(L10n.Category.createSuccess)
+                    
+                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    onCategorySaved?(newCategory)
+                    dismiss()
                 } else {
                     showPaywall = true
                     return
                 }
             }
-            
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            dismiss()
         } catch AppError.categoryLimitReached {
             showPaywall = true
         } catch {

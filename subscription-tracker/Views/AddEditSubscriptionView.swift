@@ -18,7 +18,9 @@ struct AddEditSubscriptionView: View {
     @Query private var categories: [Category]
     
     @State private var showPaywall = false
+    @State private var showAddCategory = false
     @State private var toast: Toast?
+    @State private var amountText: String = ""
     
     init(subscription: Subscription? = nil, modelContext: ModelContext) {
         let subscriptionService = SubscriptionService(modelContext: modelContext)
@@ -26,6 +28,11 @@ struct AddEditSubscriptionView: View {
             subscription: subscription,
             subscriptionService: subscriptionService
         ))
+        
+        // Initialize amount text
+        if let subscription = subscription, subscription.amount > 0 {
+            _amountText = State(initialValue: String(format: "%.2f", Double(truncating: subscription.amount as NSNumber)))
+        }
     }
     
     var body: some View {
@@ -60,6 +67,18 @@ struct AddEditSubscriptionView: View {
                             .tag(category as Category?)
                         }
                     }
+                    
+                    // Add new category button
+                    Button {
+                        showAddCategory = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(.blue)
+                            Text(L10n.Category.createNew)
+                                .foregroundColor(.blue)
+                        }
+                    }
                 }
                 
                 // Billing info section
@@ -78,13 +97,18 @@ struct AddEditSubscriptionView: View {
                     HStack {
                         Text(L10n.Subscription.amount)
                         Spacer()
-                        TextField(L10n.Subscription.amountPlaceholder, value: Binding(
-                            get: { Double(truncating: viewModel.subscription.amount as NSNumber) },
-                            set: { viewModel.subscription.amount = Decimal($0) }
-                        ), format: .number)
-                        .keyboardType(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                        .frame(width: 100)
+                        TextField(L10n.Subscription.amountPlaceholder, text: $amountText)
+                            .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 100)
+                            .onChange(of: amountText) { _, newValue in
+                                // Update the subscription amount from text
+                                if let value = Double(newValue) {
+                                    viewModel.subscription.amount = Decimal(value)
+                                } else if newValue.isEmpty {
+                                    viewModel.subscription.amount = 0
+                                }
+                            }
                     }
                     
                     CurrencyPicker(selectedCurrency: $viewModel.subscription.currency)
@@ -146,6 +170,12 @@ struct AddEditSubscriptionView: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
                     .environmentObject(paywallService)
+            }
+            .sheet(isPresented: $showAddCategory) {
+                AddEditCategoryView(modelContext: modelContext) { newCategory in
+                    // 自动选择新创建的分类
+                    viewModel.subscription.category = newCategory
+                }
             }
             .toast($toast)
         }

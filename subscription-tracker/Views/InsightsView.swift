@@ -2,63 +2,70 @@
 //  InsightsView.swift
 //  subscription-tracker
 //
-//  Created by Kiro on 2026/2/24.
+//  Created by Kiro on 2026/2/26.
 //
 
 import SwiftUI
 import SwiftData
 import Charts
 
-/// Insights view displaying beautiful analytics and statistics
+/// Insights view displaying beautiful analytics and statistics with customizable cards
 struct InsightsView: View {
     
     @Environment(\.modelContext) private var modelContext
-    @StateObject private var viewModel: DashboardViewModel
-    @State private var showAddSubscription = false
+    @StateObject private var viewModel: InsightsViewModel
+    @EnvironmentObject private var paywallService: PaywallService
+    @State private var showCardManagement = false
     
     init(modelContext: ModelContext) {
         let subscriptionService = SubscriptionService(modelContext: modelContext)
-        _viewModel = StateObject(wrappedValue: DashboardViewModel(subscriptionService: subscriptionService))
+        _viewModel = StateObject(wrappedValue: InsightsViewModel(subscriptionService: subscriptionService))
     }
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // Total spending card
-                    totalSpendingCard
-                    
-                    // Trend chart
-                    trendChartCard
-                    
-                    // Upcoming renewals
-                    upcomingRenewalsCard
+            ZStack {
+                if sortedVisibleCards.isEmpty {
+                    // Empty state when no cards are selected
+                    emptyStateView
+                } else {
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            // Render visible cards
+                            ForEach(sortedVisibleCards, id: \.self) { cardType in
+                                cardView(for: cardType)
+                            }
+                        }
+                        .padding()
+                        .padding(.top, -8)
+                    }
                 }
-                .padding()
-                .padding(.top, -8)
             }
             .background(Color(.systemGroupedBackground))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        showAddSubscription = true
+                        showCardManagement = true
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "slider.horizontal.3")
                     }
                 }
             }
-            .sheet(isPresented: $showAddSubscription) {
-                AddEditSubscriptionView(modelContext: modelContext)
+            .sheet(isPresented: $showCardManagement) {
+                InsightCardManagementView(viewModel: viewModel)
+                    .environmentObject(paywallService)
             }
             .task {
                 await viewModel.loadData()
             }
-            .onChange(of: showAddSubscription) { _, isPresented in
-                if !isPresented {
-                    Task {
-                        await viewModel.loadData()
-                    }
+            .refreshable {
+                await viewModel.loadData()
+            }
+            .onChange(of: paywallService.isProUser) { _, isProUser in
+                if isProUser {
+                    // Reload visible cards when user becomes Pro
+                    viewModel.loadVisibleCards()
                 }
             }
             .overlay {
@@ -69,25 +76,177 @@ struct InsightsView: View {
         }
     }
     
-    // MARK: - Total Spending Card
+    // MARK: - Empty State
     
-    private var totalSpendingCard: some View {
+    private var emptyStateView: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            
+            ZStack {
+                Circle()
+                    .fill(Color(hex: "#4C8DFF").opacity(0.15))
+                    .frame(width: 120, height: 120)
+                
+                Image(systemName: "chart.bar.doc.horizontal")
+                    .font(.system(size: 56))
+                    .foregroundColor(Color(hex: "#4C8DFF"))
+            }
+            
+            VStack(spacing: 12) {
+                Text(L10n.Insights.noCardsSelected)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Text(L10n.Insights.noCardsHint)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+            }
+            
+            Button {
+                showCardManagement = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "slider.horizontal.3")
+                    Text(L10n.Insights.manageCards)
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 14)
+                .background(Color(hex: "#4C8DFF"))
+                .clipShape(Capsule())
+            }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    // MARK: - Card Sorting
+    
+    private var sortedVisibleCards: [InsightCardType] {
+        // Sort cards in a logical order
+        let order: [InsightCardType] = [
+            .monthlyExpenses,
+            .yearlyExpenses,
+            .recentTrend,
+            .allTimeTrend,
+            .topSpending,
+            .categoryBreakdown,
+            .upcomingRenewals
+        ]
+        
+        var filtered = order.filter { cardType in
+            // Only show cards that are visible
+            guard viewModel.isCardVisible(cardType) else { return false }
+            
+            // If card requires Pro and user is not Pro, don't show it
+            if cardType.requiresPro && !paywallService.isProUser {
+                return false
+            }
+            
+            return true
+        }
+        
+        // If both monthly and yearly are visible, remove monthly from the list
+        // as it will be rendered together with yearly
+        if viewModel.isCardVisible(.monthlyExpenses) && viewModel.isCardVisible(.yearlyExpenses) {
+            filtered.removeAll { $0 == .monthlyExpenses }
+        }
+        
+        return filtered
+    }
+    
+    // MARK: - Card Factory
+    
+    @ViewBuilder
+    private func cardView(for cardType: InsightCardType) -> some View {
+        switch cardType {
+        case .monthlyExpenses:
+            expenseCard(
+                title: cardType.title,
+                expenses: viewModel.monthlyExpenses,
+                color: cardType.color,
+                icon: cardType.icon,
+                isYearly: false
+            )
+            
+        case .yearlyExpenses:
+            if viewModel.isCardVisible(.monthlyExpenses) {
+                // Show side by side with monthly
+                HStack(spacing: 12) {
+                    compactExpenseCard(
+                        title: L10n.Insights.monthlyExpenses,
+                        expenses: viewModel.monthlyExpenses,
+                        color: InsightCardType.monthlyExpenses.color,
+                        icon: InsightCardType.monthlyExpenses.icon,
+                        isYearly: false
+                    )
+                    
+                    compactExpenseCard(
+                        title: cardType.title,
+                        expenses: viewModel.yearlyExpenses,
+                        color: cardType.color,
+                        icon: cardType.icon,
+                        isYearly: true
+                    )
+                }
+            } else {
+                expenseCard(
+                    title: cardType.title,
+                    expenses: viewModel.yearlyExpenses,
+                    color: cardType.color,
+                    icon: cardType.icon,
+                    isYearly: true
+                )
+            }
+            
+        case .recentTrend:
+            trendCard(
+                title: cardType.title,
+                trendData: viewModel.recentTrendData,
+                color: cardType.color
+            )
+            
+        case .allTimeTrend:
+            trendCard(
+                title: cardType.title,
+                trendData: viewModel.allTimeTrendData,
+                color: cardType.color
+            )
+            
+        case .topSpending:
+            topSpendingCard()
+            
+        case .categoryBreakdown:
+            categoryBreakdownCard()
+            
+        case .upcomingRenewals:
+            upcomingRenewalsCard()
+        }
+    }
+    
+    // MARK: - Expense Cards
+    
+    private func expenseCard(title: String, expenses: [String: Decimal], color: Color, icon: String, isYearly: Bool) -> some View {
         HStack(spacing: 0) {
-            // Left accent bar
             Rectangle()
-                .fill(Color(hex: "#4C8DFF"))
+                .fill(color)
                 .frame(width: 4)
             
             VStack(spacing: 16) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(L10n.Dashboard.monthlyExpenses)
+                        Text(title)
                             .font(.subheadline)
                             .fontWeight(.medium)
                             .foregroundColor(.secondary)
                         
-                        if let firstCurrency = viewModel.monthlyExpenses.keys.sorted().first,
-                           let amount = viewModel.monthlyExpenses[firstCurrency] {
+                        if let firstCurrency = expenses.keys.sorted().first,
+                           let amount = expenses[firstCurrency] {
                             Text(CurrencyFormatter.format(amount: amount, currency: firstCurrency))
                                 .font(.system(size: 36, weight: .bold, design: .rounded))
                                 .foregroundColor(.primary)
@@ -102,23 +261,22 @@ struct InsightsView: View {
                     
                     ZStack {
                         Circle()
-                            .fill(Color(hex: "#4C8DFF").opacity(0.15))
+                            .fill(color.opacity(0.15))
                             .frame(width: 56, height: 56)
                         
-                        Image(systemName: "chart.line.uptrend.xyaxis")
+                        Image(systemName: icon)
                             .font(.system(size: 24))
-                            .foregroundColor(Color(hex: "#4C8DFF"))
+                            .foregroundColor(color)
                     }
                 }
                 
-                // Additional currencies
-                if viewModel.monthlyExpenses.count > 1 {
+                if expenses.count > 1 {
                     Divider()
                         .padding(.vertical, 4)
                     
                     VStack(spacing: 10) {
-                        ForEach(Array(viewModel.monthlyExpenses.keys.sorted().dropFirst()), id: \.self) { currency in
-                            if let amount = viewModel.monthlyExpenses[currency] {
+                        ForEach(Array(expenses.keys.sorted().dropFirst()), id: \.self) { currency in
+                            if let amount = expenses[currency] {
                                 HStack {
                                     Text(currency)
                                         .font(.subheadline)
@@ -141,18 +299,62 @@ struct InsightsView: View {
         .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
     }
     
-    // MARK: - Trend Chart Card
-    
-    private var trendChartCard: some View {
-        HStack(spacing: 0) {
-            // Left accent bar
+    private func compactExpenseCard(title: String, expenses: [String: Decimal], color: Color, icon: String, isYearly: Bool) -> some View {
+        VStack(spacing: 0) {
             Rectangle()
-                .fill(Color(hex: "#34C759"))
+                .fill(color)
+                .frame(height: 4)
+            
+            VStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.15))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 20))
+                        .foregroundColor(color)
+                }
+                
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                
+                if let firstCurrency = expenses.keys.sorted().first,
+                   let amount = expenses[firstCurrency] {
+                    Text(CurrencyFormatter.format(amount: amount, currency: firstCurrency))
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                } else {
+                    Text("$0.00")
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(16)
+        }
+        .frame(maxWidth: .infinity)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
+    }
+    
+    // MARK: - Trend Card
+    
+    private func trendCard(title: String, trendData: [MonthlyExpense], color: Color) -> some View {
+        HStack(spacing: 0) {
+            Rectangle()
+                .fill(color)
                 .frame(width: 4)
             
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    Text(L10n.Dashboard.trend)
+                    Text(title)
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
@@ -160,24 +362,24 @@ struct InsightsView: View {
                     Spacer()
                 }
                 
-                if viewModel.trendData.isEmpty {
+                if trendData.isEmpty {
                     VStack(spacing: 16) {
                         ZStack {
                             Circle()
-                                .fill(Color(hex: "#34C759").opacity(0.15))
+                                .fill(color.opacity(0.15))
                                 .frame(width: 80, height: 80)
                             
                             Image(systemName: "chart.line.uptrend.xyaxis")
                                 .font(.system(size: 36))
-                                .foregroundColor(Color(hex: "#34C759"))
+                                .foregroundColor(color)
                         }
                         
                         VStack(spacing: 6) {
-                            Text(L10n.Dashboard.noTrendData)
+                            Text(L10n.Insights.noData)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundColor(.primary)
-                            Text(L10n.Dashboard.noTrendHint)
+                            Text(L10n.Insights.noDataHint)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
@@ -186,7 +388,7 @@ struct InsightsView: View {
                     .frame(height: 200)
                     .frame(maxWidth: .infinity)
                 } else {
-                    TrendChart(trendData: viewModel.trendData)
+                    TrendChart(trendData: trendData)
                         .frame(height: 220)
                         .padding(.top, 8)
                 }
@@ -198,18 +400,78 @@ struct InsightsView: View {
         .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
     }
     
-    // MARK: - Upcoming Renewals Card
+    // MARK: - Top Spending Card
     
-    private var upcomingRenewalsCard: some View {
-        HStack(spacing: 0) {
-            // Left accent bar
+    private func topSpendingCard() -> some View {
+        let cardType = InsightCardType.topSpending
+        
+        return HStack(spacing: 0) {
             Rectangle()
-                .fill(Color(hex: "#FF9F0A"))
+                .fill(cardType.color)
                 .frame(width: 4)
             
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    Text(L10n.Dashboard.upcomingRenewals)
+                    Text(cardType.title)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                }
+                
+                TopSpendingChart(data: viewModel.topSpendingData)
+                    .frame(height: 220)
+            }
+            .padding(24)
+        }
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
+    }
+    
+    // MARK: - Category Breakdown Card
+    
+    private func categoryBreakdownCard() -> some View {
+        let cardType = InsightCardType.categoryBreakdown
+        
+        return HStack(spacing: 0) {
+            Rectangle()
+                .fill(cardType.color)
+                .frame(width: 4)
+            
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Text(cardType.title)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                }
+                
+                CategoryBreakdownChart(data: viewModel.categoryBreakdown)
+            }
+            .padding(24)
+        }
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
+    }
+    
+    // MARK: - Upcoming Renewals Card
+    
+    private func upcomingRenewalsCard() -> some View {
+        let cardType = InsightCardType.upcomingRenewals
+        
+        return HStack(spacing: 0) {
+            Rectangle()
+                .fill(cardType.color)
+                .frame(width: 4)
+            
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Text(cardType.title)
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
@@ -220,12 +482,12 @@ struct InsightsView: View {
                         Text("\(viewModel.upcomingRenewals.count)")
                             .font(.caption)
                             .fontWeight(.semibold)
-                            .foregroundColor(Color(hex: "#FF9F0A"))
+                            .foregroundColor(cardType.color)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 4)
                             .background(
                                 Capsule()
-                                    .fill(Color(hex: "#FF9F0A").opacity(0.15))
+                                    .fill(cardType.color.opacity(0.15))
                             )
                     }
                 }
@@ -234,12 +496,12 @@ struct InsightsView: View {
                     VStack(spacing: 12) {
                         ZStack {
                             Circle()
-                                .fill(Color(hex: "#FF9F0A").opacity(0.15))
+                                .fill(cardType.color.opacity(0.15))
                                 .frame(width: 64, height: 64)
                             
                             Image(systemName: "calendar.badge.checkmark")
                                 .font(.system(size: 28))
-                                .foregroundColor(Color(hex: "#FF9F0A"))
+                                .foregroundColor(cardType.color)
                         }
                         
                         Text(L10n.Dashboard.noUpcoming)
@@ -278,7 +540,6 @@ struct UpcomingRenewalRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Category color indicator
             Circle()
                 .fill(subscription.category?.color ?? .gray.opacity(0.5))
                 .frame(width: 10, height: 10)

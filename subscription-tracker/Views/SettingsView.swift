@@ -239,7 +239,7 @@ struct SettingsView: View {
                 // Sync status indicator
                 if viewModel.userSettings?.iCloudSync == true {
                     HStack {
-                        Text("同步状态")
+                        Text(L10n.Settings.syncStatus)
                         Spacer()
                         syncStatusView
                     }
@@ -252,7 +252,7 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             Image(systemName: "arrow.triangle.2.circlepath")
-                            Text("手动同步")
+                            Text(L10n.Settings.manualSync)
                             Spacer()
                             if viewModel.isLoading {
                                 ProgressView()
@@ -296,23 +296,30 @@ struct SettingsView: View {
                 HStack(spacing: 4) {
                     ProgressView()
                         .scaleEffect(0.8)
-                    Text("同步中...")
+                    Text(L10n.Settings.syncSyncing)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             case .synced:
-                HStack(spacing: 4) {
-                    Image(systemName: "checkmark.icloud.fill")
-                        .foregroundColor(.green)
-                    Text("已同步")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                VStack(alignment: .trailing, spacing: 2) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.icloud.fill")
+                            .foregroundColor(.green)
+                        Text(L10n.Settings.syncSynced)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    if let lastSyncTime = viewModel.userSettings?.lastSyncTime {
+                        Text(formatSyncTime(lastSyncTime))
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
                 }
             case .error(let message):
                 HStack(spacing: 4) {
                     Image(systemName: "exclamationmark.icloud.fill")
                         .foregroundColor(.red)
-                    Text("错误")
+                    Text(L10n.Settings.syncError)
                         .font(.caption)
                         .foregroundColor(.red)
                 }
@@ -320,11 +327,30 @@ struct SettingsView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "icloud.slash.fill")
                         .foregroundColor(.gray)
-                    Text("未启用")
+                    Text(L10n.Settings.syncDisabled)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
+        }
+    }
+    
+    private func formatSyncTime(_ date: Date) -> String {
+        let now = Date()
+        let interval = now.timeIntervalSince(date)
+        
+        if interval < 60 {
+            return "刚刚"
+        } else if interval < 3600 {
+            let minutes = Int(interval / 60)
+            return "\(minutes)分钟前"
+        } else if interval < 86400 {
+            let hours = Int(interval / 3600)
+            return "\(hours)小时前"
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MM-dd HH:mm"
+            return formatter.string(from: date)
         }
     }
     
@@ -393,9 +419,7 @@ struct SettingsView: View {
                 }
             } else {
                 Button {
-                    Task {
-                        try? await paywallService.purchaseProVersion()
-                    }
+                    showPaywall = true
                 } label: {
                     HStack {
                         Text(L10n.Settings.upgradeToPro)
@@ -407,7 +431,16 @@ struct SettingsView: View {
                 
                 Button {
                     Task {
-                        try? await paywallService.restorePurchases()
+                        do {
+                            let success = try await paywallService.restorePurchases()
+                            if success {
+                                toast = .success(L10n.Toast.restoreSuccess)
+                            } else {
+                                toast = .error(L10n.Toast.restoreFailed(L10n.Paywall.errorNoActivePurchase))
+                            }
+                        } catch {
+                            toast = .error(L10n.Toast.restoreFailed(error.localizedDescription))
+                        }
                     }
                 } label: {
                     HStack {
@@ -461,6 +494,19 @@ struct SettingsView: View {
     }
     
     private func sendTestNotification() async {
+        print("🔵 开始发送测试通知...")
+        
+        // 检查权限
+        await notificationManager.checkAuthorizationStatus()
+        let status = notificationManager.authorizationStatus
+        print("🔵 通知权限状态: \(status.rawValue)")
+        
+        guard status == .authorized else {
+            print("❌ 通知权限未授权")
+            toast = .error("通知权限未授权，请在设置中开启")
+            return
+        }
+        
         // Create a test notification that fires in 5 seconds
         let content = UNMutableNotificationContent()
         content.title = L10n.NotificationContent.title
@@ -475,9 +521,12 @@ struct SettingsView: View {
         )
         
         do {
+            print("🔵 添加通知到通知中心...")
             try await UNUserNotificationCenter.current().add(request)
+            print("✅ 测试通知已添加，将在 5 秒后显示")
             toast = .success(L10n.NotificationContent.testSent)
         } catch {
+            print("❌ 发送测试通知失败: \(error.localizedDescription)")
             toast = .error("Failed to send test notification: \(error.localizedDescription)")
         }
     }

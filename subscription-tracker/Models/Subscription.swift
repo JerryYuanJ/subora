@@ -10,21 +10,27 @@ import SwiftData
 
 @Model
 final class Subscription {
-    var id: UUID
-    var name: String
+    var id: UUID = UUID()
+    var name: String = ""
     var subscriptionDescription: String?
     var category: Category?
-    var firstPaymentDate: Date  
-    var billingCycle: Int
-    var billingCycleUnit: BillingCycleUnit
-    var amount: Decimal
-    var currency: String
-    var notify: Bool
-    var notifyDaysBefore: Int
+    var firstPaymentDate: Date = Date()
+    var billingCycle: Int = 1
+    var billingCycleUnitRawValue: String = "month"  // 存储原始值
+    var amount: Decimal = 0
+    var currency: String = "USD"
+    var notify: Bool = true
+    var notifyDaysBefore: Int = 3
     var lastNotifiedDate: Date?
-    var archived: Bool
-    var createdAt: Date
-    var updatedAt: Date
+    var archived: Bool = false
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
+    
+    // 计算属性来访问枚举
+    var billingCycleUnit: BillingCycleUnit {
+        get { BillingCycleUnit(rawValue: billingCycleUnitRawValue) ?? .month }
+        set { billingCycleUnitRawValue = newValue.rawValue }
+    }
     
     init(
         id: UUID = UUID(),
@@ -52,6 +58,22 @@ final class Subscription {
         self.notify = notify
         self.notifyDaysBefore = notifyDaysBefore
         self.archived = archived
+        self.createdAt = Date()
+        self.updatedAt = Date()
+    }
+    
+    // 提供一个无参数的初始化器供 SwiftData 使用
+    init() {
+        self.id = UUID()
+        self.name = ""
+        self.firstPaymentDate = Date()
+        self.billingCycle = 1
+        self.billingCycleUnit = .month
+        self.amount = 0
+        self.currency = "USD"
+        self.notify = true
+        self.notifyDaysBefore = 3
+        self.archived = false
         self.createdAt = Date()
         self.updatedAt = Date()
     }

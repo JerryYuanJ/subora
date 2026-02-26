@@ -5,33 +5,31 @@ import SwiftUI
 struct LoadingOverlay: View {
     let message: String
     
-    init(message: String = "加载中...") {
+    init(message: String = L10n.Loading.default) {
         self.message = message
     }
     
     var body: some View {
-        ZStack {
-            // 半透明背景
+        VStack(spacing: 16) {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: .primary))
+                .scaleEffect(1.2)
+            
+            Text(message)
+                .font(.subheadline)
+                .foregroundColor(.primary)
+        }
+        .padding(24)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
             Color.black.opacity(0.3)
                 .ignoresSafeArea()
-            
-            // 加载内容
-            VStack(spacing: 16) {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .primary))
-                    .scaleEffect(1.2)
-                
-                Text(message)
-                    .font(.subheadline)
-                    .foregroundColor(.primary)
-            }
-            .padding(24)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(.systemBackground))
-                    .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
-            )
-        }
+        )
     }
 }
 
@@ -42,7 +40,7 @@ extension View {
     /// - Parameters:
     ///   - isLoading: 是否显示加载状态
     ///   - message: 加载提示文本
-    func loadingOverlay(isLoading: Bool, message: String = "加载中...") -> some View {
+    func loadingOverlay(isLoading: Bool, message: String = L10n.Loading.default) -> some View {
         ZStack {
             self
             
@@ -60,5 +58,5 @@ extension View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(.systemGroupedBackground))
-    .loadingOverlay(isLoading: true, message: "正在保存...")
+    .loadingOverlay(isLoading: true, message: L10n.Loading.saving)
 }

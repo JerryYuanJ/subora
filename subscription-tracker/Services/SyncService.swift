@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 import Network
 import OSLog
+import CloudKit
 
 /// 同步状态枚举
 enum SyncStatus {
@@ -44,6 +45,45 @@ class SyncService {
         }
         let queue = DispatchQueue(label: "NetworkMonitor")
         networkMonitor.start(queue: queue)
+    }
+    
+    // MARK: - iCloud Account Check
+    
+    /// 检查 iCloud 账号状态
+    private func checkiCloudAccountStatus() async -> Bool {
+        print("🔵 开始检查 iCloud 账号状态...")
+        
+        return await withCheckedContinuation { continuation in
+            CKContainer.default().accountStatus { status, error in
+                if let error = error {
+                    print("❌ 检查 iCloud 账号失败: \(error.localizedDescription)")
+                    continuation.resume(returning: false)
+                    return
+                }
+                
+                switch status {
+                case .available:
+                    print("✅ iCloud 账号已登录且可用")
+                    continuation.resume(returning: true)
+                case .noAccount:
+                    print("❌ 未登录 iCloud 账号")
+                    print("💡 请在设置中登录 iCloud 账号")
+                    continuation.resume(returning: false)
+                case .restricted:
+                    print("❌ iCloud 账号受限（可能是家长控制或企业限制）")
+                    continuation.resume(returning: false)
+                case .couldNotDetermine:
+                    print("❌ 无法确定 iCloud 账号状态")
+                    continuation.resume(returning: false)
+                case .temporarilyUnavailable:
+                    print("⚠️ iCloud 暂时不可用，请稍后再试")
+                    continuation.resume(returning: false)
+                @unknown default:
+                    print("❌ 未知的 iCloud 账号状态: \(status.rawValue)")
+                    continuation.resume(returning: false)
+                }
+            }
+        }
     }
     
     // MARK: - Sync Control
@@ -96,22 +136,85 @@ class SyncService {
             throw AppError.syncFailed(reason: "同步未启用")
         }
         
+        // 检查 iCloud 账号状态
+        let iCloudAvailable = await checkiCloudAccountStatus()
+        guard iCloudAvailable else {
+            Logger.sync.error("Sync failed: iCloud account not available")
+            currentSyncStatus = .error("未登录 iCloud")
+            throw AppError.iCloudNotAvailable
+        }
+        
         guard isNetworkAvailable else {
             Logger.sync.error("Sync failed: network unavailable")
             throw AppError.networkUnavailable
         }
         
         currentSyncStatus = .syncing
+        print("🔵 正在同步数据到 iCloud...")
         
         // SwiftData 自动处理同步，这里只需要保存上下文
         // 这会触发 CloudKit 同步
-        try modelContext.save()
+        do {
+            // 更新最后同步时间
+            settings.lastSyncTime = Date()
+            
+            // 检查有多少数据
+            let subscriptionCount = try modelContext.fetch(FetchDescriptor<Subscription>()).count
+            let categoryCount = try modelContext.fetch(FetchDescriptor<Category>()).count
+            print("📊 当前数据: \(subscriptionCount) 个订阅, \(categoryCount) 个分类")
+            
+            try modelContext.save()
+            print("✅ 数据已保存到本地，CloudKit 将自动上传")
+            
+            // 验证 CloudKit 连接
+            await verifyCloudKitConnection()
+            
+            print("💡 提示: CloudKit 同步可能需要几秒到几分钟时间")
+            
+            // 模拟同步延迟
+            try await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
+            
+            currentSyncStatus = .synced
+            Logger.sync.info("Manual sync completed successfully")
+            print("✅ 同步完成")
+        } catch {
+            currentSyncStatus = .error("同步失败")
+            print("❌ 同步失败: \(error.localizedDescription)")
+            throw AppError.syncFailed(reason: error.localizedDescription)
+        }
+    }
+    
+    /// 验证 CloudKit 连接
+    private func verifyCloudKitConnection() async {
+        print("🔵 验证 CloudKit 连接...")
         
-        // 模拟同步延迟
-        try await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
+        // 使用默认 Container
+        let container = CKContainer.default()
+        let database = container.privateCloudDatabase
         
-        currentSyncStatus = .synced
-        Logger.sync.info("Manual sync completed successfully")
+        do {
+            // 尝试获取用户记录 ID
+            let userRecordID = try await container.userRecordID()
+            print("✅ CloudKit 连接正常，用户 ID: \(userRecordID.recordName)")
+            print("✅ Container ID: \(container.containerIdentifier ?? "unknown")")
+            
+            // 尝试查询记录（SwiftData 的记录类型）
+            let query = CKQuery(recordType: "CD_Category", predicate: NSPredicate(value: true))
+            let result = try await database.records(matching: query, resultsLimit: 10)
+            print("✅ CloudKit 查询成功，找到 \(result.matchResults.count) 条分类记录")
+            
+            if result.matchResults.count > 0 {
+                print("🎉 数据已成功上传到 iCloud！")
+            } else {
+                print("⚠️ 暂时没有找到记录，可能还在上传中...")
+            }
+        } catch {
+            print("⚠️ CloudKit 验证失败: \(error.localizedDescription)")
+            if let ckError = error as? CKError {
+                print("⚠️ CKError code: \(ckError.code.rawValue)")
+                print("⚠️ CKError description: \(ckError.localizedDescription)")
+            }
+        }
     }
     
     // MARK: - Conflict Resolution

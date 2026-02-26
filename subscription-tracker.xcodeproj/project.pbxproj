@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		C4FE651E2F5029F9003EFA28 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4FE651D2F5029F9003EFA28 /* StoreKit.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		C4FE647B2F4D8DFF003EFA28 /* subscription-tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "subscription-tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4FE651D2F5029F9003EFA28 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -23,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4FE651E2F5029F9003EFA28 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -33,6 +39,7 @@
 			isa = PBXGroup;
 			children = (
 				C4FE647D2F4D8DFF003EFA28 /* subscription-tracker */,
+				C4FE651C2F5029F9003EFA28 /* Frameworks */,
 				C4FE647C2F4D8DFF003EFA28 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +50,14 @@
 				C4FE647B2F4D8DFF003EFA28 /* subscription-tracker.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C4FE651C2F5029F9003EFA28 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C4FE651D2F5029F9003EFA28 /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -259,6 +274,7 @@
 				DEVELOPMENT_TEAM = DR9B4SVZCG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Subora;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -292,6 +308,7 @@
 				DEVELOPMENT_TEAM = DR9B4SVZCG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Subora;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -1,18 +1,11 @@
-/* 
-  Localizable.strings (English)
-  subscription-tracker
-  
-  Created by Kiro on 2026/2/24.
-*/
-
-// MARK: - Tab Bar
+/* Tab Bar */
 "tab.dashboard" = "Dashboard";
 "tab.subscriptions" = "Subscriptions";
 "tab.categories" = "Categories";
 "tab.settings" = "Settings";
 "tab.insights" = "Insights";
 
-// MARK: - Common
+/* Common */
 "common.cancel" = "Cancel";
 "common.save" = "Save";
 "common.delete" = "Delete";
@@ -20,88 +13,165 @@
 "common.done" = "Done";
 "common.close" = "Close";
 
-// MARK: - Category
+/* Category */
 "category.add_title" = "Add Category";
 "category.edit_title" = "Edit Category";
-"category.section_basic" = "Basic Info";
+"category.section_basic" = "Basic Information";
 "category.section_color" = "Color";
 "category.name_placeholder" = "Category Name";
 "category.description_placeholder" = "Description (Optional)";
+"category.create_new" = "Create New Category";
 "category.empty" = "No Categories";
-"category.empty_hint" = "Tap + to add a category";
+"category.empty_hint" = "Tap + to create your first category";
 "category.subscription_count" = "%d subscriptions";
-"category.delete_confirm_title" = "Confirm Delete";
-"category.delete_confirm_message" = "Are you sure you want to delete this category? Associated subscriptions will have no category.";
-"category.save_success" = "Saved successfully";
-"category.create_success" = "Created successfully";
-"category.save_failed" = "Save failed: %@";
-"category.delete_success" = "Deleted successfully";
-"category.delete_failed" = "Delete failed: %@";
+"category.delete_confirm_title" = "Delete Category";
+"category.delete_confirm_message" = "Are you sure you want to delete this category? Subscriptions in this category will not be deleted.";
+"category.save_success" = "Category saved successfully";
+"category.create_success" = "Category created successfully";
+"category.save_failed" = "Failed to save category: %@";
+"category.delete_success" = "Category deleted successfully";
+"category.delete_failed" = "Failed to delete category: %@";
 
-// MARK: - Dashboard
+/* Dashboard */
 "dashboard.title" = "Dashboard";
 "dashboard.monthly_expenses" = "Monthly Expenses";
-"dashboard.no_subscriptions" = "No Subscriptions";
+"dashboard.no_subscriptions" = "No active subscriptions";
 "dashboard.trend" = "Spending Trend";
-"dashboard.no_trend_data" = "No Trend Data";
-"dashboard.no_trend_hint" = "Add subscriptions to view spending trends";
-"dashboard.upcoming_renewals" = "Upcoming Renewals (30 days)";
+"dashboard.no_trend_data" = "No trend data available";
+"dashboard.no_trend_hint" = "Add subscriptions to see your spending trends";
+"dashboard.upcoming_renewals" = "Upcoming Renewals";
 "dashboard.no_upcoming" = "No upcoming renewals";
 
-// MARK: - Subscription List
+/* Subscription List */
 "subscriptions.title" = "Subscriptions";
-"subscriptions.search_placeholder" = "Search subscriptions...";
+"subscriptions.search_placeholder" = "Search subscriptions";
 "subscriptions.filter_all" = "All";
-"subscriptions.empty" = "No Subscriptions";
+"subscriptions.empty" = "No subscriptions yet";
+"subscriptions.today" = "Today";
+"subscriptions.next_renewal" = "Next renewal: %@";
 
-// MARK: - Add/Edit Subscription
+/* Subscription Detail */
+"subscription_detail.category" = "Category";
+"subscription_detail.amount" = "Amount";
+"subscription_detail.billing_cycle" = "Billing Cycle";
+"subscription_detail.first_payment" = "First Payment";
+"subscription_detail.next_renewal" = "Next Renewal";
+"subscription_detail.days_until" = "Days Until";
+"subscription_detail.payment_count" = "Payment Count";
+"subscription_detail.total_paid" = "Total Paid";
+"subscription_detail.notification" = "Notification";
+"subscription_detail.notification_enabled" = "Enabled";
+"subscription_detail.notification_disabled" = "Disabled";
+"subscription_detail.notification_time" = "Notification Time";
+"subscription_detail.archive" = "Archive";
+"subscription_detail.unarchive" = "Unarchive";
+"subscription_detail.delete" = "Delete";
+"subscription_detail.delete_confirm_title" = "Delete Subscription";
+"subscription_detail.delete_confirm_message" = "Are you sure you want to delete this subscription? This action cannot be undone.";
+"subscription_detail.archived" = "Subscription archived";
+"subscription_detail.unarchived" = "Subscription unarchived";
+"subscription_detail.delete_success" = "Subscription deleted";
+"subscription_detail.save_success" = "Changes saved";
+"subscription_detail.operation_failed" = "Operation failed: %@";
+"subscription_detail.save_failed" = "Failed to save: %@";
+"subscription_detail.section_basic" = "Basic Information";
+"subscription_detail.section_billing" = "Billing Information";
+"subscription_detail.section_stats" = "Statistics";
+"subscription_detail.section_notification" = "Notifications";
+"subscription_detail.name" = "Name";
+"subscription_detail.description" = "Description";
+"subscription_detail.edit" = "Edit";
+"subscription_detail.cancel" = "Cancel";
+"subscription_detail.save" = "Save";
+"subscription_detail.enable_notification" = "Enable Notification";
+"subscription_detail.notify_days_before" = "Notify %d days before";
+
+/* Insights */
+"insights.active_subscriptions" = "Active Subscriptions";
+"insights.upcoming_renewals_count" = "Upcoming Renewals";
+"insights.new_this_month" = "New This Month";
+"insights.average_cost" = "Average Cost";
+"insights.manage_cards" = "Manage Cards";
+"insights.monthly_expenses" = "Monthly Expenses";
+"insights.yearly_expenses" = "Yearly Expenses";
+"insights.recent_trend" = "Recent Trend";
+"insights.all_time_trend" = "All Time Trend";
+"insights.top_spending" = "Top Spending";
+"insights.upcoming_renewals" = "Upcoming Renewals";
+"insights.category_breakdown" = "Category Breakdown";
+"insights.no_data" = "No data available";
+"insights.no_data_hint" = "Add subscriptions to see insights";
+"insights.no_cards_selected" = "No cards selected";
+"insights.no_cards_hint" = "Tap 'Manage Cards' to select cards to display";
+"insights.subscriptions_count" = "%d subscriptions";
+
+/* Add/Edit Subscription */
 "subscription.add_title" = "Add Subscription";
 "subscription.edit_title" = "Edit Subscription";
 "subscription.section_basic" = "Basic Information";
 "subscription.name_placeholder" = "Subscription Name";
 "subscription.description_placeholder" = "Description (Optional)";
 "subscription.section_category" = "Category";
-"subscription.category_picker" = "Select Category";
+"subscription.category_picker" = "Category";
 "subscription.no_category" = "No Category";
 "subscription.section_billing" = "Billing Information";
 "subscription.first_payment_date" = "First Payment Date";
 "subscription.amount" = "Amount";
 "subscription.amount_placeholder" = "0.00";
 "subscription.currency" = "Currency";
-"subscription.section_notification" = "Notification Settings";
-"subscription.enable_notification" = "Enable Notifications";
+"subscription.section_notification" = "Notifications";
+"subscription.enable_notification" = "Enable Notification";
 "subscription.notify_days_before" = "Notify %d days before";
+"subscription.notify_days_before_zero" = "Notify on renewal day";
+"subscription.notify_days_before_singular" = "Notify 1 day before";
 "subscription.button_cancel" = "Cancel";
 "subscription.button_save" = "Save";
 
-// MARK: - Billing Cycle
+/* Billing Cycle */
 "billing_cycle.every" = "Every";
 "billing_cycle.unit" = "Unit";
 "billing_cycle.day" = "Day";
 "billing_cycle.week" = "Week";
 "billing_cycle.month" = "Month";
 "billing_cycle.year" = "Year";
+"billing_cycle.recurring" = "Recurring";
+"billing_cycle.daily" = "Daily";
+"billing_cycle.weekly" = "Weekly";
+"billing_cycle.monthly" = "Monthly";
+"billing_cycle.yearly" = "Yearly";
+"billing_cycle.every_x_days" = "Every %d days";
+"billing_cycle.every_x_weeks" = "Every %d weeks";
+"billing_cycle.every_x_months" = "Every %d months";
+"billing_cycle.every_x_years" = "Every %d years";
 
-// MARK: - Paywall
+/* Paywall */
 "paywall.title" = "Upgrade to Pro";
-"paywall.subtitle" = "Unlock unlimited subscriptions and premium features";
+"paywall.subtitle" = "Take control of your subscriptions";
+"paywall.plan_monthly" = "Monthly";
+"paywall.plan_yearly" = "Yearly";
+"paywall.plan_monthly_duration" = "Billed monthly";
+"paywall.plan_yearly_duration" = "Billed annually";
+"paywall.plan_yearly_savings" = "Save 20%";
+"paywall.plan_monthly_short" = "mo";
 "paywall.feature_unlimited_subscriptions" = "Unlimited Subscriptions";
-"paywall.feature_unlimited_subscriptions_desc" = "Create unlimited subscription records without restrictions";
+"paywall.feature_unlimited_subscriptions_desc" = "Track as many subscriptions as you want";
 "paywall.feature_unlimited_categories" = "Unlimited Categories";
-"paywall.feature_unlimited_categories_desc" = "Organize with unlimited custom categories";
+"paywall.feature_unlimited_categories_desc" = "Organize with custom categories";
 "paywall.feature_icloud_sync" = "iCloud Sync";
-"paywall.feature_icloud_sync_desc" = "Keep your data safe and synced across all your devices";
-"paywall.feature_smart_notifications" = "Smart Reminders";
-"paywall.feature_smart_notifications_desc" = "Never miss a payment with customizable renewal reminders";
-"paywall.feature_advanced_stats" = "Advanced Analytics";
-"paywall.feature_advanced_stats_desc" = "Visualize spending trends with detailed charts and insights";
+"paywall.feature_icloud_sync_desc" = "Sync across all your devices";
+"paywall.feature_smart_notifications" = "Smart Notifications";
+"paywall.feature_smart_notifications_desc" = "Never miss a renewal";
+"paywall.feature_advanced_stats" = "Advanced Statistics";
+"paywall.feature_advanced_stats_desc" = "Detailed insights and trends";
 "paywall.feature_theme_customization" = "Theme Customization";
-"paywall.feature_theme_customization_desc" = "Customize app theme colors";
-"paywall.button_purchase" = "Purchase Pro Version";
+"paywall.feature_theme_customization_desc" = "Personalize your experience";
+"paywall.button_purchase" = "Purchase";
+"paywall.button_select_plan" = "Select Plan";
 "paywall.button_restore" = "Restore Purchases";
 "paywall.button_close" = "Close";
+"paywall.error_no_active_purchase" = "No active purchase found";
 
-// MARK: - Settings
+/* Settings */
 "settings.title" = "Settings";
 "settings.section_settings" = "Settings";
 "settings.theme" = "Theme";
@@ -110,27 +180,39 @@
 "settings.dark_mode_system" = "System";
 "settings.dark_mode_light" = "Light";
 "settings.dark_mode_dark" = "Dark";
+"settings.language" = "Language";
+"settings.language_zh" = "简体中文";
+"settings.language_en" = "English";
+"settings.language_ja" = "日本語";
 "settings.theme_color" = "Theme Color";
-"settings.section_defaults" = "Default Settings";
+"settings.section_defaults" = "Defaults";
 "settings.default_currency" = "Default Currency";
 "settings.notification_time" = "Notification Time";
 "settings.section_data" = "Data";
 "settings.icloud_sync" = "iCloud Sync";
+"settings.sync_status" = "Sync Status";
+"settings.manual_sync" = "Manual Sync";
+"settings.sync_syncing" = "Syncing...";
+"settings.sync_synced" = "Synced";
+"settings.sync_error" = "Error";
+"settings.sync_disabled" = "Disabled";
 "settings.clear_data" = "Clear All Data";
-"settings.clear_data_confirm_title" = "Clear All Data?";
+"settings.clear_data_confirm_title" = "Clear All Data";
 "settings.clear_data_confirm_message" = "This will delete all subscriptions and categories. This action cannot be undone.";
-"settings.clear_data_success" = "All data cleared successfully";
+"settings.clear_data_success" = "All data cleared";
 "settings.clear_data_failed" = "Failed to clear data: %@";
 "settings.category_management" = "Category Management";
 "settings.section_pro" = "Pro Version";
-"settings.pro_purchased" = "Pro Version Purchased";
+"settings.pro_purchased" = "Pro Version Active";
 "settings.upgrade_to_pro" = "Upgrade to Pro";
 "settings.restore_purchases" = "Restore Purchases";
 "settings.section_about" = "About";
 "settings.version" = "Version";
 
-// MARK: - Color Picker
+/* Color Picker */
 "color_picker.title" = "Select Color";
+
+/* Colors */
 "color.red" = "Red";
 "color.orange" = "Orange";
 "color.yellow" = "Yellow";
@@ -144,122 +226,53 @@
 "color.cyan" = "Cyan";
 "color.sky_blue" = "Sky Blue";
 
-// MARK: - Loading & Toast
+/* Loading & Toast */
 "loading.default" = "Loading...";
 "loading.saving" = "Saving...";
+
 "toast.save_success" = "Saved successfully";
-"toast.purchase_success" = "Purchase successful!";
-"toast.restore_success" = "Restore successful!";
+"toast.purchase_success" = "Purchase successful";
+"toast.restore_success" = "Purchases restored";
 "toast.purchase_failed" = "Purchase failed: %@";
 "toast.restore_failed" = "Restore failed: %@";
 
-// MARK: - Validation Errors
+/* Validation Errors */
 "validation.name_empty" = "Name cannot be empty";
-"validation.name_too_long" = "Name cannot exceed 50 characters";
+"validation.name_too_long" = "Name is too long";
 "validation.amount_invalid" = "Amount must be greater than 0";
-"validation.billing_cycle_invalid" = "Billing cycle must be greater than 0";
+"validation.billing_cycle_invalid" = "Billing cycle must be at least 1";
 "validation.first_payment_future" = "First payment date cannot be in the future";
-"validation.currency_unsupported" = "Unsupported currency type";
-"validation.notify_days_invalid" = "Notification days must be greater than 0";
+"validation.currency_unsupported" = "Currency not supported";
+"validation.notify_days_invalid" = "Notification days must be between 0 and 30";
 
-// MARK: - App Errors
+/* App Errors */
 "error.data_not_found" = "Data not found";
-"error.data_save_failed" = "Save failed: %@";
-"error.data_load_failed" = "Load failed: %@";
+"error.data_save_failed" = "Failed to save data: %@";
+"error.data_load_failed" = "Failed to load data: %@";
 "error.invalid_data" = "Invalid data: %@";
-"error.subscription_limit" = "Free version supports up to 5 subscriptions. Upgrade to Pro for unlimited subscriptions!";
-"error.category_limit" = "Free version supports up to 5 categories. Upgrade to Pro for unlimited categories!";
-"error.notification_permission" = "Please enable notifications in Settings";
-"error.notification_schedule" = "Notification setup failed";
+"error.subscription_limit" = "Subscription limit reached. Upgrade to Pro for unlimited subscriptions.";
+"error.category_limit" = "Category limit reached. Upgrade to Pro for unlimited categories.";
+"error.notification_permission" = "Notification permission denied";
+"error.notification_schedule" = "Failed to schedule notification";
 "error.sync_failed" = "Sync failed: %@";
 "error.network_unavailable" = "Network unavailable";
 "error.icloud_unavailable" = "iCloud unavailable";
 "error.purchase_failed" = "Purchase failed: %@";
 "error.purchase_cancelled" = "Purchase cancelled";
-"error.restore_failed" = "Restore purchases failed";
+"error.restore_failed" = "Failed to restore purchases";
 
-// MARK: - Insights
-"insights.active_subscriptions" = "Active";
-"insights.upcoming_renewals_count" = "Upcoming";
-"insights.new_this_month" = "New This Month";
-"insights.average_cost" = "Average Cost";
-"insights.days_suffix" = "d";
-
-// MARK: - Subscription List
-"subscriptions.next_renewal" = "Next renewal: %@";
-"subscriptions.today" = "Today";
-
-// MARK: - Subscription Detail
-"subscription_detail.category" = "Category";
-"subscription_detail.amount" = "Amount";
-"subscription_detail.billing_cycle" = "Billing Cycle";
-"subscription_detail.first_payment" = "First Payment Date";
-"subscription_detail.next_renewal" = "Next Renewal Date";
-"subscription_detail.days_until" = "Days Until Renewal";
-"subscription_detail.payment_count" = "Payment Count";
-"subscription_detail.total_paid" = "Total Paid";
-"subscription_detail.notification" = "Notification";
-"subscription_detail.notification_enabled" = "Enabled";
-"subscription_detail.notification_disabled" = "Disabled";
-"subscription_detail.notification_time" = "Notification Time";
-"subscription_detail.archive" = "Archive";
-"subscription_detail.unarchive" = "Unarchive";
-"subscription_detail.delete" = "Delete";
-"subscription_detail.delete_confirm_title" = "Confirm Delete";
-"subscription_detail.delete_confirm_message" = "Are you sure you want to delete this subscription? This action cannot be undone.";
-"subscription_detail.archived" = "Archived";
-"subscription_detail.unarchived" = "Unarchived";
-"subscription_detail.delete_success" = "Deleted successfully";
-"subscription_detail.save_success" = "Saved successfully";
-"subscription_detail.operation_failed" = "Operation failed: %@";
-"subscription_detail.save_failed" = "Save failed: %@";
-"subscription_detail.section_basic" = "Basic Info";
-"subscription_detail.section_billing" = "Billing Info";
-"subscription_detail.section_stats" = "Statistics";
-"subscription_detail.section_notification" = "Notification Settings";
-"subscription_detail.name" = "Subscription Name";
-"subscription_detail.description" = "Description";
-"subscription_detail.days_suffix" = " days";
-"subscription_detail.times_suffix" = " times";
-"subscription_detail.edit" = "Edit";
-"subscription_detail.cancel" = "Cancel";
-"subscription_detail.save" = "Save";
-"subscription_detail.enable_notification" = "Enable Notification";
-"subscription_detail.notify_days_before" = "Notify %d days before";
-
-// MARK: - Settings
-"settings.language" = "Language";
-"settings.language_zh" = "简体中文";
-"settings.language_en" = "English";
-"settings.language_ja" = "日本語";
-
-// MARK: - Notifications
-"notification.title" = "Subscription Renewal Reminder";
-"notification.body" = "%@ will renew in %d days for %@";
-"notification.permission_required" = "Notification Permission Required";
-"notification.permission_message" = "Please enable notifications in Settings to receive renewal reminders";
+/* Notifications */
+"notification.title" = "Subscription Renewal";
+"notification.body" = "%@ will renew in %d days. Amount: %@";
+"notification.permission_required" = "Permission Required";
+"notification.permission_message" = "Enable notifications to get renewal reminders";
 "notification.go_to_settings" = "Go to Settings";
 "notification.test_notification" = "Test Notification";
 "notification.test_sent" = "Test notification sent";
-"notification.scheduled_success" = "Notification scheduled successfully";
-"notification.cancelled_success" = "Notification cancelled";
+"notification.scheduled_success" = "Notification scheduled";
 
-// MARK: - Pluralization
+/* Days/Times */
 "days.singular" = "day";
 "days.plural" = "days";
 "times.singular" = "time";
 "times.plural" = "times";
-"subscription.notify_same_day" = "On the same day";
-"subscription.notify_days_before_singular" = "Notify 1 day before";
-"subscription.notify_days_before_zero" = "Notify on renewal day";
-
-// MARK: - Billing Cycle Display
-"billing_cycle.recurring" = "Recurring";
-"billing_cycle.daily" = "Daily";
-"billing_cycle.weekly" = "Weekly";
-"billing_cycle.monthly" = "Monthly";
-"billing_cycle.yearly" = "Yearly";
-"billing_cycle.every_x_days" = "Every %d days";
-"billing_cycle.every_x_weeks" = "Every %d weeks";
-"billing_cycle.every_x_months" = "Every %d months";
-"billing_cycle.every_x_years" = "Every %d years";

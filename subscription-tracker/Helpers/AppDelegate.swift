@@ -19,6 +19,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         // Set notification center delegate
         UNUserNotificationCenter.current().delegate = self
         
+        // Clear badge count on app launch
+        clearBadgeCount()
+        
         // Store current language
         currentLanguage = Locale.current.language.languageCode?.identifier
         
@@ -34,6 +37,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     }
     
     @objc private func applicationDidBecomeActive() {
+        // Clear badge count when app becomes active
+        clearBadgeCount()
+        
         // Check if language has changed
         let newLanguage = Locale.current.language.languageCode?.identifier
         if let current = currentLanguage, let new = newLanguage, current != new {
@@ -42,6 +48,17 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                 self.showLanguageChangeAlert()
             }
             currentLanguage = newLanguage
+        }
+    }
+    
+    /// Clear app badge count
+    private func clearBadgeCount() {
+        UNUserNotificationCenter.current().setBadgeCount(0) { error in
+            if let error = error {
+                print("❌ Failed to clear badge count: \(error)")
+            } else {
+                print("✅ Badge count cleared")
+            }
         }
     }
     

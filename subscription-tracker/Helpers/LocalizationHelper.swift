@@ -37,6 +37,7 @@ enum L10n {
         static let sectionColor = NSLocalizedString("category.section_color", comment: "Color section")
         static let namePlaceholder = NSLocalizedString("category.name_placeholder", comment: "Name placeholder")
         static let descriptionPlaceholder = NSLocalizedString("category.description_placeholder", comment: "Description placeholder")
+        static let createNew = NSLocalizedString("category.create_new", comment: "Create new category button")
         static let empty = NSLocalizedString("category.empty", comment: "Empty categories message")
         static let emptyHint = NSLocalizedString("category.empty_hint", comment: "Empty categories hint")
         static func subscriptionCount(_ count: Int) -> String {
@@ -143,6 +144,21 @@ enum L10n {
         static let averageCost = NSLocalizedString("insights.average_cost", comment: "Average cost")
         static let daysSuffix = NSLocalizedString("days.plural", comment: "Days suffix")
         static let daysSuffixSingular = NSLocalizedString("days.singular", comment: "Day suffix")
+        static let manageCards = NSLocalizedString("insights.manage_cards", comment: "Manage cards")
+        static let monthlyExpenses = NSLocalizedString("insights.monthly_expenses", comment: "Monthly expenses")
+        static let yearlyExpenses = NSLocalizedString("insights.yearly_expenses", comment: "Yearly expenses")
+        static let recentTrend = NSLocalizedString("insights.recent_trend", comment: "Recent trend")
+        static let allTimeTrend = NSLocalizedString("insights.all_time_trend", comment: "All time trend")
+        static let topSpending = NSLocalizedString("insights.top_spending", comment: "Top spending")
+        static let upcomingRenewals = NSLocalizedString("insights.upcoming_renewals", comment: "Upcoming renewals")
+        static let categoryBreakdown = NSLocalizedString("insights.category_breakdown", comment: "Category breakdown")
+        static let noData = NSLocalizedString("insights.no_data", comment: "No data")
+        static let noDataHint = NSLocalizedString("insights.no_data_hint", comment: "No data hint")
+        static let noCardsSelected = NSLocalizedString("insights.no_cards_selected", comment: "No cards selected")
+        static let noCardsHint = NSLocalizedString("insights.no_cards_hint", comment: "No cards hint")
+        static func subscriptionsCount(_ count: Int) -> String {
+            String(format: NSLocalizedString("insights.subscriptions_count", comment: "Subscriptions count"), count)
+        }
     }
     
     // MARK: - Add/Edit Subscription
@@ -218,6 +234,12 @@ enum L10n {
     enum Paywall {
         static let title = NSLocalizedString("paywall.title", comment: "Paywall title")
         static let subtitle = NSLocalizedString("paywall.subtitle", comment: "Paywall subtitle")
+        static let planMonthly = NSLocalizedString("paywall.plan_monthly", comment: "Monthly plan")
+        static let planYearly = NSLocalizedString("paywall.plan_yearly", comment: "Yearly plan")
+        static let planMonthlyDuration = NSLocalizedString("paywall.plan_monthly_duration", comment: "Monthly duration")
+        static let planYearlyDuration = NSLocalizedString("paywall.plan_yearly_duration", comment: "Yearly duration")
+        static let planYearlySavings = NSLocalizedString("paywall.plan_yearly_savings", comment: "Yearly savings")
+        static let planMonthlyShort = NSLocalizedString("paywall.plan_monthly_short", comment: "Monthly short")
         static let featureUnlimitedSubscriptions = NSLocalizedString("paywall.feature_unlimited_subscriptions", comment: "Unlimited subscriptions feature")
         static let featureUnlimitedSubscriptionsDesc = NSLocalizedString("paywall.feature_unlimited_subscriptions_desc", comment: "Unlimited subscriptions description")
         static let featureUnlimitedCategories = NSLocalizedString("paywall.feature_unlimited_categories", comment: "Unlimited categories feature")
@@ -231,8 +253,10 @@ enum L10n {
         static let featureThemeCustomization = NSLocalizedString("paywall.feature_theme_customization", comment: "Theme customization feature")
         static let featureThemeCustomizationDesc = NSLocalizedString("paywall.feature_theme_customization_desc", comment: "Theme customization description")
         static let buttonPurchase = NSLocalizedString("paywall.button_purchase", comment: "Purchase button")
+        static let buttonSelectPlan = NSLocalizedString("paywall.button_select_plan", comment: "Select plan button")
         static let buttonRestore = NSLocalizedString("paywall.button_restore", comment: "Restore button")
         static let buttonClose = NSLocalizedString("paywall.button_close", comment: "Close button")
+        static let errorNoActivePurchase = NSLocalizedString("paywall.error_no_active_purchase", comment: "No active purchase error")
     }
     
     // MARK: - Settings
@@ -255,6 +279,12 @@ enum L10n {
         static let notificationTime = NSLocalizedString("settings.notification_time", comment: "Notification time label")
         static let sectionData = NSLocalizedString("settings.section_data", comment: "Data section")
         static let iCloudSync = NSLocalizedString("settings.icloud_sync", comment: "iCloud sync label")
+        static let syncStatus = NSLocalizedString("settings.sync_status", comment: "Sync status label")
+        static let manualSync = NSLocalizedString("settings.manual_sync", comment: "Manual sync button")
+        static let syncSyncing = NSLocalizedString("settings.sync_syncing", comment: "Syncing status")
+        static let syncSynced = NSLocalizedString("settings.sync_synced", comment: "Synced status")
+        static let syncError = NSLocalizedString("settings.sync_error", comment: "Sync error status")
+        static let syncDisabled = NSLocalizedString("settings.sync_disabled", comment: "Sync disabled status")
         static let clearData = NSLocalizedString("settings.clear_data", comment: "Clear data button")
         static let clearDataConfirmTitle = NSLocalizedString("settings.clear_data_confirm_title", comment: "Clear data confirm title")
         static let clearDataConfirmMessage = NSLocalizedString("settings.clear_data_confirm_message", comment: "Clear data confirm message")

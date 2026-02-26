@@ -14,23 +14,23 @@ struct ColorPickerView: View {
     
     // 预设颜色列表
     private let presetColors: [(hex: String, name: String)] = [
-        ("#FF3B30", "红色"),
-        ("#FF9500", "橙色"),
-        ("#FFCC00", "黄色"),
-        ("#34C759", "绿色"),
-        ("#007AFF", "蓝色"),
-        ("#5856D6", "紫色"),
-        ("#AF52DE", "粉紫"),
-        ("#FF2D55", "粉红"),
-        ("#A2845E", "棕色"),
-        ("#8E8E93", "灰色"),
-        ("#00C7BE", "青色"),
-        ("#32ADE6", "天蓝")
+        ("#FF3B30", L10n.Color.red),
+        ("#FF9500", L10n.Color.orange),
+        ("#FFCC00", L10n.Color.yellow),
+        ("#34C759", L10n.Color.green),
+        ("#007AFF", L10n.Color.blue),
+        ("#5856D6", L10n.Color.purple),
+        ("#AF52DE", L10n.Color.pinkPurple),
+        ("#FF2D55", L10n.Color.pink),
+        ("#A2845E", L10n.Color.brown),
+        ("#8E8E93", L10n.Color.gray),
+        ("#00C7BE", L10n.Color.cyan),
+        ("#32ADE6", L10n.Color.skyBlue)
     ]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("选择颜色")
+            Text(L10n.ColorPicker.title)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             

@@ -121,10 +121,10 @@ struct TrendChart: View {
             Image(systemName: "chart.line.uptrend.xyaxis")
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
-            Text("暂无趋势数据")
+            Text(L10n.Dashboard.noTrendData)
                 .font(.headline)
                 .foregroundColor(.secondary)
-            Text("添加订阅后即可查看支出趋势")
+            Text(L10n.Dashboard.noTrendHint)
                 .font(.caption)
                 .foregroundColor(.secondary)
         }

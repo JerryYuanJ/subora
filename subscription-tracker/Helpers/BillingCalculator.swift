@@ -141,7 +141,7 @@ struct BillingCalculator {
         }
     }
     
-    /// 添加月份，处理月末边界情况
+    /// 添加月份，处理月末边界情况（保持原始日期）
     private static func addMonths(to date: Date, months: Int, calendar: Calendar) -> Date {
         let components = calendar.dateComponents([.year, .month, .day], from: date)
         guard let year = components.year,
@@ -164,8 +164,25 @@ struct BillingCalculator {
             targetYear -= 1
         }
         
-        // 处理月末日期
-        return adjustForMonthEnd(date: date, targetMonth: targetMonth, targetYear: targetYear, originalDay: day, calendar: calendar)
+        // 获取目标月份的最大天数
+        var targetComponents = DateComponents()
+        targetComponents.year = targetYear
+        targetComponents.month = targetMonth
+        targetComponents.day = 1
+        
+        guard let firstDayOfTargetMonth = calendar.date(from: targetComponents),
+              let range = calendar.range(of: .day, in: .month, for: firstDayOfTargetMonth) else {
+            return date
+        }
+        
+        let maxDaysInTargetMonth = range.count
+        
+        // 如果原始日期大于目标月份的最大天数，使用目标月份的最后一天
+        // 例如：1月31日 + 1个月 = 2月28日（或29日）
+        let targetDay = min(day, maxDaysInTargetMonth)
+        
+        targetComponents.day = targetDay
+        return calendar.date(from: targetComponents) ?? date
     }
     
     /// 添加年份，处理闰年边界情况
@@ -179,45 +196,25 @@ struct BillingCalculator {
         
         let targetYear = year + years
         
-        // 处理 2 月 29 日的闰年情况
-        if month == 2 && day == 29 && !isLeapYear(targetYear) {
-            // 非闰年使用 2 月 28 日
-            var newComponents = DateComponents()
-            newComponents.year = targetYear
-            newComponents.month = 2
-            newComponents.day = 28
-            return calendar.date(from: newComponents) ?? date
-        }
+        // 获取目标年份该月的最大天数
+        var targetComponents = DateComponents()
+        targetComponents.year = targetYear
+        targetComponents.month = month
+        targetComponents.day = 1
         
-        return adjustForMonthEnd(date: date, targetMonth: month, targetYear: targetYear, originalDay: day, calendar: calendar)
-    }
-    
-    /// 处理月末日期调整
-    private static func adjustForMonthEnd(
-        date: Date,
-        targetMonth: Int,
-        targetYear: Int,
-        originalDay: Int,
-        calendar: Calendar
-    ) -> Date {
-        // 获取目标月份的天数
-        var components = DateComponents()
-        components.year = targetYear
-        components.month = targetMonth
-        components.day = 1
-        
-        guard let firstDayOfMonth = calendar.date(from: components),
-              let range = calendar.range(of: .day, in: .month, for: firstDayOfMonth) else {
+        guard let firstDayOfTargetMonth = calendar.date(from: targetComponents),
+              let range = calendar.range(of: .day, in: .month, for: firstDayOfTargetMonth) else {
             return date
         }
         
-        let daysInMonth = range.count
+        let maxDaysInTargetMonth = range.count
         
-        // 如果原日期超出目标月份的天数，使用该月最后一天
-        let targetDay = min(originalDay, daysInMonth)
+        // 如果原始日期大于目标月份的最大天数，使用目标月份的最后一天
+        // 例如：2024年2月29日 + 1年 = 2025年2月28日
+        let targetDay = min(day, maxDaysInTargetMonth)
         
-        components.day = targetDay
-        return calendar.date(from: components) ?? date
+        targetComponents.day = targetDay
+        return calendar.date(from: targetComponents) ?? date
     }
     
     /// 检查是否为闰年

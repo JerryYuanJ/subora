@@ -7,10 +7,12 @@
 
 import SwiftUI
 import SwiftData
+import UserNotifications
 
 struct ContentView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab = 0
     
     var body: some View {
@@ -42,6 +44,23 @@ struct ContentView: View {
                     Label(L10n.Tab.settings, systemImage: "gearshape.fill")
                 }
                 .tag(3)
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            if newPhase == .active {
+                // Clear badge when app becomes active
+                Task {
+                    await clearBadgeCount()
+                }
+            }
+        }
+    }
+    
+    /// Clear app badge count
+    private func clearBadgeCount() async {
+        do {
+            try await UNUserNotificationCenter.current().setBadgeCount(0)
+        } catch {
+            print("❌ Failed to clear badge: \(error)")
         }
     }
 }

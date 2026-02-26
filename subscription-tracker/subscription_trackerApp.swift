@@ -16,7 +16,7 @@ struct subscription_trackerApp: App {
     @StateObject private var appSettings = AppSettings()
     @StateObject private var notificationManager = NotificationManager()
     
-    // 创建不使用 CloudKit 的 ModelContainer
+    // 创建支持 CloudKit 的 ModelContainer
     let sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Subscription.self,
@@ -24,18 +24,32 @@ struct subscription_trackerApp: App {
             UserSettings.self,
         ])
         
+        // 使用 automatic 让系统自动选择匹配的 Container
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
-            cloudKitDatabase: .none  // 禁用 CloudKit
+            cloudKitDatabase: .automatic
         )
 
         do {
             let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
-            print("✅ SwiftData ModelContainer initialized successfully (CloudKit disabled)")
+            print("✅ SwiftData ModelContainer initialized (CloudKit: automatic)")
             return container
         } catch {
-            fatalError("❌ Could not create ModelContainer: \(error)")
+            print("❌ ModelContainer error: \(error)")
+            // 如果 CloudKit 初始化失败，使用本地存储
+            let localConfig = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: false,
+                cloudKitDatabase: .none
+            )
+            do {
+                let localContainer = try ModelContainer(for: schema, configurations: [localConfig])
+                print("⚠️ Fallback to local storage (CloudKit unavailable)")
+                return localContainer
+            } catch {
+                fatalError("❌ Could not create ModelContainer: \(error)")
+            }
         }
     }()
     
@@ -49,10 +63,22 @@ struct subscription_trackerApp: App {
                 .onAppear {
                     Task {
                         await notificationManager.requestPermissionIfNeeded()
+                        // Clear badge count when app appears
+                        await clearBadgeCount()
                     }
                 }
         }
         .modelContainer(sharedModelContainer)
+    }
+    
+    /// Clear app badge count
+    private func clearBadgeCount() async {
+        do {
+            try await UNUserNotificationCenter.current().setBadgeCount(0)
+            print("✅ Badge count cleared")
+        } catch {
+            print("❌ Failed to clear badge count: \(error)")
+        }
     }
 }
 

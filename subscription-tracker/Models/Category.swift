@@ -11,11 +11,11 @@ import SwiftData
 
 @Model
 final class Category {
-    var id: UUID
-    var name: String
+    var id: UUID = UUID()
+    var name: String = ""
     var categoryDescription: String?
-    var colorHex: String
-    var createdAt: Date
+    var colorHex: String = "#007AFF"
+    var createdAt: Date = Date()
     
     @Relationship(deleteRule: .nullify, inverse: \Subscription.category)
     var subscriptions: [Subscription]?

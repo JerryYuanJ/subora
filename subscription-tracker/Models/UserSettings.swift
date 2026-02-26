@@ -10,15 +10,16 @@ import SwiftData
 
 @Model
 final class UserSettings {
-    var id: UUID
+    var id: UUID = UUID()
     var darkMode: Bool?
-    var themeColor: String
-    var defaultCurrency: String
-    var defaultNotifyTime: Date
-    var iCloudSync: Bool
-    var isProUser: Bool
+    var themeColor: String = "#007AFF"
+    var defaultCurrency: String = "USD"
+    var defaultNotifyTime: Date = Calendar.current.date(from: DateComponents(hour: 9, minute: 0)) ?? Date()
+    var iCloudSync: Bool = false
+    var isProUser: Bool = false
     var language: String?
-    var updatedAt: Date
+    var updatedAt: Date = Date()
+    var lastSyncTime: Date?  // 最后同步时间
     
     init(
         id: UUID = UUID(),
@@ -39,5 +40,6 @@ final class UserSettings {
         self.isProUser = isProUser
         self.language = language
         self.updatedAt = Date()
+        self.lastSyncTime = nil
     }
 }

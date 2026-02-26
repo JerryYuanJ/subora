@@ -227,13 +227,20 @@ class SettingsViewModel: ObservableObject {
         defer { isLoading = false }
         
         do {
+            print("🔵 开始手动同步...")
+            print("🔵 iCloud 同步状态: \(userSettings?.iCloudSync == true ? "已启用" : "未启用")")
+            
             try await syncService.syncNow()
+            
+            print("✅ 手动同步完成")
             Logger.app.info("Manual sync completed successfully")
         } catch let error as AppError {
+            print("❌ 同步失败: \(error.localizedDescription)")
             errorMessage = error.errorDescription
             Logger.app.error("Manual sync failed: \(error.localizedDescription)")
             throw error
         } catch {
+            print("❌ 同步失败: \(error.localizedDescription)")
             errorMessage = "手动同步失败"
             Logger.app.error("Manual sync failed: \(error.localizedDescription)")
             throw AppError.syncFailed(reason: error.localizedDescription)
