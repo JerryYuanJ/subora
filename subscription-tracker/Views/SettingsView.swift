@@ -109,6 +109,15 @@ struct SettingsView: View {
                 // About section
                 aboutSection
             }
+            .safeAreaInset(edge: .bottom) {
+                // Version info at bottom center
+                Text(L10n.Settings.appVersion("1.0.0"))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(Color(UIColor.systemGroupedBackground))
+            }
             .task {
                 await viewModel.loadSettings()
             }
@@ -493,26 +502,14 @@ struct SettingsView: View {
     
     private var aboutSection: some View {
         Section(L10n.Settings.sectionAbout) {
-            // Version
-            HStack {
-                Text(L10n.Settings.version)
-                Spacer()
-                Text("1.0.0")
-                    .foregroundColor(.secondary)
-            }
-            
             // Contact Us
             Button {
                 contactUs()
             } label: {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "envelope.fill")
-                                .foregroundColor(.blue)
-                            Text(L10n.Settings.contactUs)
-                                .foregroundColor(.primary)
-                        }
+                        Text(L10n.Settings.contactUs)
+                            .foregroundColor(.primary)
                         Text(L10n.Settings.contactUsSubtitle)
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -530,12 +527,8 @@ struct SettingsView: View {
             } label: {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "star.fill")
-                                .foregroundColor(.yellow)
-                            Text(L10n.Settings.rateApp)
-                                .foregroundColor(.primary)
-                        }
+                        Text(L10n.Settings.rateApp)
+                            .foregroundColor(.primary)
                         Text(L10n.Settings.rateAppSubtitle)
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -553,12 +546,8 @@ struct SettingsView: View {
             } label: {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "square.and.arrow.up.fill")
-                                .foregroundColor(.green)
-                            Text(L10n.Settings.shareApp)
-                                .foregroundColor(.primary)
-                        }
+                        Text(L10n.Settings.shareApp)
+                            .foregroundColor(.primary)
                         Text(L10n.Settings.shareAppSubtitle)
                             .font(.caption)
                             .foregroundColor(.secondary)

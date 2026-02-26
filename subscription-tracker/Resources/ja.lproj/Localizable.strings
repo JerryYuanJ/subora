@@ -209,12 +209,13 @@
 "settings.section_about" = "について";
 "settings.version" = "バージョン";
 "settings.contact_us" = "お問い合わせ";
-"settings.contact_us_subtitle" = "ご意見をお聞かせください";
+"settings.contact_us_subtitle" = "フィードバックやご提案";
 "settings.rate_app" = "Subora を評価";
-"settings.rate_app_subtitle" = "応援してください ❤️";
+"settings.rate_app_subtitle" = "気に入ったらレビューをお願いします";
 "settings.share_app" = "友達に共有";
 "settings.share_app_subtitle" = "みんなに教える";
 "settings.share_message" = "Subora でサブスクリプションを管理しよう！";
+"settings.app_version" = "Subora - v%@";
 
 /* Color Picker */
 "color_picker.title" = "色を選択";

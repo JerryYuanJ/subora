@@ -306,6 +306,9 @@ enum L10n {
         static let shareApp = NSLocalizedString("settings.share_app", comment: "Share app button")
         static let shareAppSubtitle = NSLocalizedString("settings.share_app_subtitle", comment: "Share app subtitle")
         static let shareMessage = NSLocalizedString("settings.share_message", comment: "Share message")
+        static func appVersion(_ version: String) -> String {
+            String(format: NSLocalizedString("settings.app_version", comment: "App version"), version)
+        }
     }
     
     // MARK: - Color Picker

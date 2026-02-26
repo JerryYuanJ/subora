@@ -209,12 +209,13 @@
 "settings.section_about" = "About";
 "settings.version" = "Version";
 "settings.contact_us" = "Contact Us";
-"settings.contact_us_subtitle" = "We'd love to hear from you";
+"settings.contact_us_subtitle" = "Feedback or suggestions";
 "settings.rate_app" = "Rate Subora";
-"settings.rate_app_subtitle" = "Show some love ❤️";
+"settings.rate_app_subtitle" = "Enjoying the app? Leave a review";
 "settings.share_app" = "Share with Friends";
 "settings.share_app_subtitle" = "Spread the word";
 "settings.share_message" = "Manage your subscriptions with Subora!";
+"settings.app_version" = "Subora - v%@";
 
 /* Color Picker */
 "color_picker.title" = "Select Color";
