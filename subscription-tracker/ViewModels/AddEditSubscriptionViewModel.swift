@@ -42,10 +42,12 @@ class AddEditSubscriptionViewModel: ObservableObject {
     ///   - subscription: Existing subscription for edit mode, nil for create mode
     ///   - subscriptionService: Service for subscription operations
     ///   - paywallService: Service for checking free user limits
+    ///   - defaultCurrency: Default currency from user settings
     init(
         subscription: Subscription? = nil,
         subscriptionService: SubscriptionService,
-        paywallService: PaywallService? = nil
+        paywallService: PaywallService? = nil,
+        defaultCurrency: String = "USD"
     ) {
         self.isEditMode = subscription != nil
         self.subscriptionService = subscriptionService
@@ -64,7 +66,7 @@ class AddEditSubscriptionViewModel: ObservableObject {
                 billingCycle: 1,
                 billingCycleUnit: .month,
                 amount: 0,
-                currency: "USD",
+                currency: defaultCurrency,
                 notify: true,
                 notifyDaysBefore: 3,
                 archived: false

@@ -24,9 +24,18 @@ struct AddEditSubscriptionView: View {
     
     init(subscription: Subscription? = nil, modelContext: ModelContext) {
         let subscriptionService = SubscriptionService(modelContext: modelContext)
+        
+        // Get default currency from user settings
+        var defaultCurrency = "USD"
+        let descriptor = FetchDescriptor<UserSettings>()
+        if let userSettings = try? modelContext.fetch(descriptor).first {
+            defaultCurrency = userSettings.defaultCurrency
+        }
+        
         _viewModel = StateObject(wrappedValue: AddEditSubscriptionViewModel(
             subscription: subscription,
-            subscriptionService: subscriptionService
+            subscriptionService: subscriptionService,
+            defaultCurrency: defaultCurrency
         ))
         
         // Initialize amount text
