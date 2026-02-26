@@ -208,6 +208,13 @@
 "settings.restore_purchases" = "恢复购买";
 "settings.section_about" = "关于";
 "settings.version" = "版本";
+"settings.contact_us" = "联系我们";
+"settings.contact_us_subtitle" = "我们期待您的反馈";
+"settings.rate_app" = "给 Subora 评分";
+"settings.rate_app_subtitle" = "给我们点爱心 ❤️";
+"settings.share_app" = "分享给朋友";
+"settings.share_app_subtitle" = "推荐给更多人";
+"settings.share_message" = "推荐一个超好用的订阅管理应用 Subora！🚀";
 
 /* Color Picker */
 "color_picker.title" = "选择颜色";

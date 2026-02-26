@@ -19,6 +19,8 @@ struct SettingsView: View {
     @State private var showClearDataConfirmation = false
     @State private var showPaywall = false
     @State private var showNotificationPermissionAlert = false
+    @State private var showMailComposer = false
+    @State private var showMailUnavailableAlert = false
     @State private var toast: Toast?
     
     // Computed properties for bindings
@@ -139,6 +141,25 @@ struct SettingsView: View {
             }
         }
         .toast($toast)
+        .sheet(isPresented: $showMailComposer) {
+            MailComposer(
+                recipients: [AppConfig.supportEmail],
+                subject: "Subora Feedback",
+                body: """
+                
+                
+                ---
+                App Version: \(AppConfig.fullVersion)
+                Device: \(UIDevice.current.model)
+                iOS: \(UIDevice.current.systemVersion)
+                """
+            )
+        }
+        .alert("Mail Unavailable", isPresented: $showMailUnavailableAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Please configure a mail account in your device settings to send feedback.")
+        }
     }
     
     // MARK: - View Components
@@ -472,11 +493,81 @@ struct SettingsView: View {
     
     private var aboutSection: some View {
         Section(L10n.Settings.sectionAbout) {
+            // Version
             HStack {
                 Text(L10n.Settings.version)
                 Spacer()
                 Text("1.0.0")
                     .foregroundColor(.secondary)
+            }
+            
+            // Contact Us
+            Button {
+                contactUs()
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "envelope.fill")
+                                .foregroundColor(.blue)
+                            Text(L10n.Settings.contactUs)
+                                .foregroundColor(.primary)
+                        }
+                        Text(L10n.Settings.contactUsSubtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            // Rate App
+            Button {
+                rateApp()
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "star.fill")
+                                .foregroundColor(.yellow)
+                            Text(L10n.Settings.rateApp)
+                                .foregroundColor(.primary)
+                        }
+                        Text(L10n.Settings.rateAppSubtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            // Share App
+            Button {
+                shareApp()
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "square.and.arrow.up.fill")
+                                .foregroundColor(.green)
+                            Text(L10n.Settings.shareApp)
+                                .foregroundColor(.primary)
+                        }
+                        Text(L10n.Settings.shareAppSubtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
         }
     }
@@ -528,6 +619,49 @@ struct SettingsView: View {
         } catch {
             print("❌ 发送测试通知失败: \(error.localizedDescription)")
             toast = .error("Failed to send test notification: \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: - About Actions
+    
+    private func contactUs() {
+        if MailComposer.canSendMail {
+            showMailComposer = true
+        } else {
+            showMailUnavailableAlert = true
+        }
+    }
+    
+    private func rateApp() {
+        if let url = URL(string: AppConfig.appStoreReviewURL) {
+            UIApplication.shared.open(url)
+        }
+    }
+    
+    private func shareApp() {
+        let message = L10n.Settings.shareMessage
+        guard let appURL = URL(string: AppConfig.appStoreURL) else { return }
+        
+        let activityViewController = UIActivityViewController(
+            activityItems: [message, appURL],
+            applicationActivities: nil
+        )
+        
+        // 获取当前的 window scene
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let rootViewController = window.rootViewController {
+            
+            // iPad 需要设置 popover
+            if let popover = activityViewController.popoverPresentationController {
+                popover.sourceView = rootViewController.view
+                popover.sourceRect = CGRect(x: rootViewController.view.bounds.midX,
+                                           y: rootViewController.view.bounds.midY,
+                                           width: 0, height: 0)
+                popover.permittedArrowDirections = []
+            }
+            
+            rootViewController.present(activityViewController, animated: true)
         }
     }
 }

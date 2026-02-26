@@ -299,6 +299,13 @@ enum L10n {
         static let restorePurchases = NSLocalizedString("settings.restore_purchases", comment: "Restore purchases button")
         static let sectionAbout = NSLocalizedString("settings.section_about", comment: "About section")
         static let version = NSLocalizedString("settings.version", comment: "Version label")
+        static let contactUs = NSLocalizedString("settings.contact_us", comment: "Contact us button")
+        static let contactUsSubtitle = NSLocalizedString("settings.contact_us_subtitle", comment: "Contact us subtitle")
+        static let rateApp = NSLocalizedString("settings.rate_app", comment: "Rate app button")
+        static let rateAppSubtitle = NSLocalizedString("settings.rate_app_subtitle", comment: "Rate app subtitle")
+        static let shareApp = NSLocalizedString("settings.share_app", comment: "Share app button")
+        static let shareAppSubtitle = NSLocalizedString("settings.share_app_subtitle", comment: "Share app subtitle")
+        static let shareMessage = NSLocalizedString("settings.share_message", comment: "Share message")
     }
     
     // MARK: - Color Picker

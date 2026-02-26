@@ -208,6 +208,13 @@
 "settings.restore_purchases" = "Restore Purchases";
 "settings.section_about" = "About";
 "settings.version" = "Version";
+"settings.contact_us" = "Contact Us";
+"settings.contact_us_subtitle" = "We'd love to hear from you";
+"settings.rate_app" = "Rate Subora";
+"settings.rate_app_subtitle" = "Show some love ❤️";
+"settings.share_app" = "Share with Friends";
+"settings.share_app_subtitle" = "Spread the word";
+"settings.share_message" = "Check out Subora - the best way to manage your subscriptions! 🚀";
 
 /* Color Picker */
 "color_picker.title" = "Select Color";

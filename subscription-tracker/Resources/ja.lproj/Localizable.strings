@@ -208,6 +208,13 @@
 "settings.restore_purchases" = "購入を復元";
 "settings.section_about" = "について";
 "settings.version" = "バージョン";
+"settings.contact_us" = "お問い合わせ";
+"settings.contact_us_subtitle" = "ご意見をお聞かせください";
+"settings.rate_app" = "Subora を評価";
+"settings.rate_app_subtitle" = "応援してください ❤️";
+"settings.share_app" = "友達に共有";
+"settings.share_app_subtitle" = "みんなに教える";
+"settings.share_message" = "Subora - 最高のサブスクリプション管理アプリをチェック！🚀";
 
 /* Color Picker */
 "color_picker.title" = "色を選択";
