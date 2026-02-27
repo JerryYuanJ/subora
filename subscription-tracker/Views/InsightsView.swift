@@ -16,10 +16,37 @@ struct InsightsView: View {
     @StateObject private var viewModel: InsightsViewModel
     @EnvironmentObject private var paywallService: PaywallService
     @State private var showCardManagement = false
+    @Query private var userSettings: [UserSettings]
+    @State private var showCurrencyNotice = true
+    
+    private let currencyNoticeKey = "insights_currency_notice_dismissed"
     
     init(modelContext: ModelContext) {
         let subscriptionService = SubscriptionService(modelContext: modelContext)
-        _viewModel = StateObject(wrappedValue: InsightsViewModel(subscriptionService: subscriptionService))
+        
+        // Get default currency from user settings
+        var defaultCurrency = "USD"
+        let descriptor = FetchDescriptor<UserSettings>()
+        if let userSettings = try? modelContext.fetch(descriptor).first {
+            defaultCurrency = userSettings.defaultCurrency
+        }
+        
+        let viewModel = InsightsViewModel(
+            subscriptionService: subscriptionService,
+            defaultCurrency: defaultCurrency
+        )
+        _viewModel = StateObject(wrappedValue: viewModel)
+        
+        // Load currency notice preference
+        _showCurrencyNotice = State(initialValue: !UserDefaults.standard.bool(forKey: "insights_currency_notice_dismissed"))
+    }
+    
+    // MARK: - Computed Properties
+    
+    private var hasMultipleCurrencies: Bool {
+        let subscriptions = viewModel.getFilteredSubscriptions()
+        let currencies = Set(subscriptions.map { $0.currency })
+        return currencies.count > 1
     }
     
     var body: some View {
@@ -29,15 +56,22 @@ struct InsightsView: View {
                     // Empty state when no cards are selected
                     emptyStateView
                 } else {
-                    ScrollView {
-                        VStack(spacing: 20) {
-                            // Render visible cards
-                            ForEach(sortedVisibleCards, id: \.self) { cardType in
-                                cardView(for: cardType)
-                            }
+                    VStack(spacing: 0) {
+                        // Currency conversion notice
+                        if showCurrencyNotice && hasMultipleCurrencies {
+                            currencyNoticeBanner
                         }
-                        .padding()
-                        .padding(.top, -8)
+                        
+                        ScrollView {
+                            VStack(spacing: 20) {
+                                // Render visible cards
+                                ForEach(sortedVisibleCards, id: \.self) { cardType in
+                                    cardView(for: cardType)
+                                }
+                            }
+                            .padding()
+                            .padding(.top, -8)
+                        }
                     }
                 }
             }
@@ -92,12 +126,49 @@ struct InsightsView: View {
                     viewModel.loadVisibleCards()
                 }
             }
+            .onChange(of: userSettings.first?.defaultCurrency) { _, newCurrency in
+                if let currency = newCurrency {
+                    viewModel.defaultCurrency = currency
+                }
+            }
             .overlay {
                 if viewModel.isLoading {
                     LoadingOverlay(message: L10n.Loading.default)
                 }
             }
         }
+    }
+    
+    // MARK: - Currency Notice Banner
+    
+    private var currencyNoticeBanner: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "info.circle.fill")
+                .foregroundColor(Color(hex: "#FF9F0A"))
+                .font(.system(size: 14))
+            
+            Text(L10n.Insights.currencyNoticeShort)
+                .font(.caption)
+                .foregroundColor(.primary)
+            
+            Button {
+                withAnimation {
+                    showCurrencyNotice = false
+                    UserDefaults.standard.set(true, forKey: currencyNoticeKey)
+                }
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundColor(.secondary)
+                    .font(.system(size: 16))
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color(hex: "#FF9F0A").opacity(0.15))
+        .clipShape(Capsule())
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
     }
     
     // MARK: - Empty State
@@ -275,7 +346,7 @@ struct InsightsView: View {
                                 .font(.system(size: 36, weight: .bold, design: .rounded))
                                 .foregroundColor(.primary)
                         } else {
-                            Text("$0.00")
+                            Text(L10n.Insights.noAmount)
                                 .font(.system(size: 36, weight: .bold, design: .rounded))
                                 .foregroundColor(.secondary)
                         }
@@ -355,7 +426,7 @@ struct InsightsView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                 } else {
-                    Text("$0.00")
+                    Text(L10n.Insights.noAmount)
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                         .foregroundColor(.secondary)
                 }
@@ -608,7 +679,8 @@ struct UpcomingRenewalRow: View {
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MM/dd"
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
         return formatter.string(from: date)
     }
 }

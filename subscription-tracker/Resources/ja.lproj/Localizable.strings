@@ -106,6 +106,9 @@
 "insights.no_cards_selected" = "カードが選択されていません";
 "insights.no_cards_hint" = "「カードを管理」をタップして表示するカードを選択";
 "insights.subscriptions_count" = "%d 件のサブスクリプション";
+"insights.currency_notice" = "複数通貨のサブスクリプションは概算レートでデフォルト通貨に換算されています";
+"insights.currency_notice_short" = "複数通貨をデフォルト通貨に換算";
+"insights.no_amount" = "データなし";
 
 /* Add/Edit Subscription */
 "subscription.add_title" = "サブスクリプションを追加";
@@ -221,6 +224,9 @@
 
 /* Color Picker */
 "color_picker.title" = "色を選択";
+"color_picker.custom" = "カスタム";
+"color_picker.custom_color" = "カスタムカラー";
+"color_picker.select_color" = "色を選択";
 
 /* Colors */
 "color.red" = "赤";
@@ -235,6 +241,8 @@
 "color.gray" = "グレー";
 "color.cyan" = "シアン";
 "color.sky_blue" = "スカイブルー";
+"color.coral" = "コーラル";
+"color.teal" = "ティール";
 
 /* Loading & Toast */
 "loading.default" = "読み込み中...";

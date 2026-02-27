@@ -106,6 +106,9 @@
 "insights.no_cards_selected" = "No cards selected";
 "insights.no_cards_hint" = "Tap 'Manage Cards' to select cards to display";
 "insights.subscriptions_count" = "%d subscriptions";
+"insights.currency_notice" = "Multi-currency subscriptions are converted to your default currency using approximate exchange rates";
+"insights.currency_notice_short" = "Multi-currency converted to default";
+"insights.no_amount" = "No data";
 
 /* Add/Edit Subscription */
 "subscription.add_title" = "Add Subscription";
@@ -221,6 +224,9 @@
 
 /* Color Picker */
 "color_picker.title" = "Select Color";
+"color_picker.custom" = "Custom";
+"color_picker.custom_color" = "Custom Color";
+"color_picker.select_color" = "Select Color";
 
 /* Colors */
 "color.red" = "Red";
@@ -235,6 +241,8 @@
 "color.gray" = "Gray";
 "color.cyan" = "Cyan";
 "color.sky_blue" = "Sky Blue";
+"color.coral" = "Coral";
+"color.teal" = "Teal";
 
 /* Loading & Toast */
 "loading.default" = "Loading...";

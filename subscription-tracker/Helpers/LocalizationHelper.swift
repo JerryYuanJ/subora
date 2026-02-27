@@ -161,6 +161,9 @@ enum L10n {
         static func subscriptionsCount(_ count: Int) -> String {
             String(format: NSLocalizedString("insights.subscriptions_count", comment: "Subscriptions count"), count)
         }
+        static let currencyNotice = NSLocalizedString("insights.currency_notice", comment: "Currency conversion notice")
+        static let currencyNoticeShort = NSLocalizedString("insights.currency_notice_short", comment: "Currency conversion notice short")
+        static let noAmount = NSLocalizedString("insights.no_amount", comment: "No amount placeholder")
     }
     
     // MARK: - Add/Edit Subscription
@@ -316,6 +319,9 @@ enum L10n {
     // MARK: - Color Picker
     enum ColorPicker {
         static let title = NSLocalizedString("color_picker.title", comment: "Color picker title")
+        static let custom = NSLocalizedString("color_picker.custom", comment: "Custom color")
+        static let customColor = NSLocalizedString("color_picker.custom_color", comment: "Custom color title")
+        static let selectColor = NSLocalizedString("color_picker.select_color", comment: "Select color")
     }
     
     enum Color {
@@ -331,6 +337,8 @@ enum L10n {
         static let gray = NSLocalizedString("color.gray", comment: "Gray color")
         static let cyan = NSLocalizedString("color.cyan", comment: "Cyan color")
         static let skyBlue = NSLocalizedString("color.sky_blue", comment: "Sky blue color")
+        static let coral = NSLocalizedString("color.coral", comment: "Coral color")
+        static let teal = NSLocalizedString("color.teal", comment: "Teal color")
     }
     
     // MARK: - Loading & Toast

@@ -110,11 +110,19 @@ class InsightsViewModel: ObservableObject {
     
     private let subscriptionService: SubscriptionService
     private let userDefaultsKey = "insights_visible_cards"
+    @Published var defaultCurrency: String = "USD" {
+        didSet {
+            Task {
+                await loadData()
+            }
+        }
+    }
     
     // MARK: - Initialization
     
-    init(subscriptionService: SubscriptionService) {
+    init(subscriptionService: SubscriptionService, defaultCurrency: String = "USD") {
         self.subscriptionService = subscriptionService
+        self.defaultCurrency = defaultCurrency
         loadVisibleCards()
     }
     
@@ -155,7 +163,7 @@ class InsightsViewModel: ObservableObject {
         isLoading = true
         
         do {
-            let subscriptions = getFilteredSubscriptions()
+            let subscriptions = fetchFilteredSubscriptions()
             print("📊 InsightsViewModel: Fetched \(subscriptions.count) subscriptions with filter: \(filterType.rawValue)")
             
             // Monthly expenses
@@ -190,7 +198,7 @@ class InsightsViewModel: ObservableObject {
     
     // MARK: - Private Helpers
     
-    private func getFilteredSubscriptions() -> [Subscription] {
+    private func fetchFilteredSubscriptions() -> [Subscription] {
         switch filterType {
         case .active:
             return subscriptionService.fetchActiveSubscriptions()
@@ -201,34 +209,47 @@ class InsightsViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Public Helpers
+    
+    /// Get filtered subscriptions (exposed for view)
+    func getFilteredSubscriptions() -> [Subscription] {
+        return fetchFilteredSubscriptions()
+    }
+    
     // MARK: - Private Calculations
     
     private func calculateMonthlyExpensesByCurrency(subscriptions: [Subscription]) -> [String: Decimal] {
-        let currencies = Set(subscriptions.map { $0.currency })
+        // Convert all to default currency
+        var total = Decimal(0)
         
-        var result: [String: Decimal] = [:]
-        for currency in currencies {
-            let total = subscriptions
-                .filter { $0.currency == currency }
-                .reduce(Decimal(0)) { $0 + $1.monthlyEquivalent }
-            result[currency] = total
+        for subscription in subscriptions {
+            let monthlyAmount = subscription.monthlyEquivalent
+            let convertedAmount = CurrencyConverter.convert(
+                amount: monthlyAmount,
+                from: subscription.currency,
+                to: defaultCurrency
+            )
+            total += convertedAmount
         }
         
-        return result
+        return [defaultCurrency: total]
     }
     
     private func calculateYearlyExpensesByCurrency(subscriptions: [Subscription]) -> [String: Decimal] {
-        let currencies = Set(subscriptions.map { $0.currency })
+        // Convert all to default currency
+        var total = Decimal(0)
         
-        var result: [String: Decimal] = [:]
-        for currency in currencies {
-            let monthlyTotal = subscriptions
-                .filter { $0.currency == currency }
-                .reduce(Decimal(0)) { $0 + $1.monthlyEquivalent }
-            result[currency] = monthlyTotal * 12
+        for subscription in subscriptions {
+            let monthlyAmount = subscription.monthlyEquivalent
+            let convertedAmount = CurrencyConverter.convert(
+                amount: monthlyAmount,
+                from: subscription.currency,
+                to: defaultCurrency
+            )
+            total += convertedAmount
         }
         
-        return result
+        return [defaultCurrency: total * 12]
     }
     
     private func calculateMonthlyTrend(subscriptions: [Subscription], months: Int) -> [MonthlyExpense] {
@@ -238,9 +259,6 @@ class InsightsViewModel: ObservableObject {
         let now = Date()
         var result: [MonthlyExpense] = []
         
-        // Use primary currency (first subscription's currency)
-        let primaryCurrency = subscriptions.first?.currency ?? "USD"
-        
         for i in (0..<months).reversed() {
             guard let monthDate = calendar.date(byAdding: .month, value: -i, to: now),
                   let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: monthDate)),
@@ -248,13 +266,10 @@ class InsightsViewModel: ObservableObject {
                 continue
             }
             
-            // Calculate total for this month across all currencies (convert to primary currency)
+            // Calculate total for this month, convert all to default currency
             var monthTotal = Decimal(0)
             
             for subscription in subscriptions {
-                // Only count subscriptions in primary currency for now
-                guard subscription.currency == primaryCurrency else { continue }
-                
                 // Check if subscription was active during this month
                 let subscriptionStart = subscription.firstPaymentDate
                 // For archived subscriptions, use updatedAt as end date; for active ones, use current date
@@ -262,11 +277,17 @@ class InsightsViewModel: ObservableObject {
                 
                 // If subscription overlaps with this month
                 if subscriptionStart <= endOfMonth && subscriptionEnd >= startOfMonth {
-                    monthTotal += subscription.monthlyEquivalent
+                    let monthlyAmount = subscription.monthlyEquivalent
+                    let convertedAmount = CurrencyConverter.convert(
+                        amount: monthlyAmount,
+                        from: subscription.currency,
+                        to: defaultCurrency
+                    )
+                    monthTotal += convertedAmount
                 }
             }
             
-            result.append(MonthlyExpense(month: monthDate, amount: monthTotal, currency: primaryCurrency))
+            result.append(MonthlyExpense(month: monthDate, amount: monthTotal, currency: defaultCurrency))
         }
         
         return result
@@ -288,12 +309,17 @@ class InsightsViewModel: ObservableObject {
     }
     
     private func calculateTopSpending(subscriptions: [Subscription], limit: Int) -> [TopSpendingItem] {
-        // Group by subscription and calculate monthly equivalent
+        // Calculate monthly equivalent and convert to default currency
         var spendingMap: [String: (subscription: Subscription, amount: Decimal)] = [:]
         
         for subscription in subscriptions {
             let monthlyAmount = subscription.monthlyEquivalent
-            spendingMap[subscription.id.uuidString] = (subscription, monthlyAmount)
+            let convertedAmount = CurrencyConverter.convert(
+                amount: monthlyAmount,
+                from: subscription.currency,
+                to: defaultCurrency
+            )
+            spendingMap[subscription.id.uuidString] = (subscription, convertedAmount)
         }
         
         // Sort by amount and take top N
@@ -328,19 +354,24 @@ class InsightsViewModel: ObservableObject {
     }
     
     private func calculateCategoryBreakdown(subscriptions: [Subscription]) -> [CategoryExpense] {
-        // Group by category
+        // Group by category and convert to default currency
         var categoryMap: [String: (category: Category?, amount: Decimal, count: Int)] = [:]
         
         for subscription in subscriptions {
             let key = subscription.category?.id.uuidString ?? "uncategorized"
             let monthlyAmount = subscription.monthlyEquivalent
+            let convertedAmount = CurrencyConverter.convert(
+                amount: monthlyAmount,
+                from: subscription.currency,
+                to: defaultCurrency
+            )
             
             if var existing = categoryMap[key] {
-                existing.amount += monthlyAmount
+                existing.amount += convertedAmount
                 existing.count += 1
                 categoryMap[key] = existing
             } else {
-                categoryMap[key] = (subscription.category, monthlyAmount, 1)
+                categoryMap[key] = (subscription.category, convertedAmount, 1)
             }
         }
         

@@ -106,6 +106,9 @@
 "insights.no_cards_selected" = "未选择卡片";
 "insights.no_cards_hint" = "点击'管理卡片'选择要显示的卡片";
 "insights.subscriptions_count" = "%d 个订阅";
+"insights.currency_notice" = "多币种订阅已按汇率转换为默认货币统计，数据仅供参考";
+"insights.currency_notice_short" = "多币种已转换为默认货币";
+"insights.no_amount" = "无数据";
 
 /* Add/Edit Subscription */
 "subscription.add_title" = "添加订阅";
@@ -221,6 +224,9 @@
 
 /* Color Picker */
 "color_picker.title" = "选择颜色";
+"color_picker.custom" = "自定义";
+"color_picker.custom_color" = "自定义颜色";
+"color_picker.select_color" = "选择颜色";
 
 /* Colors */
 "color.red" = "红色";
@@ -235,6 +241,8 @@
 "color.gray" = "灰色";
 "color.cyan" = "青色";
 "color.sky_blue" = "天蓝色";
+"color.coral" = "珊瑚色";
+"color.teal" = "青绿色";
 
 /* Loading & Toast */
 "loading.default" = "加载中...";

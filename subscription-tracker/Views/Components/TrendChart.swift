@@ -136,10 +136,10 @@ struct TrendChart: View {
     
     /// Format month label for X-axis
     /// - Parameter date: The date to format
-    /// - Returns: Formatted month string (e.g., "1月", "2月")
+    /// - Returns: Formatted month string (e.g., "Jan", "Feb" or "1月", "2月")
     private func monthLabel(for date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M月"
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMM", options: 0, locale: Locale.current)
         return formatter.string(from: date)
     }
     
