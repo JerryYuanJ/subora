@@ -53,7 +53,7 @@ extension View {
 
 #Preview {
     VStack {
-        Text("主要内容")
+        Text("Main Content")
             .font(.title)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)

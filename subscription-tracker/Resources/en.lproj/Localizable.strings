@@ -12,6 +12,7 @@
 "common.edit" = "Edit";
 "common.done" = "Done";
 "common.close" = "Close";
+"common.ok" = "OK";
 
 /* Category */
 "category.add_title" = "Add Category";
@@ -175,6 +176,8 @@
 "paywall.button_restore" = "Restore Purchases";
 "paywall.button_close" = "Close";
 "paywall.error_no_active_purchase" = "No active purchase found";
+"paywall.products_not_available" = "Products Not Available";
+"paywall.storekit_config_error" = "Configure StoreKit Configuration in Xcode";
 
 /* Settings */
 "settings.title" = "Settings";
@@ -221,6 +224,12 @@
 "settings.share_app_subtitle" = "Spread the word";
 "settings.share_message" = "Manage your subscriptions with Subora!";
 "settings.app_version" = "Subora - v%@";
+"settings.feedback_subject" = "Subora Feedback";
+"settings.mail_unavailable" = "Mail Unavailable";
+"settings.mail_unavailable_message" = "Please configure a mail account in your device settings to send feedback.";
+"settings.dev_toggle_pro_status" = "Toggle Pro Status (Dev Only)";
+"settings.dev_pro_status_on" = "ON";
+"settings.dev_pro_status_off" = "OFF";
 
 /* Color Picker */
 "color_picker.title" = "Select Color";
@@ -253,6 +262,13 @@
 "toast.restore_success" = "Purchases restored";
 "toast.purchase_failed" = "Purchase failed: %@";
 "toast.restore_failed" = "Restore failed: %@";
+"toast.sync_success" = "Sync successful";
+"toast.sync_failed" = "Sync failed: %@";
+
+/* Time */
+"time.just_now" = "Just now";
+"time.minutes_ago" = "%d minutes ago";
+"time.hours_ago" = "%d hours ago";
 
 /* Validation Errors */
 "validation.name_empty" = "Name cannot be empty";

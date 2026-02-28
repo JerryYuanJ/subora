@@ -61,7 +61,7 @@ struct DashboardView: View {
             }
             .overlay {
                 if viewModel.isLoading {
-                    LoadingOverlay(message: "加载中...")
+                    LoadingOverlay(message: L10n.Loading.default)
                 }
             }
         }
@@ -71,11 +71,11 @@ struct DashboardView: View {
     
     private var monthlyExpensesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("本月支出")
+            Text(L10n.Dashboard.monthlyExpenses)
                 .font(.headline)
             
             if viewModel.monthlyExpenses.isEmpty {
-                Text("暂无订阅")
+                Text(L10n.Dashboard.noSubscriptions)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding()
@@ -105,7 +105,7 @@ struct DashboardView: View {
     
     private var trendChartSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("支出趋势")
+            Text(L10n.Dashboard.trend)
                 .font(.headline)
             
             if viewModel.trendData.isEmpty {
@@ -113,10 +113,10 @@ struct DashboardView: View {
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .font(.system(size: 48))
                         .foregroundColor(.secondary)
-                    Text("暂无趋势数据")
+                    Text(L10n.Dashboard.noTrendData)
                         .font(.headline)
                         .foregroundColor(.secondary)
-                    Text("添加订阅后即可查看支出趋势")
+                    Text(L10n.Dashboard.noTrendHint)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -138,11 +138,11 @@ struct DashboardView: View {
     
     private var upcomingRenewalsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("即将到期 (30天内)")
+            Text(L10n.Dashboard.upcomingRenewals)
                 .font(.headline)
             
             if viewModel.upcomingRenewals.isEmpty {
-                Text("暂无即将到期的订阅")
+                Text(L10n.Dashboard.noUpcoming)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding()

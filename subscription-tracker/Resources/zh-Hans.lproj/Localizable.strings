@@ -12,6 +12,7 @@
 "common.edit" = "编辑";
 "common.done" = "完成";
 "common.close" = "关闭";
+"common.ok" = "好的";
 
 /* Category */
 "category.add_title" = "添加分类";
@@ -175,6 +176,8 @@
 "paywall.button_restore" = "恢复购买";
 "paywall.button_close" = "关闭";
 "paywall.error_no_active_purchase" = "未找到有效购买";
+"paywall.products_not_available" = "产品不可用";
+"paywall.storekit_config_error" = "请在 Xcode 中配置 StoreKit 配置";
 
 /* Settings */
 "settings.title" = "设置";
@@ -221,6 +224,12 @@
 "settings.share_app_subtitle" = "推荐给更多人";
 "settings.share_message" = "快来用 Subora 来管理你的订阅吧！";
 "settings.app_version" = "Subora - v%@";
+"settings.feedback_subject" = "Subora 反馈";
+"settings.mail_unavailable" = "邮件不可用";
+"settings.mail_unavailable_message" = "请在设备设置中配置邮件账户以发送反馈。";
+"settings.dev_toggle_pro_status" = "切换 Pro 状态（仅开发）";
+"settings.dev_pro_status_on" = "开";
+"settings.dev_pro_status_off" = "关";
 
 /* Color Picker */
 "color_picker.title" = "选择颜色";
@@ -253,6 +262,13 @@
 "toast.restore_success" = "购买已恢复";
 "toast.purchase_failed" = "购买失败：%@";
 "toast.restore_failed" = "恢复失败：%@";
+"toast.sync_success" = "同步成功";
+"toast.sync_failed" = "同步失败：%@";
+
+/* Time */
+"time.just_now" = "刚刚";
+"time.minutes_ago" = "%d 分钟前";
+"time.hours_ago" = "%d 小时前";
 
 /* Validation Errors */
 "validation.name_empty" = "名称不能为空";

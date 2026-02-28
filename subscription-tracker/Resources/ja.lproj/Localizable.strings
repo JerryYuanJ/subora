@@ -12,6 +12,7 @@
 "common.edit" = "編集";
 "common.done" = "完了";
 "common.close" = "閉じる";
+"common.ok" = "OK";
 
 /* Category */
 "category.add_title" = "カテゴリを追加";
@@ -175,6 +176,8 @@
 "paywall.button_restore" = "購入を復元";
 "paywall.button_close" = "閉じる";
 "paywall.error_no_active_purchase" = "有効な購入が見つかりません";
+"paywall.products_not_available" = "製品が利用できません";
+"paywall.storekit_config_error" = "Xcode で StoreKit 設定を構成してください";
 
 /* Settings */
 "settings.title" = "設定";
@@ -221,6 +224,12 @@
 "settings.share_app_subtitle" = "みんなに教える";
 "settings.share_message" = "Subora でサブスクリプションを管理しよう！";
 "settings.app_version" = "Subora - v%@";
+"settings.feedback_subject" = "Subora フィードバック";
+"settings.mail_unavailable" = "メールが利用できません";
+"settings.mail_unavailable_message" = "フィードバックを送信するには、デバイスの設定でメールアカウントを設定してください。";
+"settings.dev_toggle_pro_status" = "Pro ステータスを切り替え（開発のみ）";
+"settings.dev_pro_status_on" = "オン";
+"settings.dev_pro_status_off" = "オフ";
 
 /* Color Picker */
 "color_picker.title" = "色を選択";
@@ -253,6 +262,13 @@
 "toast.restore_success" = "購入を復元しました";
 "toast.purchase_failed" = "購入に失敗しました：%@";
 "toast.restore_failed" = "復元に失敗しました：%@";
+"toast.sync_success" = "同期しました";
+"toast.sync_failed" = "同期に失敗しました：%@";
+
+/* Time */
+"time.just_now" = "たった今";
+"time.minutes_ago" = "%d 分前";
+"time.hours_ago" = "%d 時間前";
 
 /* Validation Errors */
 "validation.name_empty" = "名前を入力してください";

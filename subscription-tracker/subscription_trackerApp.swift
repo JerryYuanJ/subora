@@ -24,7 +24,7 @@ struct subscription_trackerApp: App {
             UserSettings.self,
         ])
         
-        // 使用 automatic 让系统自动选择匹配的 Container
+        // 使用 automatic 让 Xcode 自动管理 CloudKit 容器
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
@@ -34,6 +34,7 @@ struct subscription_trackerApp: App {
         do {
             let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
             print("✅ SwiftData ModelContainer initialized (CloudKit: automatic)")
+            print("💡 Xcode 会自动管理 CloudKit 容器")
             return container
         } catch {
             print("❌ ModelContainer error: \(error)")

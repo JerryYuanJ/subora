@@ -170,12 +170,12 @@ struct PaywallView: View {
                                         .font(.system(size: 32))
                                         .foregroundColor(Color(hex: "#fbbf24"))
                                     
-                                    Text("Products Not Available")
+                                    Text(L10n.Paywall.productsNotAvailable)
                                         .font(.headline)
                                         .foregroundColor(.white)
                                     
                                     #if DEBUG
-                                    Text("Configure StoreKit Configuration in Xcode")
+                                    Text(L10n.Paywall.storekitConfigError)
                                         .font(.caption)
                                         .foregroundColor(.white.opacity(0.6))
                                     #endif

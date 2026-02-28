@@ -116,16 +116,16 @@ extension View {
         
         var body: some View {
             VStack(spacing: 20) {
-                Button("显示成功提示") {
-                    toast = .success("操作成功完成")
+                Button("Show Success") {
+                    toast = .success("Operation completed successfully")
                 }
                 
-                Button("显示错误提示") {
-                    toast = .error("操作失败，请重试")
+                Button("Show Error") {
+                    toast = .error("Operation failed, please try again")
                 }
                 
-                Button("显示信息提示") {
-                    toast = .info("这是一条信息提示")
+                Button("Show Info") {
+                    toast = .info("This is an info message")
                 }
             }
             .toast($toast)

@@ -27,6 +27,7 @@ enum L10n {
         static let edit = NSLocalizedString("common.edit", comment: "Edit button")
         static let done = NSLocalizedString("common.done", comment: "Done button")
         static let close = NSLocalizedString("common.close", comment: "Close button")
+        static let ok = NSLocalizedString("common.ok", comment: "OK button")
     }
     
     // MARK: - Category
@@ -262,6 +263,8 @@ enum L10n {
         static let buttonRestore = NSLocalizedString("paywall.button_restore", comment: "Restore button")
         static let buttonClose = NSLocalizedString("paywall.button_close", comment: "Close button")
         static let errorNoActivePurchase = NSLocalizedString("paywall.error_no_active_purchase", comment: "No active purchase error")
+        static let productsNotAvailable = NSLocalizedString("paywall.products_not_available", comment: "Products not available")
+        static let storekitConfigError = NSLocalizedString("paywall.storekit_config_error", comment: "StoreKit configuration error")
     }
     
     // MARK: - Settings
@@ -314,6 +317,12 @@ enum L10n {
         static func appVersion(_ version: String) -> String {
             String(format: NSLocalizedString("settings.app_version", comment: "App version"), version)
         }
+        static let feedbackSubject = NSLocalizedString("settings.feedback_subject", comment: "Feedback email subject")
+        static let mailUnavailable = NSLocalizedString("settings.mail_unavailable", comment: "Mail unavailable title")
+        static let mailUnavailableMessage = NSLocalizedString("settings.mail_unavailable_message", comment: "Mail unavailable message")
+        static let devToggleProStatus = NSLocalizedString("settings.dev_toggle_pro_status", comment: "Dev toggle pro status")
+        static let devProStatusOn = NSLocalizedString("settings.dev_pro_status_on", comment: "Pro status ON")
+        static let devProStatusOff = NSLocalizedString("settings.dev_pro_status_off", comment: "Pro status OFF")
     }
     
     // MARK: - Color Picker
@@ -356,6 +365,21 @@ enum L10n {
         }
         static func restoreFailed(_ error: String) -> String {
             String(format: NSLocalizedString("toast.restore_failed", comment: "Restore failed message"), error)
+        }
+        static let syncSuccess = NSLocalizedString("toast.sync_success", comment: "Sync success message")
+        static func syncFailed(_ error: String) -> String {
+            String(format: NSLocalizedString("toast.sync_failed", comment: "Sync failed message"), error)
+        }
+    }
+    
+    // MARK: - Time
+    enum Time {
+        static let justNow = NSLocalizedString("time.just_now", comment: "Just now")
+        static func minutesAgo(_ minutes: Int) -> String {
+            String(format: NSLocalizedString("time.minutes_ago", comment: "Minutes ago"), minutes)
+        }
+        static func hoursAgo(_ hours: Int) -> String {
+            String(format: NSLocalizedString("time.hours_ago", comment: "Hours ago"), hours)
         }
     }
     

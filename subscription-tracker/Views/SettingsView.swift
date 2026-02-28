@@ -123,7 +123,7 @@ struct SettingsView: View {
             }
             .overlay {
                 if viewModel.isLoading {
-                    LoadingOverlay(message: "加载中...")
+                    LoadingOverlay(message: L10n.Loading.default)
                 }
             }
             .alert(L10n.Settings.clearDataConfirmTitle, isPresented: $showClearDataConfirmation) {
@@ -153,7 +153,7 @@ struct SettingsView: View {
         .sheet(isPresented: $showMailComposer) {
             MailComposer(
                 recipients: [AppConfig.supportEmail],
-                subject: "Subora Feedback",
+                subject: L10n.Settings.feedbackSubject,
                 body: """
                 
                 
@@ -164,10 +164,10 @@ struct SettingsView: View {
                 """
             )
         }
-        .alert("Mail Unavailable", isPresented: $showMailUnavailableAlert) {
-            Button("OK", role: .cancel) { }
+        .alert(L10n.Settings.mailUnavailable, isPresented: $showMailUnavailableAlert) {
+            Button(L10n.Common.ok, role: .cancel) { }
         } message: {
-            Text("Please configure a mail account in your device settings to send feedback.")
+            Text(L10n.Settings.mailUnavailableMessage)
         }
     }
     
@@ -370,13 +370,13 @@ struct SettingsView: View {
         let interval = now.timeIntervalSince(date)
         
         if interval < 60 {
-            return "刚刚"
+            return L10n.Time.justNow
         } else if interval < 3600 {
             let minutes = Int(interval / 60)
-            return "\(minutes)分钟前"
+            return L10n.Time.minutesAgo(minutes)
         } else if interval < 86400 {
             let hours = Int(interval / 3600)
-            return "\(hours)小时前"
+            return L10n.Time.hoursAgo(hours)
         } else {
             let formatter = DateFormatter()
             formatter.dateFormat = "MM-dd HH:mm"
@@ -387,9 +387,9 @@ struct SettingsView: View {
     private func manualSync() async {
         do {
             try await viewModel.manualSync()
-            toast = .success("同步成功")
+            toast = .success(L10n.Toast.syncSuccess)
         } catch {
-            toast = .error("同步失败: \(error.localizedDescription)")
+            toast = .error(L10n.Toast.syncFailed(error.localizedDescription))
         }
     }
     
@@ -397,9 +397,8 @@ struct SettingsView: View {
     
     private func clearAllData() async {
         do {
-            // Fetch all subscriptions with all properties loaded
-            var subscriptionDescriptor = FetchDescriptor<Subscription>()
-            subscriptionDescriptor.propertiesToFetch = [\.name, \.amount, \.currency, \.billingCycle, \.billingCycleUnit]
+            // Fetch all subscriptions
+            let subscriptionDescriptor = FetchDescriptor<Subscription>()
             let subscriptions = try modelContext.fetch(subscriptionDescriptor)
             
             // Delete all subscriptions
@@ -407,9 +406,8 @@ struct SettingsView: View {
                 modelContext.delete(subscription)
             }
             
-            // Fetch all categories with all properties loaded
-            var categoryDescriptor = FetchDescriptor<Category>()
-            categoryDescriptor.propertiesToFetch = [\.name, \.colorHex]
+            // Fetch all categories
+            let categoryDescriptor = FetchDescriptor<Category>()
             let categories = try modelContext.fetch(categoryDescriptor)
             
             // Delete all categories
@@ -490,9 +488,9 @@ struct SettingsView: View {
                 HStack {
                     Image(systemName: "hammer.fill")
                         .foregroundColor(.orange)
-                    Text("Toggle Pro Status (Dev Only)")
+                    Text(L10n.Settings.devToggleProStatus)
                     Spacer()
-                    Text(paywallService.isProUser ? "ON" : "OFF")
+                    Text(paywallService.isProUser ? L10n.Settings.devProStatusOn : L10n.Settings.devProStatusOff)
                         .foregroundColor(.secondary)
                 }
             }
