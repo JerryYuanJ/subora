@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import Combine
+import CloudKit
 
 @main
 struct subscription_trackerApp: App {
@@ -33,8 +34,9 @@ struct subscription_trackerApp: App {
 
         do {
             let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
-            print("✅ SwiftData ModelContainer initialized (CloudKit: automatic)")
-            print("💡 Xcode 会自动管理 CloudKit 容器")
+            print("✅ SwiftData ModelContainer initialized")
+            print("📦 CloudKit: Automatic (Xcode managed)")
+            print("🔐 Database: Private")
             return container
         } catch {
             print("❌ ModelContainer error: \(error)")
@@ -65,7 +67,6 @@ struct subscription_trackerApp: App {
                     seedDefaultCategoriesIfNeeded()
                     Task {
                         await notificationManager.requestPermissionIfNeeded()
-                        // Clear badge count when app appears
                         await clearBadgeCount()
                     }
                 }

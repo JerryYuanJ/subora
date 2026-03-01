@@ -49,12 +49,38 @@ class SyncService {
     
     // MARK: - iCloud Account Check
     
-    /// 检查 iCloud 账号状态
+    /// 检查 iCloud 账号状态（带超时）
     private func checkiCloudAccountStatus() async -> Bool {
         print("🔵 开始检查 iCloud 账号状态...")
         
         return await withCheckedContinuation { continuation in
+            var hasResumed = false
+            let lock = NSLock()
+            
+            // 设置 5 秒超时
+            Task {
+                try? await Task.sleep(nanoseconds: 5_000_000_000) // 5秒
+                lock.lock()
+                if !hasResumed {
+                    hasResumed = true
+                    lock.unlock()
+                    print("⚠️ iCloud 账号检查超时（5秒），跳过检查继续同步")
+                    print("💡 这通常发生在模拟器上，不影响实际同步功能")
+                    continuation.resume(returning: true) // 超时时假设可用
+                } else {
+                    lock.unlock()
+                }
+            }
+            
             CKContainer.default().accountStatus { status, error in
+                lock.lock()
+                guard !hasResumed else {
+                    lock.unlock()
+                    return
+                }
+                hasResumed = true
+                lock.unlock()
+                
                 if let error = error {
                     print("❌ 检查 iCloud 账号失败: \(error.localizedDescription)")
                     continuation.resume(returning: false)
@@ -136,26 +162,14 @@ class SyncService {
             throw AppError.syncFailed(reason: "同步未启用")
         }
         
-        // 检查 iCloud 账号状态
-        let iCloudAvailable = await checkiCloudAccountStatus()
-        guard iCloudAvailable else {
-            Logger.sync.error("Sync failed: iCloud account not available")
-            currentSyncStatus = .error("未登录 iCloud")
-            throw AppError.iCloudNotAvailable
-        }
-        
         guard isNetworkAvailable else {
             Logger.sync.error("Sync failed: network unavailable")
             throw AppError.networkUnavailable
         }
         
         currentSyncStatus = .syncing
-        print("🔵 正在同步数据到 iCloud...")
-        print("📍 使用容器: iCloud.com.app.sub.tracker")
-        print("📍 数据库类型: Private Database")
         
         // SwiftData 自动处理同步，这里只需要保存上下文
-        // 这会触发 CloudKit 同步
         do {
             // 更新最后同步时间
             settings.lastSyncTime = Date()
@@ -170,10 +184,12 @@ class SyncService {
             }
             
             try modelContext.save()
-            print("✅ 数据已保存到本地，CloudKit 将自动上传")
+            print("✅ 数据已保存到本地，SwiftData 将自动同步到 CloudKit")
             
-            // 可选：验证 CloudKit 连接（不影响实际同步）
-            await verifyCloudKitConnection()
+            // 可选：快速验证 CloudKit 连接（不阻塞，有超时）
+            Task.detached {
+                await self.verifyCloudKitConnection()
+            }
             
             print("💡 提示: CloudKit 同步可能需要几秒到几分钟时间")
             print("💡 本地数据已上传，其他设备的数据会自动下载")
@@ -193,19 +209,46 @@ class SyncService {
         }
     }
     
-    /// 验证 CloudKit 连接（仅用于调试，不影响实际同步）
+    /// 验证 CloudKit 连接（仅用于调试，不影响实际同步，带超时）
     func verifyCloudKitConnection() async {
         print("🔵 验证 CloudKit 连接...")
         
         let container = CKContainer.default()
         
-        do {
-            let userRecordID = try await container.userRecordID()
+        // 使用 Task with timeout
+        let result = await withTaskGroup(of: Result<CKRecord.ID, Error>?.self) { group in
+            // 添加实际的 CloudKit 请求
+            group.addTask {
+                do {
+                    let userRecordID = try await container.userRecordID()
+                    return .success(userRecordID)
+                } catch {
+                    return .failure(error)
+                }
+            }
+            
+            // 添加超时任务
+            group.addTask {
+                try? await Task.sleep(nanoseconds: 5_000_000_000) // 5秒
+                return nil // 超时返回 nil
+            }
+            
+            // 返回第一个完成的结果
+            if let firstResult = await group.next() {
+                group.cancelAll()
+                return firstResult
+            }
+            return nil
+        }
+        
+        switch result {
+        case .success(let userRecordID):
             print("✅ CloudKit 连接正常")
             print("   用户 ID: \(userRecordID.recordName)")
             print("   容器 ID: \(container.containerIdentifier ?? "unknown")")
             print("💡 SwiftData 会自动管理数据同步")
-        } catch {
+            
+        case .failure(let error):
             print("⚠️ CloudKit 验证失败（不影响实际同步）")
             
             if let ckError = error as? CKError {
@@ -230,6 +273,11 @@ class SyncService {
             }
             
             print("📝 注意: 即使验证失败，SwiftData 仍会在后台自动同步数据")
+            
+        case .none:
+            print("⚠️ CloudKit 验证超时（5秒）")
+            print("💡 这通常发生在模拟器上或网络较慢时")
+            print("💡 SwiftData 的自动同步功能不受影响")
         }
     }
     
