@@ -62,6 +62,7 @@ struct subscription_trackerApp: App {
                 .environmentObject(notificationManager)
                 .preferredColorScheme(appSettings.colorScheme)
                 .onAppear {
+                    seedDefaultCategoriesIfNeeded()
                     Task {
                         await notificationManager.requestPermissionIfNeeded()
                         // Clear badge count when app appears
@@ -72,6 +73,28 @@ struct subscription_trackerApp: App {
         .modelContainer(sharedModelContainer)
     }
     
+    /// Seed default categories on first launch
+    private func seedDefaultCategoriesIfNeeded() {
+        let context = sharedModelContainer.mainContext
+        let descriptor = FetchDescriptor<Category>()
+        let existingCount = (try? context.fetchCount(descriptor)) ?? 0
+
+        guard existingCount == 0 else { return }
+
+        let defaults: [(name: String, color: String)] = [
+            ("娱乐", "#FF2D55"),
+            ("教育", "#5856D6"),
+            ("工具", "#007AFF"),
+            ("AI Tool", "#AF52DE"),
+        ]
+
+        for item in defaults {
+            let category = Category(name: item.name, colorHex: item.color)
+            context.insert(category)
+        }
+        try? context.save()
+    }
+
     /// Clear app badge count
     private func clearBadgeCount() async {
         do {

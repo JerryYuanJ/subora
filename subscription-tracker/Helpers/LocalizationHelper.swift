@@ -30,6 +30,13 @@ enum L10n {
         static let ok = NSLocalizedString("common.ok", comment: "OK button")
     }
     
+    // MARK: - App Selection
+    enum AppSelection {
+        static let title = NSLocalizedString("app_selection.title", comment: "App selection title")
+        static let searchPlaceholder = NSLocalizedString("app_selection.search_placeholder", comment: "Search placeholder")
+        static let createCustom = NSLocalizedString("app_selection.create_custom", comment: "Create custom subscription button")
+    }
+    
     // MARK: - Category
     enum Category {
         static let addTitle = NSLocalizedString("category.add_title", comment: "Add category title")

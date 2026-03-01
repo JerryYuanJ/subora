@@ -14,7 +14,9 @@ struct SubscriptionListView: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel: SubscriptionListViewModel
     @Query private var categories: [Category]
+    @State private var showAppSelection = false
     @State private var showAddSubscription = false
+    @State private var selectedTemplate: AppTemplate?
     
     init(modelContext: ModelContext) {
         let subscriptionService = SubscriptionService(modelContext: modelContext)
@@ -84,14 +86,23 @@ struct SubscriptionListView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        showAddSubscription = true
+                        showAppSelection = true
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
+            .sheet(isPresented: $showAppSelection) {
+                AppSelectionView { template in
+                    selectedTemplate = template
+                    showAddSubscription = true
+                }
+            }
             .sheet(isPresented: $showAddSubscription) {
-                AddEditSubscriptionView(modelContext: modelContext)
+                AddEditSubscriptionView(
+                    template: selectedTemplate,
+                    modelContext: modelContext
+                )
             }
             .task {
                 viewModel.loadSubscriptions()

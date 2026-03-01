@@ -13,6 +13,7 @@ final class Subscription {
     var id: UUID = UUID()
     var name: String = ""
     var subscriptionDescription: String?
+    var iconURL: String?  // App icon URL
     var category: Category?
     var firstPaymentDate: Date = Date()
     var billingCycle: Int = 1
@@ -36,6 +37,7 @@ final class Subscription {
         id: UUID = UUID(),
         name: String,
         description: String? = nil,
+        iconURL: String? = nil,
         category: Category? = nil,
         firstPaymentDate: Date,
         billingCycle: Int,
@@ -49,6 +51,7 @@ final class Subscription {
         self.id = id
         self.name = name
         self.subscriptionDescription = description
+        self.iconURL = iconURL
         self.category = category
         self.firstPaymentDate = firstPaymentDate
         self.billingCycle = billingCycle

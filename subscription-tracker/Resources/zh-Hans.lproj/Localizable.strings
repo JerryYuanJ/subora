@@ -14,6 +14,11 @@
 "common.close" = "关闭";
 "common.ok" = "好的";
 
+/* App Selection */
+"app_selection.title" = "选择应用";
+"app_selection.search_placeholder" = "搜索应用";
+"app_selection.create_custom" = "创建自定义订阅";
+
 /* Category */
 "category.add_title" = "添加分类";
 "category.edit_title" = "编辑分类";

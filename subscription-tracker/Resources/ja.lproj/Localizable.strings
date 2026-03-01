@@ -14,6 +14,11 @@
 "common.close" = "閉じる";
 "common.ok" = "OK";
 
+/* App Selection */
+"app_selection.title" = "アプリを選択";
+"app_selection.search_placeholder" = "アプリを検索";
+"app_selection.create_custom" = "カスタムサブスクリプションを作成";
+
 /* Category */
 "category.add_title" = "カテゴリを追加";
 "category.edit_title" = "カテゴリを編集";

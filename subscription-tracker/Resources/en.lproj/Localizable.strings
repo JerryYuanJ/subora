@@ -14,6 +14,11 @@
 "common.close" = "Close";
 "common.ok" = "OK";
 
+/* App Selection */
+"app_selection.title" = "Select App";
+"app_selection.search_placeholder" = "Search apps";
+"app_selection.create_custom" = "Create Custom Subscription";
+
 /* Category */
 "category.add_title" = "Add Category";
 "category.edit_title" = "Edit Category";

@@ -22,22 +22,23 @@ struct AddEditSubscriptionView: View {
     @State private var toast: Toast?
     @State private var amountText: String = ""
     
-    init(subscription: Subscription? = nil, modelContext: ModelContext) {
+    init(subscription: Subscription? = nil, template: AppTemplate? = nil, modelContext: ModelContext) {
         let subscriptionService = SubscriptionService(modelContext: modelContext)
-        
+
         // Get default currency from user settings
         var defaultCurrency = "USD"
         let descriptor = FetchDescriptor<UserSettings>()
         if let userSettings = try? modelContext.fetch(descriptor).first {
             defaultCurrency = userSettings.defaultCurrency
         }
-        
+
         _viewModel = StateObject(wrappedValue: AddEditSubscriptionViewModel(
             subscription: subscription,
+            template: template,
             subscriptionService: subscriptionService,
             defaultCurrency: defaultCurrency
         ))
-        
+
         // Initialize amount text
         if let subscription = subscription, subscription.amount > 0 {
             _amountText = State(initialValue: String(format: "%.2f", Double(truncating: subscription.amount as NSNumber)))
@@ -49,7 +50,24 @@ struct AddEditSubscriptionView: View {
             Form {
                 // Basic info section
                 Section(L10n.Subscription.sectionBasic) {
-                    TextField(L10n.Subscription.namePlaceholder, text: $viewModel.subscription.name)
+                    HStack(spacing: 8) {
+                        TextField(L10n.Subscription.namePlaceholder, text: $viewModel.subscription.name)
+                        if let iconURL = viewModel.subscription.iconURL,
+                           let url = URL(string: iconURL) {
+                            AsyncImage(url: url) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 24, height: 24)
+                                        .cornerRadius(5)
+                                default:
+                                    EmptyView()
+                                }
+                            }
+                        }
+                    }
                     TextField(L10n.Subscription.descriptionPlaceholder, text: Binding(
                         get: { viewModel.subscription.subscriptionDescription ?? "" },
                         set: { viewModel.subscription.subscriptionDescription = $0.isEmpty ? nil : $0 }

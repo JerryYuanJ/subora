@@ -10,8 +10,27 @@ struct SubscriptionCard: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // 分类颜色指示器
-            if let category = subscription.category {
+            // App icon or category color indicator
+            if let iconURL = subscription.iconURL, let url = URL(string: iconURL) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(width: 44, height: 44)
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 44, height: 44)
+                            .cornerRadius(10)
+                    case .failure:
+                        defaultIcon
+                    @unknown default:
+                        defaultIcon
+                    }
+                }
+            } else if let category = subscription.category {
+                // Category color indicator
                 RoundedRectangle(cornerRadius: 2)
                     .fill(category.color)
                     .frame(width: 4)
@@ -78,6 +97,17 @@ struct SubscriptionCard: View {
             }
             .tint(.orange)
         }
+    }
+    
+    // MARK: - Helper Views
+    
+    private var defaultIcon: some View {
+        Image(systemName: "app.fill")
+            .font(.system(size: 24))
+            .foregroundColor(.secondary)
+            .frame(width: 44, height: 44)
+            .background(Color(.systemGray5))
+            .cornerRadius(10)
     }
     
     // MARK: - Helper Methods
