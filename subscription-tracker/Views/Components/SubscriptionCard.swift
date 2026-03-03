@@ -12,22 +12,15 @@ struct SubscriptionCard: View {
         HStack(spacing: 12) {
             // App icon or category color indicator
             if let iconURL = subscription.iconURL, let url = URL(string: iconURL) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(width: 44, height: 44)
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 44, height: 44)
-                            .cornerRadius(10)
-                    case .failure:
-                        defaultIcon
-                    @unknown default:
-                        defaultIcon
-                    }
+                CachedAsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 44, height: 44)
+                        .cornerRadius(10)
+                } placeholder: {
+                    ProgressView()
+                        .frame(width: 44, height: 44)
                 }
             } else if let category = subscription.category {
                 // Category color indicator

@@ -305,6 +305,19 @@ struct SettingsView: View {
                 }
             }
             
+            // Clear image cache button
+            Button {
+                ImageCache.shared.clearCache()
+                toast = Toast(message: L10n.Settings.clearImageCacheSuccess, type: .success)
+            } label: {
+                HStack {
+                    Text(L10n.Settings.clearImageCache)
+                    Spacer()
+                    Image(systemName: "photo")
+                        .foregroundColor(.secondary)
+                }
+            }
+            
             // Clear all data button
             Button(role: .destructive) {
                 showClearDataConfirmation = true
@@ -581,31 +594,38 @@ struct SettingsView: View {
         
         guard status == .authorized else {
             print("❌ 通知权限未授权")
-            toast = .error("通知权限未授权，请在设置中开启")
+            toast = .error(L10n.NotificationContent.permissionDenied)
             return
         }
         
-        // Create a test notification that fires in 5 seconds
-        let content = UNMutableNotificationContent()
-        content.title = L10n.NotificationContent.title
-        content.body = "This is a test notification. Your notifications are working!"
-        content.sound = .default
-        
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-        let request = UNNotificationRequest(
-            identifier: "test-notification-\(UUID().uuidString)",
-            content: content,
-            trigger: trigger
-        )
-        
+        // Create two test notifications with realistic content
+        let testData: [(name: String, days: Int, amount: String, delay: TimeInterval)] = [
+            ("Claude Code", 3, "$20.00", 3),
+            ("Apple Music", 7, "$10.99", 5)
+        ]
+
         do {
-            print("🔵 添加通知到通知中心...")
-            try await UNUserNotificationCenter.current().add(request)
-            print("✅ 测试通知已添加，将在 5 秒后显示")
+            for item in testData {
+                let content = UNMutableNotificationContent()
+                content.title = L10n.NotificationContent.title
+                content.body = L10n.NotificationContent.body(item.name, item.days, item.amount)
+                content.sound = .default
+
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: item.delay, repeats: false)
+                let request = UNNotificationRequest(
+                    identifier: "test-notification-\(UUID().uuidString)",
+                    content: content,
+                    trigger: trigger
+                )
+
+                print("🔵 添加通知到通知中心...")
+                try await UNUserNotificationCenter.current().add(request)
+                print("✅ 测试通知已添加：\(item.name)")
+            }
             toast = .success(L10n.NotificationContent.testSent)
         } catch {
             print("❌ 发送测试通知失败: \(error.localizedDescription)")
-            toast = .error("Failed to send test notification: \(error.localizedDescription)")
+            toast = .error(L10n.NotificationContent.testFailed(error.localizedDescription))
         }
     }
     

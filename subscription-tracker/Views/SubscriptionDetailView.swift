@@ -96,28 +96,16 @@ struct SubscriptionDetailView: View {
         VStack(spacing: 24) {
             // App icon (if available)
             if let iconURL = viewModel.subscription.iconURL, let url = URL(string: iconURL) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(width: 80, height: 80)
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 80, height: 80)
-                            .cornerRadius(18)
-                            .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
-                    case .failure:
-                        Image(systemName: "app.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.secondary)
-                            .frame(width: 80, height: 80)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(18)
-                    @unknown default:
-                        EmptyView()
-                    }
+                CachedAsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 80, height: 80)
+                        .cornerRadius(18)
+                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                } placeholder: {
+                    ProgressView()
+                        .frame(width: 80, height: 80)
                 }
                 .padding(.top, 8)
             }

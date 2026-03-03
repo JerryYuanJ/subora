@@ -54,17 +54,14 @@ struct AddEditSubscriptionView: View {
                         TextField(L10n.Subscription.namePlaceholder, text: $viewModel.subscription.name)
                         if let iconURL = viewModel.subscription.iconURL,
                            let url = URL(string: iconURL) {
-                            AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 24, height: 24)
-                                        .cornerRadius(5)
-                                default:
-                                    EmptyView()
-                                }
+                            CachedAsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 24, height: 24)
+                                    .cornerRadius(5)
+                            } placeholder: {
+                                EmptyView()
                             }
                         }
                     }

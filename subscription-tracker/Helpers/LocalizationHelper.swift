@@ -330,6 +330,8 @@ enum L10n {
         static let devToggleProStatus = NSLocalizedString("settings.dev_toggle_pro_status", comment: "Dev toggle pro status")
         static let devProStatusOn = NSLocalizedString("settings.dev_pro_status_on", comment: "Pro status ON")
         static let devProStatusOff = NSLocalizedString("settings.dev_pro_status_off", comment: "Pro status OFF")
+        static let clearImageCache = NSLocalizedString("settings.clear_image_cache", comment: "Clear image cache button")
+        static let clearImageCacheSuccess = NSLocalizedString("settings.clear_image_cache_success", comment: "Clear image cache success message")
     }
     
     // MARK: - Color Picker
@@ -440,6 +442,10 @@ enum L10n {
         static let goToSettings = NSLocalizedString("notification.go_to_settings", comment: "Go to settings")
         static let testNotification = NSLocalizedString("notification.test_notification", comment: "Test notification")
         static let testSent = NSLocalizedString("notification.test_sent", comment: "Test sent")
+        static let permissionDenied = NSLocalizedString("notification.permission_denied", comment: "Permission denied message")
+        static func testFailed(_ error: String) -> String {
+            String(format: NSLocalizedString("notification.test_failed", comment: "Test notification failed"), error)
+        }
         static let scheduledSuccess = NSLocalizedString("notification.scheduled_success", comment: "Scheduled success")
         static let cancelledSuccess = NSLocalizedString("notification.cancelled_success", comment: "Cancelled success")
     }

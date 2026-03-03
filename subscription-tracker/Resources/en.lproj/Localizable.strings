@@ -235,6 +235,8 @@
 "settings.dev_toggle_pro_status" = "Toggle Pro Status (Dev Only)";
 "settings.dev_pro_status_on" = "ON";
 "settings.dev_pro_status_off" = "OFF";
+"settings.clear_image_cache" = "Clear Image Cache";
+"settings.clear_image_cache_success" = "Image cache cleared";
 
 /* Color Picker */
 "color_picker.title" = "Select Color";
@@ -308,6 +310,8 @@
 "notification.go_to_settings" = "Go to Settings";
 "notification.test_notification" = "Test Notification";
 "notification.test_sent" = "Test notification sent";
+"notification.permission_denied" = "Notification permission denied. Please enable in Settings.";
+"notification.test_failed" = "Failed to send test notification: %@";
 "notification.scheduled_success" = "Notification scheduled";
 
 /* Days/Times */

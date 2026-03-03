@@ -235,6 +235,8 @@
 "settings.dev_toggle_pro_status" = "Pro ステータスを切り替え（開発のみ）";
 "settings.dev_pro_status_on" = "オン";
 "settings.dev_pro_status_off" = "オフ";
+"settings.clear_image_cache" = "画像キャッシュを消去";
+"settings.clear_image_cache_success" = "画像キャッシュを消去しました";
 
 /* Color Picker */
 "color_picker.title" = "色を選択";
@@ -308,6 +310,8 @@
 "notification.go_to_settings" = "設定へ";
 "notification.test_notification" = "テスト通知";
 "notification.test_sent" = "テスト通知を送信しました";
+"notification.permission_denied" = "通知の許可がありません。設定で有効にしてください。";
+"notification.test_failed" = "テスト通知の送信に失敗しました：%@";
 "notification.scheduled_success" = "通知をスケジュールしました";
 
 /* Days/Times */

@@ -163,27 +163,15 @@ private struct AppTemplateRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: URL(string: template.iconURL)) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                        .frame(width: 44, height: 44)
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 44, height: 44)
-                        .cornerRadius(10)
-                case .failure:
-                    Image(systemName: "app.fill")
-                        .font(.system(size: 24))
-                        .foregroundColor(.secondary)
-                        .frame(width: 44, height: 44)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(10)
-                @unknown default:
-                    EmptyView()
-                }
+            CachedAsyncImage(url: URL(string: template.iconURL)) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 44, height: 44)
+                    .cornerRadius(10)
+            } placeholder: {
+                ProgressView()
+                    .frame(width: 44, height: 44)
             }
             
             Text(template.name)

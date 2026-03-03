@@ -235,6 +235,8 @@
 "settings.dev_toggle_pro_status" = "切换 Pro 状态（仅开发）";
 "settings.dev_pro_status_on" = "开";
 "settings.dev_pro_status_off" = "关";
+"settings.clear_image_cache" = "清除图片缓存";
+"settings.clear_image_cache_success" = "图片缓存已清除";
 
 /* Color Picker */
 "color_picker.title" = "选择颜色";
@@ -308,6 +310,8 @@
 "notification.go_to_settings" = "前往设置";
 "notification.test_notification" = "测试通知";
 "notification.test_sent" = "测试通知已发送";
+"notification.permission_denied" = "通知权限未授权，请在设置中开启";
+"notification.test_failed" = "发送测试通知失败：%@";
 "notification.scheduled_success" = "通知已安排";
 
 /* Days/Times */
