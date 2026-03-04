@@ -55,7 +55,7 @@ struct CurrencyFormatter {
         case "CNY":
             return Locale(identifier: "zh_CN")
         case "EUR":
-            return Locale(identifier: "en_EU")
+            return Locale(identifier: "de_DE")
         case "GBP":
             return Locale(identifier: "en_GB")
         case "JPY":

@@ -53,13 +53,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     
     /// Clear app badge count
     private func clearBadgeCount() {
-        UNUserNotificationCenter.current().setBadgeCount(0) { error in
-            if let error = error {
-                print("❌ Failed to clear badge count: \(error)")
-            } else {
-                print("✅ Badge count cleared")
-            }
-        }
+        UNUserNotificationCenter.current().setBadgeCount(0) { _ in }
     }
     
     private func showLanguageChangeAlert() {

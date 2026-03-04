@@ -45,7 +45,7 @@ class SubscriptionListViewModel: ObservableObject {
     
     // MARK: - Dependencies
     
-    private let subscriptionService: SubscriptionService
+    let subscriptionService: SubscriptionService
     
     // MARK: - Initialization
     

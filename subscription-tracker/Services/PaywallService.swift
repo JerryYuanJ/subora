@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import Combine
 import StoreKit
+import WidgetKit
 
 /// Subscription plan type
 enum SubscriptionPlan: String, CaseIterable {
@@ -43,25 +44,51 @@ class PaywallService: ObservableObject {
     
     // MARK: - Published Properties
     
-    @Published var isProUser: Bool = false
+    @Published var isProUser: Bool = false {
+        didSet {
+            guard oldValue != isProUser else { return }
+            UserDefaults.standard.set(isProUser, forKey: "isProUser")
+            WidgetDataStore.saveProStatus(isProUser)
+            // Also patch the WidgetData JSON so widget reads correct Pro status
+            let current = WidgetDataStore.load()
+            let updated = WidgetData(
+                subscriptions: current.subscriptions,
+                monthlyTotalsByCurrency: current.monthlyTotalsByCurrency,
+                isProUser: isProUser,
+                themeColorHex: current.themeColorHex,
+                darkMode: current.darkMode,
+                lastUpdated: Date()
+            )
+            WidgetDataStore.save(updated)
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+    }
     @Published var availableProducts: [Product] = []
     @Published var isLoadingProducts: Bool = false
-    
+
     // MARK: - Constants
-    
+
     private let freeSubscriptionLimit = 5
     private let freeCategoryLimit = 5
-    
+
     private let productIDs: [String] = [
         SubscriptionPlan.monthly.rawValue,
         SubscriptionPlan.yearly.rawValue
     ]
-    
+
     private init() {
-        // Load Pro status from UserDefaults
-        self.isProUser = UserDefaults.standard.bool(forKey: "isProUser")
-        
-        // Start listening for transaction updates
+        // Load cached Pro status for immediate UI display
+        let savedProStatus = UserDefaults.standard.bool(forKey: "isProUser")
+        self.isProUser = savedProStatus
+        // Sync to widget on init (didSet won't fire during init)
+        WidgetDataStore.saveProStatus(savedProStatus)
+
+        // Verify actual entitlement status on launch (handles expired subscriptions)
+        Task {
+            await updateProStatus()
+        }
+
+        // Listen for future transaction updates
         Task {
             await observeTransactionUpdates()
         }
@@ -202,7 +229,6 @@ class PaywallService: ObservableObject {
         }
         
         isProUser = hasActiveSubscription
-        UserDefaults.standard.set(hasActiveSubscription, forKey: "isProUser")
     }
     
     // MARK: - Transaction Observation

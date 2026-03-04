@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 import OSLog
+import WidgetKit
 
 /// Service for managing subscription business logic and data operations
 @MainActor
@@ -75,7 +76,9 @@ class SubscriptionService {
             let notifyTime = getDefaultNotifyTime()
             try? await notificationService.scheduleNotification(for: subscription, notifyTime: notifyTime)
         }
-        
+
+        refreshWidgetData()
+
         return true
     }
     
@@ -98,6 +101,8 @@ class SubscriptionService {
         // Update notification
         let notifyTime = getDefaultNotifyTime()
         try? await notificationService.updateNotification(for: subscription, notifyTime: notifyTime)
+
+        refreshWidgetData()
     }
     
     /// Delete a subscription and cancel its notifications
@@ -120,6 +125,8 @@ class SubscriptionService {
             Logger.data.error("Failed to delete subscription: \(error.localizedDescription)")
             throw AppError.dataSaveFailed(reason: error.localizedDescription)
         }
+
+        refreshWidgetData()
     }
     
     // MARK: - Archive Operations
@@ -133,13 +140,15 @@ class SubscriptionService {
         
         // Cancel notifications
         await notificationService.cancelNotifications(for: subscription)
-        
+
         // Save context
         do {
             try modelContext.save()
         } catch {
             throw AppError.dataSaveFailed(reason: error.localizedDescription)
         }
+
+        refreshWidgetData()
     }
     
     /// Unarchive a subscription and reschedule notifications
@@ -167,6 +176,8 @@ class SubscriptionService {
             let notifyTime = getDefaultNotifyTime()
             try? await notificationService.scheduleNotification(for: subscription, notifyTime: notifyTime)
         }
+
+        refreshWidgetData()
     }
     
     // MARK: - Query Operations
@@ -175,8 +186,7 @@ class SubscriptionService {
     /// - Returns: Array of active subscriptions
     func fetchActiveSubscriptions() -> [Subscription] {
         let descriptor = FetchDescriptor<Subscription>(
-            predicate: #Predicate { !$0.archived },
-            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+            predicate: #Predicate { !$0.archived }
         )
         
         do {
@@ -334,8 +344,64 @@ class SubscriptionService {
         
         let count = billingDates.count
         let total = subscription.amount * Decimal(count)
-        
+
         return (total, count)
+    }
+
+    // MARK: - Widget Data
+
+    /// Refresh widget data from current subscriptions and write to shared UserDefaults
+    func refreshWidgetData() {
+        let subscriptions = fetchActiveSubscriptions()
+
+        let items = subscriptions.map { sub in
+            WidgetSubscriptionItem(
+                id: sub.id,
+                name: sub.name,
+                amount: sub.amount,
+                currency: sub.currency,
+                nextBillingDate: sub.nextBillingDate,
+                billingCycle: sub.billingCycle,
+                billingCycleUnitRaw: sub.billingCycleUnitRawValue,
+                categoryName: sub.category?.name,
+                categoryColorHex: sub.category?.colorHex,
+                iconURL: sub.iconURL
+            )
+        }
+
+        // Calculate monthly totals by currency
+        let currencies = Set(subscriptions.map { $0.currency })
+        var totals: [String: Decimal] = [:]
+        for currency in currencies {
+            totals[currency] = subscriptions
+                .filter { $0.currency == currency }
+                .map { $0.monthlyEquivalent }
+                .reduce(0, +)
+        }
+
+        // Read theme settings from UserSettings
+        let themeColor: String
+        let darkMode: Bool?
+        let settingsDescriptor = FetchDescriptor<UserSettings>()
+        if let settings = try? modelContext.fetch(settingsDescriptor).first {
+            themeColor = settings.themeColor
+            darkMode = settings.darkMode
+        } else {
+            themeColor = "#007AFF"
+            darkMode = nil
+        }
+
+        let widgetData = WidgetData(
+            subscriptions: items,
+            monthlyTotalsByCurrency: totals,
+            isProUser: paywallService.isProUser,
+            themeColorHex: themeColor,
+            darkMode: darkMode,
+            lastUpdated: Date()
+        )
+
+        WidgetDataStore.save(widgetData)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }
 

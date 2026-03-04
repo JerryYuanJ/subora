@@ -1,0 +1,24 @@
+/* Widget UI */
+"widget.subora" = "Subora";
+"widget.per_month" = "月額";
+"widget.active_count" = "%d件";
+"widget.upcoming" = "もうすぐ";
+"widget.upcoming_renewals" = "もうすぐ更新";
+"widget.no_upcoming" = "更新予定なし";
+"widget.today" = "今日";
+"widget.tomorrow" = "明日";
+"widget.in_days" = "%d日後";
+"widget.monthly_suffix" = "/月";
+
+/* Widget Pro Lock */
+"widget.upgrade_to_pro" = "Proにアップグレード";
+"widget.unlock_widgets" = "ウィジェットを解除";
+
+/* Widget Empty State */
+"widget.empty_title" = "サブスクなし";
+"widget.empty_subtitle" = "Suboraを開いて追加";
+
+/* Widget Placeholder Categories */
+"widget.category_entertainment" = "エンタメ";
+"widget.category_tools" = "ツール";
+"widget.category_ai_tool" = "AIツール";

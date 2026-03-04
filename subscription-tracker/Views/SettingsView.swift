@@ -7,6 +7,8 @@
 
 import SwiftUI
 import SwiftData
+import StoreKit
+import WidgetKit
 
 /// Settings view for app configuration and preferences
 struct SettingsView: View {
@@ -22,6 +24,7 @@ struct SettingsView: View {
     @State private var showMailComposer = false
     @State private var showMailUnavailableAlert = false
     @State private var toast: Toast?
+    @State private var showWidgetPreview = false
     
     // Computed properties for bindings
     var darkModeSelection: Binding<DarkModeOption> {
@@ -139,6 +142,9 @@ struct SettingsView: View {
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
                     .environmentObject(paywallService)
+            }
+            .sheet(isPresented: $showWidgetPreview) {
+                WidgetPreviewSheet()
             }
             .alert(L10n.NotificationContent.permissionRequired, isPresented: $showNotificationPermissionAlert) {
                 Button(L10n.Common.cancel, role: .cancel) { }
@@ -410,25 +416,46 @@ struct SettingsView: View {
     
     private func clearAllData() async {
         do {
+            // Cancel all pending notifications
+            await NotificationService.shared.cancelAllNotifications()
+
             // Fetch all subscriptions
             let subscriptionDescriptor = FetchDescriptor<Subscription>()
             let subscriptions = try modelContext.fetch(subscriptionDescriptor)
-            
+
             // Delete all subscriptions
             for subscription in subscriptions {
                 modelContext.delete(subscription)
             }
-            
+
             // Fetch all categories
             let categoryDescriptor = FetchDescriptor<Category>()
             let categories = try modelContext.fetch(categoryDescriptor)
-            
+
             // Delete all categories
             for category in categories {
                 modelContext.delete(category)
             }
-            
+
             try modelContext.save()
+
+            // Clear widget data
+            WidgetDataStore.save(.empty)
+            WidgetKit.WidgetCenter.shared.reloadAllTimelines()
+
+            // Re-seed default categories
+            let defaults: [(name: String, color: String)] = [
+                (L10n.Category.defaultEntertainment, "#FF2D55"),
+                (L10n.Category.defaultEducation, "#5856D6"),
+                (L10n.Category.defaultTools, "#007AFF"),
+                (L10n.Category.defaultAITool, "#AF52DE"),
+            ]
+            for item in defaults {
+                let category = Category(name: item.name, colorHex: item.color)
+                modelContext.insert(category)
+            }
+            try? modelContext.save()
+
             toast = .success(L10n.Settings.clearDataSuccess)
         } catch {
             toast = .error(L10n.Settings.clearDataFailed(error.localizedDescription))
@@ -443,7 +470,27 @@ struct SettingsView: View {
                         .foregroundColor(.green)
                     Text(L10n.Settings.proPurchased)
                 }
-                
+
+                // Widget promotion (Pro users only)
+                Button {
+                    showWidgetPreview = true
+                } label: {
+                    HStack {
+                        Image(systemName: "square.grid.2x2.fill")
+                            .foregroundColor(.blue)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(L10n.Settings.widget)
+                            Text(L10n.Settings.widgetSubtitle)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                    }
+                }
+
                 // Test notification button (Pro users only)
                 if notificationManager.authorizationStatus == .authorized {
                     Button {
@@ -640,9 +687,8 @@ struct SettingsView: View {
     }
     
     private func rateApp() {
-        if let url = URL(string: AppConfig.appStoreReviewURL) {
-            UIApplication.shared.open(url)
-        }
+        guard let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene else { return }
+        SKStoreReviewController.requestReview(in: scene)
     }
     
     private func shareApp() {
@@ -703,4 +749,5 @@ enum DarkModeOption {
     return SettingsView(modelContext: container.mainContext)
         .environmentObject(PaywallService.shared)
         .environmentObject(AppSettings())
+        .environmentObject(NotificationManager())
 }

@@ -19,10 +19,11 @@ struct SubscriptionDetailView: View {
     
     @State private var isEditMode = false
     @State private var editedSubscription: Subscription
+    @State private var editSnapshot: SubscriptionSnapshot?
     @State private var showDeleteConfirmation = false
     @State private var showPaywall = false
     @State private var toast: Toast?
-    
+
     init(subscription: Subscription, modelContext: ModelContext) {
         let subscriptionService = SubscriptionService(modelContext: modelContext)
         _viewModel = StateObject(wrappedValue: SubscriptionDetailViewModel(
@@ -330,31 +331,24 @@ struct SubscriptionDetailView: View {
     // MARK: - Actions
     
     private func enterEditMode() {
+        editSnapshot = SubscriptionSnapshot(from: viewModel.subscription)
         editedSubscription = viewModel.subscription
         isEditMode = true
     }
-    
+
     private func cancelEdit() {
+        // Restore original values from snapshot
+        if let snapshot = editSnapshot {
+            snapshot.restore(to: viewModel.subscription)
+        }
+        editSnapshot = nil
         isEditMode = false
     }
-    
+
     private func saveChanges() async {
         do {
-            // 更新原始订阅对象
-            viewModel.subscription.name = editedSubscription.name
-            viewModel.subscription.subscriptionDescription = editedSubscription.subscriptionDescription
-            viewModel.subscription.category = editedSubscription.category
-            viewModel.subscription.firstPaymentDate = editedSubscription.firstPaymentDate
-            viewModel.subscription.billingCycle = editedSubscription.billingCycle
-            viewModel.subscription.billingCycleUnit = editedSubscription.billingCycleUnit
-            viewModel.subscription.amount = editedSubscription.amount
-            viewModel.subscription.currency = editedSubscription.currency
-            viewModel.subscription.notify = editedSubscription.notify
-            viewModel.subscription.notifyDaysBefore = editedSubscription.notifyDaysBefore
-            
-            // 保存到数据库
-            try modelContext.save()
-            
+            try await viewModel.subscriptionService.updateSubscription(viewModel.subscription)
+            editSnapshot = nil
             toast = .success(L10n.SubscriptionDetail.saveSuccess)
             isEditMode = false
             viewModel.loadDetails()
@@ -400,6 +394,50 @@ struct SubscriptionDetailView: View {
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
         return formatter.string(from: date)
+    }
+}
+
+// MARK: - Subscription Snapshot (for edit cancel rollback)
+
+/// Value-type snapshot of subscription fields to support cancel/rollback during editing
+private struct SubscriptionSnapshot {
+    let name: String
+    let subscriptionDescription: String?
+    let categoryId: UUID?
+    let category: Category?
+    let firstPaymentDate: Date
+    let billingCycle: Int
+    let billingCycleUnitRawValue: String
+    let amount: Decimal
+    let currency: String
+    let notify: Bool
+    let notifyDaysBefore: Int
+
+    init(from sub: Subscription) {
+        self.name = sub.name
+        self.subscriptionDescription = sub.subscriptionDescription
+        self.categoryId = sub.category?.id
+        self.category = sub.category
+        self.firstPaymentDate = sub.firstPaymentDate
+        self.billingCycle = sub.billingCycle
+        self.billingCycleUnitRawValue = sub.billingCycleUnitRawValue
+        self.amount = sub.amount
+        self.currency = sub.currency
+        self.notify = sub.notify
+        self.notifyDaysBefore = sub.notifyDaysBefore
+    }
+
+    func restore(to sub: Subscription) {
+        sub.name = name
+        sub.subscriptionDescription = subscriptionDescription
+        sub.category = category
+        sub.firstPaymentDate = firstPaymentDate
+        sub.billingCycle = billingCycle
+        sub.billingCycleUnitRawValue = billingCycleUnitRawValue
+        sub.amount = amount
+        sub.currency = currency
+        sub.notify = notify
+        sub.notifyDaysBefore = notifyDaysBefore
     }
 }
 

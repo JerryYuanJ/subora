@@ -23,23 +23,39 @@ struct BillingCalculator {
     ) -> Date {
         let calendar = Calendar.current
         let now = Date()
-        
+
         // 获取今天的开始时间（忽略时分秒）
         let today = calendar.startOfDay(for: now)
         let firstPaymentDay = calendar.startOfDay(for: firstPaymentDate)
-        
+
         // 如果首次付款日期在今天或未来，直接返回
         if firstPaymentDay >= today {
             return firstPaymentDate
         }
-        
-        var currentDate = firstPaymentDay
-        
-        // 循环计算直到找到今天或未来的日期
+
+        // 使用数学公式计算需要跳过的完整周期数，避免 O(n) 循环
+        let skipCycles: Int
+        switch unit {
+        case .day:
+            let daysBetween = calendar.dateComponents([.day], from: firstPaymentDay, to: today).day ?? 0
+            skipCycles = max(0, daysBetween / cycle)
+        case .week:
+            let daysBetween = calendar.dateComponents([.day], from: firstPaymentDay, to: today).day ?? 0
+            skipCycles = max(0, daysBetween / (cycle * 7))
+        case .month:
+            let monthsBetween = calendar.dateComponents([.month], from: firstPaymentDay, to: today).month ?? 0
+            skipCycles = max(0, monthsBetween / cycle)
+        case .year:
+            let yearsBetween = calendar.dateComponents([.year], from: firstPaymentDay, to: today).year ?? 0
+            skipCycles = max(0, yearsBetween / cycle)
+        }
+
+        // 跳到接近目标的位置，然后最多迭代 1-2 次
+        var currentDate = addBillingCycle(to: firstPaymentDay, cycle: cycle * skipCycles, unit: unit, calendar: calendar)
         while currentDate < today {
             currentDate = addBillingCycle(to: currentDate, cycle: cycle, unit: unit, calendar: calendar)
         }
-        
+
         return currentDate
     }
     
@@ -82,20 +98,20 @@ struct BillingCalculator {
         unit: BillingCycleUnit
     ) -> Decimal {
         let cycleDecimal = Decimal(cycle)
-        
+
         switch unit {
         case .day:
-            // 每日 -> 每月：金额 * 周期 * 30.44 (平均每月天数)
-            return amount * cycleDecimal * Decimal(30.44)
+            // 每 N 天付一次 -> 每月：金额 / 周期 * 30.44
+            return amount / cycleDecimal * Decimal(30.44)
         case .week:
-            // 每周 -> 每月：金额 * 周期 * 4.33 (平均每月周数)
-            return amount * cycleDecimal * Decimal(4.33)
+            // 每 N 周付一次 -> 每月：金额 / 周期 * 4.33
+            return amount / cycleDecimal * Decimal(4.33)
         case .month:
-            // 每月 -> 每月：金额 * 周期
-            return amount * cycleDecimal
+            // 每 N 月付一次 -> 每月：金额 / 周期
+            return amount / cycleDecimal
         case .year:
-            // 每年 -> 每月：金额 * 周期 / 12
-            return (amount * cycleDecimal) / 12
+            // 每 N 年付一次 -> 每月：金额 / (周期 * 12)
+            return amount / (cycleDecimal * 12)
         }
     }
     

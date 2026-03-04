@@ -6,7 +6,7 @@ struct ToastView: View {
     let message: String
     let type: ToastType
     
-    enum ToastType {
+    enum ToastType: Equatable {
         case success
         case error
         case info
@@ -70,7 +70,7 @@ struct ToastModifier: ViewModifier {
                         }
                 }
             }
-            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: toast?.message)
+            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: toast)
     }
 }
 
@@ -80,7 +80,11 @@ struct Toast: Equatable {
     let message: String
     let type: ToastView.ToastType
     let duration: TimeInterval
-    
+
+    static func == (lhs: Toast, rhs: Toast) -> Bool {
+        lhs.message == rhs.message && lhs.type == rhs.type
+    }
+
     init(message: String, type: ToastView.ToastType, duration: TimeInterval = 3.0) {
         self.message = message
         self.type = type

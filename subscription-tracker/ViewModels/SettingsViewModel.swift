@@ -48,12 +48,25 @@ class SettingsViewModel: ObservableObject {
         do {
             let descriptor = FetchDescriptor<UserSettings>()
             let settings = try modelContext.fetch(descriptor)
-            
+
             if let existingSettings = settings.first {
+                // 如果存在多条记录，清理多余的
+                if settings.count > 1 {
+                    for extra in settings.dropFirst() {
+                        modelContext.delete(extra)
+                    }
+                    try? modelContext.save()
+                    Logger.app.warning("Cleaned up \(settings.count - 1) duplicate UserSettings")
+                }
                 userSettings = existingSettings
                 Logger.app.info("User settings loaded successfully")
             } else {
-                // Create default settings if none exist
+                // 创建前再次检查（防止并发创建）
+                let count = try modelContext.fetchCount(descriptor)
+                guard count == 0 else {
+                    userSettings = try modelContext.fetch(descriptor).first
+                    return
+                }
                 let newSettings = UserSettings()
                 modelContext.insert(newSettings)
                 try modelContext.save()
@@ -61,7 +74,7 @@ class SettingsViewModel: ObservableObject {
                 Logger.app.info("Created default user settings")
             }
         } catch {
-            errorMessage = "加载设置失败"
+            errorMessage = L10n.VMError.loadSettingsFailed
             Logger.app.error("Failed to load settings: \(error.localizedDescription)")
         }
     }
@@ -82,9 +95,12 @@ class SettingsViewModel: ObservableObject {
             settings.darkMode = darkMode
             settings.updatedAt = Date()
             try modelContext.save()
+            // Refresh widget to apply dark mode
+            let service = SubscriptionService(modelContext: modelContext)
+            service.refreshWidgetData()
             Logger.app.info("Dark mode updated to: \(String(describing: darkMode))")
         } catch {
-            errorMessage = "更新深色模式失败"
+            errorMessage = L10n.VMError.updateDarkModeFailed
             Logger.app.error("Failed to update dark mode: \(error.localizedDescription)")
             throw AppError.dataSaveFailed(reason: error.localizedDescription)
         }
@@ -104,9 +120,12 @@ class SettingsViewModel: ObservableObject {
             settings.themeColor = colorHex
             settings.updatedAt = Date()
             try modelContext.save()
+            // Refresh widget to apply new theme color
+            let service = SubscriptionService(modelContext: modelContext)
+            service.refreshWidgetData()
             Logger.app.info("Theme color updated to: \(colorHex)")
         } catch {
-            errorMessage = "更新主题颜色失败"
+            errorMessage = L10n.VMError.updateThemeColorFailed
             Logger.app.error("Failed to update theme color: \(error.localizedDescription)")
             throw AppError.dataSaveFailed(reason: error.localizedDescription)
         }
@@ -128,7 +147,7 @@ class SettingsViewModel: ObservableObject {
             try modelContext.save()
             Logger.app.info("Default currency updated to: \(currency)")
         } catch {
-            errorMessage = "更新默认货币失败"
+            errorMessage = L10n.VMError.updateCurrencyFailed
             Logger.app.error("Failed to update default currency: \(error.localizedDescription)")
             throw AppError.dataSaveFailed(reason: error.localizedDescription)
         }
@@ -150,7 +169,7 @@ class SettingsViewModel: ObservableObject {
             try modelContext.save()
             Logger.app.info("Default notify time updated")
         } catch {
-            errorMessage = "更新默认通知时间失败"
+            errorMessage = L10n.VMError.updateNotifyTimeFailed
             Logger.app.error("Failed to update default notify time: \(error.localizedDescription)")
             throw AppError.dataSaveFailed(reason: error.localizedDescription)
         }
@@ -183,7 +202,7 @@ class SettingsViewModel: ObservableObject {
             Logger.app.error("Failed to toggle iCloud sync: \(error.localizedDescription)")
             throw error
         } catch {
-            errorMessage = "切换 iCloud 同步失败"
+            errorMessage = L10n.VMError.toggleSyncFailed
             Logger.app.error("Failed to toggle iCloud sync: \(error.localizedDescription)")
             throw AppError.syncFailed(reason: error.localizedDescription)
         }
@@ -203,7 +222,7 @@ class SettingsViewModel: ObservableObject {
             try modelContext.save()
             Logger.app.info("Settings saved successfully")
         } catch {
-            errorMessage = "保存设置失败"
+            errorMessage = L10n.VMError.saveSettingsFailed
             Logger.app.error("Failed to save settings: \(error.localizedDescription)")
             throw AppError.dataSaveFailed(reason: error.localizedDescription)
         }
@@ -227,21 +246,14 @@ class SettingsViewModel: ObservableObject {
         defer { isLoading = false }
         
         do {
-            print("🔵 开始手动同步...")
-            print("🔵 iCloud 同步状态: \(userSettings?.iCloudSync == true ? "已启用" : "未启用")")
-            
             try await syncService.syncNow()
-            
-            print("✅ 手动同步完成")
             Logger.app.info("Manual sync completed successfully")
         } catch let error as AppError {
-            print("❌ 同步失败: \(error.localizedDescription)")
             errorMessage = error.errorDescription
             Logger.app.error("Manual sync failed: \(error.localizedDescription)")
             throw error
         } catch {
-            print("❌ 同步失败: \(error.localizedDescription)")
-            errorMessage = "手动同步失败"
+            errorMessage = L10n.VMError.manualSyncFailed
             Logger.app.error("Manual sync failed: \(error.localizedDescription)")
             throw AppError.syncFailed(reason: error.localizedDescription)
         }

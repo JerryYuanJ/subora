@@ -66,7 +66,7 @@ class CategoryViewModel: ObservableObject {
             errorMessage = error.errorDescription
             throw error
         } catch {
-            errorMessage = "创建分类失败"
+            errorMessage = L10n.VMError.createCategoryFailed
             throw error
         }
     }
@@ -83,7 +83,7 @@ class CategoryViewModel: ObservableObject {
             // Reload categories after successful update
             loadCategories()
         } catch {
-            errorMessage = "更新分类失败"
+            errorMessage = L10n.VMError.updateCategoryFailed
             throw error
         }
     }
@@ -100,7 +100,7 @@ class CategoryViewModel: ObservableObject {
             // Reload categories after successful deletion
             loadCategories()
         } catch {
-            errorMessage = "删除分类失败"
+            errorMessage = L10n.VMError.deleteCategoryFailed
             throw error
         }
     }

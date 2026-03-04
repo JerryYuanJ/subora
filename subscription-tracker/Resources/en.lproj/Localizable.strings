@@ -37,6 +37,10 @@
 "category.save_failed" = "Failed to save category: %@";
 "category.delete_success" = "Category deleted successfully";
 "category.delete_failed" = "Failed to delete category: %@";
+"category.default_entertainment" = "Entertainment";
+"category.default_education" = "Education";
+"category.default_tools" = "Tools";
+"category.default_ai_tool" = "AI Tool";
 
 /* Dashboard */
 "dashboard.title" = "Dashboard";
@@ -237,6 +241,25 @@
 "settings.dev_pro_status_off" = "OFF";
 "settings.clear_image_cache" = "Clear Image Cache";
 "settings.clear_image_cache_success" = "Image cache cleared";
+"settings.widget" = "Home Screen Widget";
+"settings.widget_subtitle" = "View subscriptions at a glance";
+"settings.widget_preview_title" = "Widget Preview";
+"settings.widget_step1" = "Long press on the Home Screen";
+"settings.widget_step2" = "Tap the + button in the top left";
+"settings.widget_step3" = "Search \"Subora\" and choose a size";
+
+/* ViewModel Errors */
+"vm_error.load_settings_failed" = "Failed to load settings";
+"vm_error.update_dark_mode_failed" = "Failed to update dark mode";
+"vm_error.update_theme_color_failed" = "Failed to update theme color";
+"vm_error.update_currency_failed" = "Failed to update default currency";
+"vm_error.update_notify_time_failed" = "Failed to update notification time";
+"vm_error.toggle_sync_failed" = "Failed to toggle iCloud sync";
+"vm_error.save_settings_failed" = "Failed to save settings";
+"vm_error.manual_sync_failed" = "Manual sync failed";
+"vm_error.create_category_failed" = "Failed to create category";
+"vm_error.update_category_failed" = "Failed to update category";
+"vm_error.delete_category_failed" = "Failed to delete category";
 
 /* Color Picker */
 "color_picker.title" = "Select Color";

@@ -37,6 +37,10 @@
 "category.save_failed" = "保存分类失败：%@";
 "category.delete_success" = "分类删除成功";
 "category.delete_failed" = "删除分类失败：%@";
+"category.default_entertainment" = "娱乐";
+"category.default_education" = "教育";
+"category.default_tools" = "工具";
+"category.default_ai_tool" = "AI Tool";
 
 /* Dashboard */
 "dashboard.title" = "仪表盘";
@@ -237,6 +241,25 @@
 "settings.dev_pro_status_off" = "关";
 "settings.clear_image_cache" = "清除图片缓存";
 "settings.clear_image_cache_success" = "图片缓存已清除";
+"settings.widget" = "桌面小组件";
+"settings.widget_subtitle" = "在主屏幕上快速查看订阅";
+"settings.widget_preview_title" = "小组件预览";
+"settings.widget_step1" = "长按主屏幕空白处";
+"settings.widget_step2" = "点击左上角 + 按钮";
+"settings.widget_step3" = "搜索「Subora」并选择尺寸";
+
+/* ViewModel Errors */
+"vm_error.load_settings_failed" = "加载设置失败";
+"vm_error.update_dark_mode_failed" = "更新深色模式失败";
+"vm_error.update_theme_color_failed" = "更新主题颜色失败";
+"vm_error.update_currency_failed" = "更新默认货币失败";
+"vm_error.update_notify_time_failed" = "更新默认通知时间失败";
+"vm_error.toggle_sync_failed" = "切换 iCloud 同步失败";
+"vm_error.save_settings_failed" = "保存设置失败";
+"vm_error.manual_sync_failed" = "手动同步失败";
+"vm_error.create_category_failed" = "创建分类失败";
+"vm_error.update_category_failed" = "更新分类失败";
+"vm_error.delete_category_failed" = "删除分类失败";
 
 /* Color Picker */
 "color_picker.title" = "选择颜色";

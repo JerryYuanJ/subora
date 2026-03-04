@@ -1,0 +1,24 @@
+/* Widget UI */
+"widget.subora" = "Subora";
+"widget.per_month" = "每月";
+"widget.active_count" = "%d 个订阅";
+"widget.upcoming" = "即将到期";
+"widget.upcoming_renewals" = "即将到期的订阅";
+"widget.no_upcoming" = "暂无即将到期的订阅";
+"widget.today" = "今天";
+"widget.tomorrow" = "明天";
+"widget.in_days" = "%d天后";
+"widget.monthly_suffix" = "/月";
+
+/* Widget Pro Lock */
+"widget.upgrade_to_pro" = "升级 Pro";
+"widget.unlock_widgets" = "解锁小组件";
+
+/* Widget Empty State */
+"widget.empty_title" = "暂无订阅";
+"widget.empty_subtitle" = "打开 Subora 添加";
+
+/* Widget Placeholder Categories */
+"widget.category_entertainment" = "娱乐";
+"widget.category_tools" = "工具";
+"widget.category_ai_tool" = "AI Tool";

@@ -17,10 +17,6 @@ enum AppConfig {
     static var appStoreURL: String {
         "https://apps.apple.com/app/id\(appStoreID)"
     }
-    static var appStoreReviewURL: String {
-        "https://apps.apple.com/app/id\(appStoreID)?action=write-review"
-    }
-    
     // MARK: - App Info
     static var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"

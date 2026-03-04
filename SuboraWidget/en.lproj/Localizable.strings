@@ -1,0 +1,24 @@
+/* Widget UI */
+"widget.subora" = "Subora";
+"widget.per_month" = "per month";
+"widget.active_count" = "%d active";
+"widget.upcoming" = "Upcoming";
+"widget.upcoming_renewals" = "Upcoming Renewals";
+"widget.no_upcoming" = "No upcoming renewals";
+"widget.today" = "Today";
+"widget.tomorrow" = "Tomorrow";
+"widget.in_days" = "in %dd";
+"widget.monthly_suffix" = "/mo";
+
+/* Widget Pro Lock */
+"widget.upgrade_to_pro" = "Upgrade to Pro";
+"widget.unlock_widgets" = "Unlock widgets";
+
+/* Widget Empty State */
+"widget.empty_title" = "No Subscriptions";
+"widget.empty_subtitle" = "Open Subora to add";
+
+/* Widget Placeholder Categories */
+"widget.category_entertainment" = "Entertainment";
+"widget.category_tools" = "Tools";
+"widget.category_ai_tool" = "AI Tool";

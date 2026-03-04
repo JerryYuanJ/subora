@@ -62,6 +62,11 @@ enum L10n {
         static func deleteFailed(_ error: String) -> String {
             String(format: NSLocalizedString("category.delete_failed", comment: "Delete failed message"), error)
         }
+        // Default category names
+        static let defaultEntertainment = NSLocalizedString("category.default_entertainment", comment: "Default entertainment category")
+        static let defaultEducation = NSLocalizedString("category.default_education", comment: "Default education category")
+        static let defaultTools = NSLocalizedString("category.default_tools", comment: "Default tools category")
+        static let defaultAITool = NSLocalizedString("category.default_ai_tool", comment: "Default AI tool category")
     }
     
     // MARK: - Dashboard
@@ -332,8 +337,29 @@ enum L10n {
         static let devProStatusOff = NSLocalizedString("settings.dev_pro_status_off", comment: "Pro status OFF")
         static let clearImageCache = NSLocalizedString("settings.clear_image_cache", comment: "Clear image cache button")
         static let clearImageCacheSuccess = NSLocalizedString("settings.clear_image_cache_success", comment: "Clear image cache success message")
+        static let widget = NSLocalizedString("settings.widget", comment: "Widget label")
+        static let widgetSubtitle = NSLocalizedString("settings.widget_subtitle", comment: "Widget subtitle")
+        static let widgetPreviewTitle = NSLocalizedString("settings.widget_preview_title", comment: "Widget preview title")
+        static let widgetStep1 = NSLocalizedString("settings.widget_step1", comment: "Widget step 1")
+        static let widgetStep2 = NSLocalizedString("settings.widget_step2", comment: "Widget step 2")
+        static let widgetStep3 = NSLocalizedString("settings.widget_step3", comment: "Widget step 3")
     }
     
+    // MARK: - ViewModel Errors
+    enum VMError {
+        static let loadSettingsFailed = NSLocalizedString("vm_error.load_settings_failed", comment: "")
+        static let updateDarkModeFailed = NSLocalizedString("vm_error.update_dark_mode_failed", comment: "")
+        static let updateThemeColorFailed = NSLocalizedString("vm_error.update_theme_color_failed", comment: "")
+        static let updateCurrencyFailed = NSLocalizedString("vm_error.update_currency_failed", comment: "")
+        static let updateNotifyTimeFailed = NSLocalizedString("vm_error.update_notify_time_failed", comment: "")
+        static let toggleSyncFailed = NSLocalizedString("vm_error.toggle_sync_failed", comment: "")
+        static let saveSettingsFailed = NSLocalizedString("vm_error.save_settings_failed", comment: "")
+        static let manualSyncFailed = NSLocalizedString("vm_error.manual_sync_failed", comment: "")
+        static let createCategoryFailed = NSLocalizedString("vm_error.create_category_failed", comment: "")
+        static let updateCategoryFailed = NSLocalizedString("vm_error.update_category_failed", comment: "")
+        static let deleteCategoryFailed = NSLocalizedString("vm_error.delete_category_failed", comment: "")
+    }
+
     // MARK: - Color Picker
     enum ColorPicker {
         static let title = NSLocalizedString("color_picker.title", comment: "Color picker title")

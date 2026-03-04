@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import OSLog
 
 /// Subscription list view with search and filtering capabilities
 struct SubscriptionListView: View {
@@ -169,21 +170,19 @@ struct SubscriptionListView: View {
     
     private func archiveSubscription(_ subscription: Subscription) async {
         do {
-            let subscriptionService = SubscriptionService(modelContext: modelContext)
-            try await subscriptionService.archiveSubscription(subscription)
+            try await viewModel.subscriptionService.archiveSubscription(subscription)
             viewModel.loadSubscriptions()
         } catch {
-            print("Archive failed: \(error)")
+            Logger.app.error("Archive failed: \(error.localizedDescription)")
         }
     }
-    
+
     private func deleteSubscription(_ subscription: Subscription) async {
         do {
-            let subscriptionService = SubscriptionService(modelContext: modelContext)
-            try await subscriptionService.deleteSubscription(subscription)
+            try await viewModel.subscriptionService.deleteSubscription(subscription)
             viewModel.loadSubscriptions()
         } catch {
-            print("Delete failed: \(error)")
+            Logger.app.error("Delete failed: \(error.localizedDescription)")
         }
     }
 }

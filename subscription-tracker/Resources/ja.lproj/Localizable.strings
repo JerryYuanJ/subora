@@ -37,6 +37,10 @@
 "category.save_failed" = "カテゴリの保存に失敗しました：%@";
 "category.delete_success" = "カテゴリを削除しました";
 "category.delete_failed" = "カテゴリの削除に失敗しました：%@";
+"category.default_entertainment" = "エンタメ";
+"category.default_education" = "教育";
+"category.default_tools" = "ツール";
+"category.default_ai_tool" = "AIツール";
 
 /* Dashboard */
 "dashboard.title" = "ダッシュボード";
@@ -237,6 +241,25 @@
 "settings.dev_pro_status_off" = "オフ";
 "settings.clear_image_cache" = "画像キャッシュを消去";
 "settings.clear_image_cache_success" = "画像キャッシュを消去しました";
+"settings.widget" = "ホーム画面ウィジェット";
+"settings.widget_subtitle" = "サブスクをひと目で確認";
+"settings.widget_preview_title" = "ウィジェットプレビュー";
+"settings.widget_step1" = "ホーム画面を長押し";
+"settings.widget_step2" = "左上の + ボタンをタップ";
+"settings.widget_step3" = "「Subora」を検索してサイズを選択";
+
+/* ViewModel Errors */
+"vm_error.load_settings_failed" = "設定の読み込みに失敗しました";
+"vm_error.update_dark_mode_failed" = "ダークモードの更新に失敗しました";
+"vm_error.update_theme_color_failed" = "テーマカラーの更新に失敗しました";
+"vm_error.update_currency_failed" = "デフォルト通貨の更新に失敗しました";
+"vm_error.update_notify_time_failed" = "通知時刻の更新に失敗しました";
+"vm_error.toggle_sync_failed" = "iCloud同期の切り替えに失敗しました";
+"vm_error.save_settings_failed" = "設定の保存に失敗しました";
+"vm_error.manual_sync_failed" = "手動同期に失敗しました";
+"vm_error.create_category_failed" = "カテゴリの作成に失敗しました";
+"vm_error.update_category_failed" = "カテゴリの更新に失敗しました";
+"vm_error.delete_category_failed" = "カテゴリの削除に失敗しました";
 
 /* Color Picker */
 "color_picker.title" = "色を選択";

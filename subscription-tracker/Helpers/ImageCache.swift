@@ -59,7 +59,7 @@ class ImageCache {
     
     /// 从磁盘加载图片
     private func loadFromDisk(url: String) -> UIImage? {
-        let filename = url.md5
+        let filename = url.sha256Hash
         let fileURL = cacheDirectory.appendingPathComponent(filename)
         
         guard let data = try? Data(contentsOf: fileURL),
@@ -72,7 +72,7 @@ class ImageCache {
     
     /// 保存图片到磁盘
     private func saveToDisk(image: UIImage, url: String) {
-        let filename = url.md5
+        let filename = url.sha256Hash
         let fileURL = cacheDirectory.appendingPathComponent(filename)
         
         guard let data = image.pngData() else { return }
@@ -87,18 +87,14 @@ class ImageCache {
     }
 }
 
-// MARK: - String Extension for MD5
+// MARK: - String Extension for SHA256
+
+import CryptoKit
 
 extension String {
-    var md5: String {
+    var sha256Hash: String {
         guard let data = self.data(using: .utf8) else { return self }
-        let hash = data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) -> [UInt8] in
-            var hash = [UInt8](repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
-            CC_MD5(bytes.baseAddress, CC_LONG(data.count), &hash)
-            return hash
-        }
-        return hash.map { String(format: "%02x", $0) }.joined()
+        let hash = SHA256.hash(data: data)
+        return hash.compactMap { String(format: "%02x", $0) }.joined()
     }
 }
-
-import CommonCrypto

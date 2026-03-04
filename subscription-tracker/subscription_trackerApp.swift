@@ -33,13 +33,8 @@ struct subscription_trackerApp: App {
         )
 
         do {
-            let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
-            print("✅ SwiftData ModelContainer initialized")
-            print("📦 CloudKit: Automatic (Xcode managed)")
-            print("🔐 Database: Private")
-            return container
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
-            print("❌ ModelContainer error: \(error)")
             // 如果 CloudKit 初始化失败，使用本地存储
             let localConfig = ModelConfiguration(
                 schema: schema,
@@ -47,11 +42,9 @@ struct subscription_trackerApp: App {
                 cloudKitDatabase: .none
             )
             do {
-                let localContainer = try ModelContainer(for: schema, configurations: [localConfig])
-                print("⚠️ Fallback to local storage (CloudKit unavailable)")
-                return localContainer
+                return try ModelContainer(for: schema, configurations: [localConfig])
             } catch {
-                fatalError("❌ Could not create ModelContainer: \(error)")
+                fatalError("Could not create ModelContainer: \(error)")
             }
         }
     }()
@@ -65,9 +58,11 @@ struct subscription_trackerApp: App {
                 .preferredColorScheme(appSettings.colorScheme)
                 .onAppear {
                     seedDefaultCategoriesIfNeeded()
+                    refreshWidgetDataOnLaunch()
                     Task {
                         await notificationManager.requestPermissionIfNeeded()
                         await clearBadgeCount()
+                        await rescheduleAllNotifications()
                     }
                 }
         }
@@ -83,10 +78,10 @@ struct subscription_trackerApp: App {
         guard existingCount == 0 else { return }
 
         let defaults: [(name: String, color: String)] = [
-            ("娱乐", "#FF2D55"),
-            ("教育", "#5856D6"),
-            ("工具", "#007AFF"),
-            ("AI Tool", "#AF52DE"),
+            (L10n.Category.defaultEntertainment, "#FF2D55"),
+            (L10n.Category.defaultEducation, "#5856D6"),
+            (L10n.Category.defaultTools, "#007AFF"),
+            (L10n.Category.defaultAITool, "#AF52DE"),
         ]
 
         for item in defaults {
@@ -96,14 +91,42 @@ struct subscription_trackerApp: App {
         try? context.save()
     }
 
+    /// Refresh widget data on app launch
+    private func refreshWidgetDataOnLaunch() {
+        let context = sharedModelContainer.mainContext
+        let service = SubscriptionService(
+            modelContext: context,
+            paywallService: PaywallService.shared
+        )
+        service.refreshWidgetData()
+    }
+
+    /// Reschedule notifications for all active subscriptions
+    /// This ensures next-cycle notifications are always queued, even if the previous one already fired
+    private func rescheduleAllNotifications() async {
+        let context = sharedModelContainer.mainContext
+        let descriptor = FetchDescriptor<Subscription>(
+            predicate: #Predicate { !$0.archived && $0.notify }
+        )
+        guard let subscriptions = try? context.fetch(descriptor) else { return }
+
+        let settingsDescriptor = FetchDescriptor<UserSettings>()
+        let notifyTime: Date
+        if let settings = try? context.fetch(settingsDescriptor).first {
+            notifyTime = settings.defaultNotifyTime
+        } else {
+            notifyTime = Calendar.current.date(from: DateComponents(hour: 9, minute: 0)) ?? Date()
+        }
+
+        await NotificationService.shared.rescheduleAllNotifications(
+            for: subscriptions,
+            notifyTime: notifyTime
+        )
+    }
+
     /// Clear app badge count
     private func clearBadgeCount() async {
-        do {
-            try await UNUserNotificationCenter.current().setBadgeCount(0)
-            print("✅ Badge count cleared")
-        } catch {
-            print("❌ Failed to clear badge count: \(error)")
-        }
+        try? await UNUserNotificationCenter.current().setBadgeCount(0)
     }
 }
 
