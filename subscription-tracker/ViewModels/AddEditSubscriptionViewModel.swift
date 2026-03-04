@@ -70,7 +70,7 @@ class AddEditSubscriptionViewModel: ObservableObject {
                 amount: 0,
                 currency: defaultCurrency,
                 notify: true,
-                notifyDaysBefore: 3,
+                notifyDaysBefore: 1,
                 archived: false
             )
             if let iconURL = template?.iconURL {

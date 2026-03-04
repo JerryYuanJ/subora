@@ -21,7 +21,7 @@ final class Subscription {
     var amount: Decimal = 0
     var currency: String = "USD"
     var notify: Bool = true
-    var notifyDaysBefore: Int = 3
+    var notifyDaysBefore: Int = 1
     var lastNotifiedDate: Date?
     var archived: Bool = false
     var createdAt: Date = Date()
@@ -45,7 +45,7 @@ final class Subscription {
         amount: Decimal,
         currency: String,
         notify: Bool = true,
-        notifyDaysBefore: Int = 3,
+        notifyDaysBefore: Int = 1,
         archived: Bool = false
     ) {
         self.id = id
@@ -75,7 +75,7 @@ final class Subscription {
         self.amount = 0
         self.currency = "USD"
         self.notify = true
-        self.notifyDaysBefore = 3
+        self.notifyDaysBefore = 1
         self.archived = false
         self.createdAt = Date()
         self.updatedAt = Date()
