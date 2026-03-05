@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "subora.png",
+      "filename" : "subora@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "subora@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "subora@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
