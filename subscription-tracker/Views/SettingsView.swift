@@ -311,19 +311,6 @@ struct SettingsView: View {
                 }
             }
             
-            // Clear image cache button
-            Button {
-                ImageCache.shared.clearCache()
-                toast = Toast(message: L10n.Settings.clearImageCacheSuccess, type: .success)
-            } label: {
-                HStack {
-                    Text(L10n.Settings.clearImageCache)
-                    Spacer()
-                    Image(systemName: "photo")
-                        .foregroundColor(.secondary)
-                }
-            }
-            
             // Clear all data button
             Button(role: .destructive) {
                 showClearDataConfirmation = true
