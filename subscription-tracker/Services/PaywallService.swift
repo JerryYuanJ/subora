@@ -132,30 +132,6 @@ class PaywallService: ObservableObject {
         isLoadingProducts = true
         defer { isLoadingProducts = false }
         
-        #if DEBUG
-        // In development, if products can't be loaded, use mock data
-        do {
-            let products = try await Product.products(for: productIDs)
-            if products.isEmpty {
-                print("⚠️ No products loaded from App Store, using mock data for development")
-                // Products will remain empty, UI will handle this
-            } else {
-                availableProducts = products.sorted { product1, product2 in
-                    if let plan1 = SubscriptionPlan(rawValue: product1.id),
-                       let plan2 = SubscriptionPlan(rawValue: product2.id) {
-                        return plan1 == .monthly && plan2 == .yearly
-                    }
-                    return false
-                }
-                print("✅ Loaded \(products.count) products from App Store")
-            }
-        } catch {
-            print("⚠️ Failed to load products: \(error.localizedDescription)")
-            print("💡 This is expected in development before configuring App Store Connect")
-            // Products will remain empty
-        }
-        #else
-        // In production, load products normally
         do {
             let products = try await Product.products(for: productIDs)
             availableProducts = products.sorted { product1, product2 in
@@ -165,11 +141,11 @@ class PaywallService: ObservableObject {
                 }
                 return false
             }
+            print("✅ Loaded \(products.count) products from App Store Connect")
         } catch {
-            print("❌ Failed to load products: \(error)")
+            print("❌ Failed to load products: \(error.localizedDescription)")
             availableProducts = []
         }
-        #endif
     }
     
     // MARK: - Purchase Management
