@@ -430,19 +430,6 @@ struct SettingsView: View {
             WidgetDataStore.save(.empty)
             WidgetKit.WidgetCenter.shared.reloadAllTimelines()
 
-            // Re-seed default categories
-            let defaults: [(name: String, color: String)] = [
-                (L10n.Category.defaultEntertainment, "#FF2D55"),
-                (L10n.Category.defaultEducation, "#5856D6"),
-                (L10n.Category.defaultTools, "#007AFF"),
-                (L10n.Category.defaultAITool, "#AF52DE"),
-            ]
-            for item in defaults {
-                let category = Category(name: item.name, colorHex: item.color)
-                modelContext.insert(category)
-            }
-            try? modelContext.save()
-
             toast = .success(L10n.Settings.clearDataSuccess)
         } catch {
             toast = .error(L10n.Settings.clearDataFailed(error.localizedDescription))
