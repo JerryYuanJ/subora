@@ -10,6 +10,7 @@
 		C4E9C1CB2F57EE4900F1B412 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4E9C1CA2F57EE4900F1B412 /* WidgetKit.framework */; };
 		C4E9C1CD2F57EE4900F1B412 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4E9C1CC2F57EE4900F1B412 /* SwiftUI.framework */; };
 		C4E9C1DA2F57EE4900F1B412 /* SuboraWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C4E9C1C92F57EE4900F1B412 /* SuboraWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C4E9C1F42F5AB96800F1B412 /* PostHog in Frameworks */ = {isa = PBXBuildFile; productRef = C4E9C1F32F5AB96800F1B412 /* PostHog */; };
 		C4FE651E2F5029F9003EFA28 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4FE651D2F5029F9003EFA28 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -87,6 +88,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C4FE651E2F5029F9003EFA28 /* StoreKit.framework in Frameworks */,
+				C4E9C1F42F5AB96800F1B412 /* PostHog in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +169,7 @@
 			);
 			name = "subscription-tracker";
 			packageProductDependencies = (
+				C4E9C1F32F5AB96800F1B412 /* PostHog */,
 			);
 			productName = "subscription-tracker";
 			productReference = C4FE647B2F4D8DFF003EFA28 /* subscription-tracker.app */;
@@ -201,6 +204,9 @@
 			);
 			mainGroup = C4FE64722F4D8DFF003EFA28;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C4E9C1F22F5AB96800F1B412 /* XCRemoteSwiftPackageReference "posthog-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C4FE647C2F4D8DFF003EFA28 /* Products */;
 			projectDirPath = "";
@@ -543,6 +549,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C4E9C1F22F5AB96800F1B412 /* XCRemoteSwiftPackageReference "posthog-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PostHog/posthog-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.44.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C4E9C1F32F5AB96800F1B412 /* PostHog */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C4E9C1F22F5AB96800F1B412 /* XCRemoteSwiftPackageReference "posthog-ios" */;
+			productName = PostHog;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C4FE64732F4D8DFF003EFA28 /* Project object */;
 }

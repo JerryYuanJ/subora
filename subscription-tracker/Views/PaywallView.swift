@@ -297,6 +297,10 @@ struct PaywallView: View {
                     selectedProduct = paywallService.availableProducts.first
                 }
             }
+            .onAppear {
+                // Track paywall view
+                AnalyticsService.shared.trackPaywallViewed()
+            }
         }
     }
     
@@ -305,12 +309,22 @@ struct PaywallView: View {
     private func purchasePro() async {
         guard let product = selectedProduct else { return }
         
+        // Track purchase started
+        AnalyticsService.shared.trackPurchaseStarted(productId: product.id)
+        
         isPurchasing = true
         defer { isPurchasing = false }
         
         do {
             let success = try await paywallService.purchase(product)
             if success {
+                // Track purchase completed
+                AnalyticsService.shared.trackPurchaseCompleted(
+                    productId: product.id,
+                    price: Double(truncating: product.price as NSNumber),
+                    currency: product.priceFormatStyle.currencyCode ?? "USD"
+                )
+                
                 toast = .success(L10n.Toast.purchaseSuccess)
                 
                 // Dismiss after a short delay
@@ -318,6 +332,12 @@ struct PaywallView: View {
                 dismiss()
             }
         } catch {
+            // Track purchase failed
+            AnalyticsService.shared.trackPurchaseFailed(
+                productId: product.id,
+                error: error.localizedDescription
+            )
+            
             toast = .error(L10n.Toast.purchaseFailed(error.localizedDescription))
         }
     }
@@ -329,6 +349,9 @@ struct PaywallView: View {
         do {
             let success = try await paywallService.restorePurchases()
             if success {
+                // Track restore success
+                AnalyticsService.shared.trackPurchaseRestored()
+                
                 toast = .success(L10n.Toast.restoreSuccess)
                 
                 // Dismiss after a short delay

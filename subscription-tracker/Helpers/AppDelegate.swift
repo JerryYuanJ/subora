@@ -7,6 +7,7 @@
 
 import UIKit
 import UserNotifications
+import PostHog
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
@@ -16,6 +17,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
+        // Initialize PostHog
+        setupPostHog()
+        
         // Set notification center delegate
         UNUserNotificationCenter.current().delegate = self
         
@@ -34,6 +38,18 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         )
         
         return true
+    }
+    
+    // MARK: - PostHog Setup
+    
+    private func setupPostHog() {
+        let POSTHOG_API_KEY = "phc_TcI9ELRnksM2AIxym0bidO8o9Lz0cR1e2QAr3GpN3G"
+        let POSTHOG_HOST = "https://us.i.posthog.com"
+        
+        let config = PostHogConfig(apiKey: POSTHOG_API_KEY, host: POSTHOG_HOST)
+        PostHogSDK.shared.setup(config)
+        
+        print("✅ PostHog initialized successfully")
     }
     
     @objc private func applicationDidBecomeActive() {

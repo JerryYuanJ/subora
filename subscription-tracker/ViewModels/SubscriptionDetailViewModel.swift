@@ -66,6 +66,9 @@ class SubscriptionDetailViewModel: ObservableObject {
     /// Delete the subscription
     /// - Throws: AppError if delete operation fails
     func delete() async throws {
+        // Track analytics before deletion
+        AnalyticsService.shared.trackSubscriptionDeleted(name: subscription.name)
+        
         try await subscriptionService.deleteSubscription(subscription)
     }
 }

@@ -138,6 +138,9 @@ class AddEditSubscriptionViewModel: ObservableObject {
         if isEditMode {
             // Update existing subscription
             try await subscriptionService.updateSubscription(subscription)
+            
+            // Track analytics
+            AnalyticsService.shared.trackSubscriptionEdited(name: subscription.name)
         } else {
             // Create new subscription with free user limit check
             let activeCount = subscriptionService.fetchActiveSubscriptions().count
@@ -146,6 +149,14 @@ class AddEditSubscriptionViewModel: ObservableObject {
             }
 
             _ = try await subscriptionService.createSubscription(subscription)
+            
+            // Track analytics
+            AnalyticsService.shared.trackSubscriptionAdded(
+                name: subscription.name,
+                amount: Double(truncating: subscription.amount as NSNumber),
+                currency: subscription.currency,
+                billingCycle: "\(subscription.billingCycle) \(subscription.billingCycleUnit.rawValue)"
+            )
         }
     }
 }
