@@ -86,7 +86,7 @@ struct PaywallView: View {
                         // Content
                         VStack(spacing: 20) {
                             // Crown icon and title
-                            VStack(spacing: 10) {
+                            VStack(spacing: 8) {
                                 ZStack {
                                     // Outer glow
                                     Circle()
@@ -99,10 +99,10 @@ struct PaywallView: View {
                                                 ],
                                                 center: .center,
                                                 startRadius: 0,
-                                                endRadius: 50
+                                                endRadius: 35
                                             )
                                         )
-                                        .frame(width: 100, height: 100)
+                                        .frame(width: 70, height: 70)
                                     
                                     // Inner circle
                                     Circle()
@@ -116,10 +116,10 @@ struct PaywallView: View {
                                                 endPoint: .bottomTrailing
                                             )
                                         )
-                                        .frame(width: 70, height: 70)
+                                        .frame(width: 50, height: 50)
                                     
                                     Image(systemName: "crown.fill")
-                                        .font(.system(size: 36))
+                                        .font(.system(size: 24))
                                         .foregroundStyle(
                                             LinearGradient(
                                                 colors: [
@@ -130,11 +130,11 @@ struct PaywallView: View {
                                                 endPoint: .bottomTrailing
                                             )
                                         )
-                                        .shadow(color: Color(hex: "#fbbf24").opacity(0.5), radius: 10)
+                                        .shadow(color: Color(hex: "#fbbf24").opacity(0.5), radius: 8)
                                 }
                                 
                                 Text(L10n.Paywall.title)
-                                    .font(.system(size: 26, weight: .bold))
+                                    .font(.system(size: 24, weight: .bold))
                                     .foregroundStyle(
                                         LinearGradient(
                                             colors: [.white, Color.white.opacity(0.9)],
@@ -144,7 +144,7 @@ struct PaywallView: View {
                                     )
                                 
                                 Text(L10n.Paywall.subtitle)
-                                    .font(.system(size: 14))
+                                    .font(.system(size: 13))
                                     .foregroundColor(.white.opacity(0.6))
                                     .multilineTextAlignment(.center)
                                     .padding(.horizontal, 32)
@@ -202,6 +202,12 @@ struct PaywallView: View {
                                     icon: "folder.fill",
                                     title: L10n.Paywall.featureUnlimitedCategories,
                                     description: L10n.Paywall.featureUnlimitedCategoriesDesc
+                                )
+                                
+                                PremiumFeatureRow(
+                                    icon: "square.grid.2x2.fill",
+                                    title: L10n.Paywall.featureWidgets,
+                                    description: L10n.Paywall.featureWidgetsDesc
                                 )
                                 
                                 PremiumFeatureRow(
@@ -286,6 +292,28 @@ struct PaywallView: View {
                                         .foregroundColor(.white.opacity(0.5))
                                 }
                                 .disabled(isPurchasing)
+                                
+                                // Legal links
+                                HStack(spacing: 8) {
+                                    Link(destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!) {
+                                        Text(L10n.Legal.termsOfService)
+                                            .font(.system(size: 11))
+                                            .foregroundColor(.white.opacity(0.4))
+                                            .underline()
+                                    }
+                                    
+                                    Text("•")
+                                        .font(.system(size: 11))
+                                        .foregroundColor(.white.opacity(0.3))
+                                    
+                                    Link(destination: URL(string: "https://jerrysolo.notion.site/Subora-Privacy-318e62a123fa807c87fcd7299176ef8c")!) {
+                                        Text(L10n.Legal.privacyPolicy)
+                                            .font(.system(size: 11))
+                                            .foregroundColor(.white.opacity(0.4))
+                                            .underline()
+                                    }
+                                }
+                                .padding(.top, 4)
                             }
                             .padding(.horizontal, 20)
                             .padding(.top, 8)

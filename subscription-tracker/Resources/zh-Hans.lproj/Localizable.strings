@@ -172,6 +172,8 @@
 "paywall.feature_unlimited_subscriptions_desc" = "追踪任意数量的订阅";
 "paywall.feature_unlimited_categories" = "无限分类";
 "paywall.feature_unlimited_categories_desc" = "使用自定义分类整理";
+"paywall.feature_widgets" = "主屏幕小组件";
+"paywall.feature_widgets_desc" = "一目了然查看订阅";
 "paywall.feature_icloud_sync" = "iCloud 同步";
 "paywall.feature_icloud_sync_desc" = "在所有设备间同步";
 "paywall.feature_smart_notifications" = "智能通知";
@@ -359,3 +361,7 @@
 "settings.submit_success" = "感谢！我们会尽快审核并添加该应用。";
 "settings.submit_failed" = "提交失败，请稍后重试。";
 "settings.app_name_required" = "应用名称为必填项";
+
+/* Legal */
+"legal.terms_of_service" = "服务条款";
+"legal.privacy_policy" = "隐私政策";

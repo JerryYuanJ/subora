@@ -172,6 +172,8 @@
 "paywall.feature_unlimited_subscriptions_desc" = "好きなだけサブスクリプションを追跡";
 "paywall.feature_unlimited_categories" = "無制限のカテゴリ";
 "paywall.feature_unlimited_categories_desc" = "カスタムカテゴリで整理";
+"paywall.feature_widgets" = "ホーム画面ウィジェット";
+"paywall.feature_widgets_desc" = "一目でサブスクリプションを確認";
 "paywall.feature_icloud_sync" = "iCloud 同期";
 "paywall.feature_icloud_sync_desc" = "すべてのデバイスで同期";
 "paywall.feature_smart_notifications" = "スマート通知";
@@ -359,3 +361,7 @@
 "settings.submit_success" = "ありがとうございます！確認後、アプリを追加いたします。";
 "settings.submit_failed" = "送信に失敗しました。後でもう一度お試しください。";
 "settings.app_name_required" = "アプリ名は必須です";
+
+/* Legal */
+"legal.terms_of_service" = "利用規約";
+"legal.privacy_policy" = "プライバシーポリシー";

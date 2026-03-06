@@ -172,6 +172,8 @@
 "paywall.feature_unlimited_subscriptions_desc" = "Track as many subscriptions as you want";
 "paywall.feature_unlimited_categories" = "Unlimited Categories";
 "paywall.feature_unlimited_categories_desc" = "Organize with custom categories";
+"paywall.feature_widgets" = "Home Screen Widgets";
+"paywall.feature_widgets_desc" = "View subscriptions at a glance";
 "paywall.feature_icloud_sync" = "iCloud Sync";
 "paywall.feature_icloud_sync_desc" = "Sync across all your devices";
 "paywall.feature_smart_notifications" = "Smart Notifications";
@@ -359,3 +361,7 @@
 "settings.submit_success" = "Thank you! We'll review and add the app soon.";
 "settings.submit_failed" = "Failed to submit. Please try again later.";
 "settings.app_name_required" = "App name is required";
+
+/* Legal */
+"legal.terms_of_service" = "Terms of Service";
+"legal.privacy_policy" = "Privacy Policy";

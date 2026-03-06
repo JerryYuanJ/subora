@@ -262,6 +262,8 @@ enum L10n {
         static let featureUnlimitedSubscriptionsDesc = NSLocalizedString("paywall.feature_unlimited_subscriptions_desc", comment: "Unlimited subscriptions description")
         static let featureUnlimitedCategories = NSLocalizedString("paywall.feature_unlimited_categories", comment: "Unlimited categories feature")
         static let featureUnlimitedCategoriesDesc = NSLocalizedString("paywall.feature_unlimited_categories_desc", comment: "Unlimited categories description")
+        static let featureWidgets = NSLocalizedString("paywall.feature_widgets", comment: "Widgets feature")
+        static let featureWidgetsDesc = NSLocalizedString("paywall.feature_widgets_desc", comment: "Widgets description")
         static let featureiCloudSync = NSLocalizedString("paywall.feature_icloud_sync", comment: "iCloud sync feature")
         static let featureiCloudSyncDesc = NSLocalizedString("paywall.feature_icloud_sync_desc", comment: "iCloud sync description")
         static let featureSmartNotifications = NSLocalizedString("paywall.feature_smart_notifications", comment: "Smart notifications feature")
@@ -491,5 +493,11 @@ enum L10n {
         }
         static let scheduledSuccess = NSLocalizedString("notification.scheduled_success", comment: "Scheduled success")
         static let cancelledSuccess = NSLocalizedString("notification.cancelled_success", comment: "Cancelled success")
+    }
+    
+    // MARK: - Legal
+    enum Legal {
+        static let termsOfService = NSLocalizedString("legal.terms_of_service", comment: "Terms of Service")
+        static let privacyPolicy = NSLocalizedString("legal.privacy_policy", comment: "Privacy Policy")
     }
 }
