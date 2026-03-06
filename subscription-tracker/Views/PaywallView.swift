@@ -17,6 +17,13 @@ struct PaywallView: View {
     @State private var isPurchasing = false
     @State private var toast: Toast?
     
+    /// Source of paywall trigger for analytics
+    let source: String
+    
+    init(source: String = "unknown") {
+        self.source = source
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -298,8 +305,8 @@ struct PaywallView: View {
                 }
             }
             .onAppear {
-                // Track paywall view
-                AnalyticsService.shared.trackPaywallViewed()
+                // Track paywall view with source
+                AnalyticsService.shared.trackPaywallViewed(source: source)
             }
         }
     }

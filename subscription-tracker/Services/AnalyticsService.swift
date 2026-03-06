@@ -145,8 +145,10 @@ class AnalyticsService {
     
     // MARK: - Paywall Events
     
-    func trackPaywallViewed() {
-        track("paywall_viewed")
+    func trackPaywallViewed(source: String) {
+        track("paywall_viewed", properties: [
+            "source": source
+        ])
     }
     
     func trackPurchaseStarted(productId: String) {

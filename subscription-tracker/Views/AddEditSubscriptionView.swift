@@ -192,7 +192,7 @@ struct AddEditSubscriptionView: View {
                 }
             }
             .sheet(isPresented: $showPaywall) {
-                PaywallView()
+                PaywallView(source: "subscription_limit")
                     .environmentObject(paywallService)
             }
             .sheet(isPresented: $showAddCategory) {

@@ -239,7 +239,7 @@ struct AddEditCategoryView: View {
                 }
             }
             .sheet(isPresented: $showPaywall) {
-                PaywallView()
+                PaywallView(source: "category_limit")
                     .environmentObject(PaywallService.shared)
             }
         }

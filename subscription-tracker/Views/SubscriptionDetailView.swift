@@ -85,7 +85,7 @@ struct SubscriptionDetailView: View {
             Text(L10n.SubscriptionDetail.deleteConfirmMessage)
         }
         .sheet(isPresented: $showPaywall) {
-            PaywallView()
+            PaywallView(source: "subscription_detail")
                 .environmentObject(paywallService)
         }
         .toast($toast)

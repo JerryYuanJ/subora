@@ -76,7 +76,7 @@ struct InsightCardManagementView: View {
                 }
             }
             .sheet(isPresented: $showPaywall) {
-                PaywallView()
+                PaywallView(source: "insights_card")
                     .environmentObject(paywallService)
             }
         }

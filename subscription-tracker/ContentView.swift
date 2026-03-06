@@ -45,6 +45,13 @@ struct ContentView: View {
                 }
                 .tag(3)
         }
+        .onChange(of: selectedTab) { oldValue, newValue in
+            // Track screen view
+            let screenNames = ["subscriptions", "insights", "categories", "settings"]
+            if newValue < screenNames.count {
+                AnalyticsService.shared.trackScreenView(screenNames[newValue])
+            }
+        }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .active {
                 // Clear badge when app becomes active

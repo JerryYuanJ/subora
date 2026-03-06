@@ -58,6 +58,9 @@ class CategoryViewModel: ObservableObject {
         do {
             let success = try await categoryService.createCategory(category)
             if success {
+                // Track analytics
+                AnalyticsService.shared.trackCategoryCreated(name: category.name)
+                
                 // Reload categories after successful creation
                 loadCategories()
             }

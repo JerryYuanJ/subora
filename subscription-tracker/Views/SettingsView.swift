@@ -140,7 +140,7 @@ struct SettingsView: View {
                 Text(L10n.Settings.clearDataConfirmMessage)
             }
             .sheet(isPresented: $showPaywall) {
-                PaywallView()
+                PaywallView(source: "settings_pro")
                     .environmentObject(paywallService)
             }
             .sheet(isPresented: $showWidgetPreview) {
