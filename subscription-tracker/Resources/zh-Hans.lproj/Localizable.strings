@@ -342,3 +342,20 @@
 "days.plural" = "天";
 "times.singular" = "次";
 "times.plural" = "次";
+
+/* Submit App Info */
+"settings.submit_app_info" = "提交应用信息";
+"settings.submit_app_info_subtitle" = "帮助我们添加缺失的应用";
+"settings.submit_app_info_title" = "提交应用信息";
+"settings.submit_app_info_description" = "找不到你的应用？帮助我们提交应用信息。";
+"settings.app_name_label" = "应用名称";
+"settings.app_name_placeholder" = "例如：Netflix、Spotify";
+"settings.app_website_label" = "应用官网（选填）";
+"settings.app_website_placeholder" = "例如：https://netflix.com";
+"settings.user_email_label" = "您的邮箱（选填）";
+"settings.user_email_placeholder" = "例如：user@example.com";
+"settings.submit_button" = "提交";
+"settings.submitting" = "提交中...";
+"settings.submit_success" = "感谢！我们会尽快审核并添加该应用。";
+"settings.submit_failed" = "提交失败，请稍后重试。";
+"settings.app_name_required" = "应用名称为必填项";

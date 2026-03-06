@@ -343,6 +343,23 @@ enum L10n {
         static let widgetStep1 = NSLocalizedString("settings.widget_step1", comment: "Widget step 1")
         static let widgetStep2 = NSLocalizedString("settings.widget_step2", comment: "Widget step 2")
         static let widgetStep3 = NSLocalizedString("settings.widget_step3", comment: "Widget step 3")
+        
+        // Submit App Info
+        static let submitAppInfo = NSLocalizedString("settings.submit_app_info", comment: "Submit app info button")
+        static let submitAppInfoSubtitle = NSLocalizedString("settings.submit_app_info_subtitle", comment: "Submit app info subtitle")
+        static let submitAppInfoTitle = NSLocalizedString("settings.submit_app_info_title", comment: "Submit app info title")
+        static let submitAppInfoDescription = NSLocalizedString("settings.submit_app_info_description", comment: "Submit app info description")
+        static let appNameLabel = NSLocalizedString("settings.app_name_label", comment: "App name label")
+        static let appNamePlaceholder = NSLocalizedString("settings.app_name_placeholder", comment: "App name placeholder")
+        static let appWebsiteLabel = NSLocalizedString("settings.app_website_label", comment: "App website label")
+        static let appWebsitePlaceholder = NSLocalizedString("settings.app_website_placeholder", comment: "App website placeholder")
+        static let userEmailLabel = NSLocalizedString("settings.user_email_label", comment: "User email label")
+        static let userEmailPlaceholder = NSLocalizedString("settings.user_email_placeholder", comment: "User email placeholder")
+        static let submitButton = NSLocalizedString("settings.submit_button", comment: "Submit button")
+        static let submitting = NSLocalizedString("settings.submitting", comment: "Submitting status")
+        static let submitSuccess = NSLocalizedString("settings.submit_success", comment: "Submit success message")
+        static let submitFailed = NSLocalizedString("settings.submit_failed", comment: "Submit failed message")
+        static let appNameRequired = NSLocalizedString("settings.app_name_required", comment: "App name required error")
     }
     
     // MARK: - ViewModel Errors

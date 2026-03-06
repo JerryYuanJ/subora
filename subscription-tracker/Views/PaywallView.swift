@@ -380,13 +380,52 @@ private struct PremiumSubscriptionPlanCard: View {
     let isSelected: Bool
     let onSelect: () -> Void
     
+    // Store all products to calculate savings
+    @EnvironmentObject private var paywallService: PaywallService
+    
     private var plan: SubscriptionPlan? {
         SubscriptionPlan(rawValue: product.id)
     }
     
     private var savingsText: String? {
         guard plan == .yearly else { return nil }
-        return L10n.Paywall.planYearlySavings
+        return calculateSavingsPercentage()
+    }
+    
+    private func calculateSavingsPercentage() -> String? {
+        // Find monthly product
+        guard let monthlyProduct = paywallService.availableProducts.first(where: { $0.id == SubscriptionPlan.monthly.rawValue }) else {
+            return L10n.Paywall.planYearlySavings // Fallback to default
+        }
+        
+        // Get prices as Decimal
+        let monthlyPrice = monthlyProduct.price
+        let yearlyPrice = product.price
+        
+        // Calculate monthly equivalent of yearly plan
+        let yearlyMonthlyEquivalent = yearlyPrice / 12
+        
+        // Calculate savings percentage
+        let savings = (monthlyPrice - yearlyMonthlyEquivalent) / monthlyPrice * 100
+        
+        // Convert to Double and round to nearest integer
+        let savingsDouble = NSDecimalNumber(decimal: savings).doubleValue
+        let roundedSavings = Int(savingsDouble.rounded())
+        
+        // Return formatted string
+        if roundedSavings > 0 {
+            let locale = Locale.current.language.languageCode?.identifier ?? "en"
+            switch locale {
+            case "zh":
+                return "节省 \(roundedSavings)%"
+            case "ja":
+                return "\(roundedSavings)% お得"
+            default:
+                return "Save \(roundedSavings)%"
+            }
+        }
+        
+        return nil
     }
     
     var body: some View {

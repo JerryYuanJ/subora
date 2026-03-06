@@ -342,3 +342,20 @@
 "days.plural" = "日";
 "times.singular" = "回";
 "times.plural" = "回";
+
+/* Submit App Info */
+"settings.submit_app_info" = "アプリ情報を送信";
+"settings.submit_app_info_subtitle" = "不足しているアプリの追加にご協力ください";
+"settings.submit_app_info_title" = "アプリ情報を送信";
+"settings.submit_app_info_description" = "お探しのアプリが見つかりませんか？アプリ情報の送信にご協力ください。";
+"settings.app_name_label" = "アプリ名";
+"settings.app_name_placeholder" = "例：Netflix、Spotify";
+"settings.app_website_label" = "アプリのウェブサイト（任意）";
+"settings.app_website_placeholder" = "例：https://netflix.com";
+"settings.user_email_label" = "メールアドレス（任意）";
+"settings.user_email_placeholder" = "例：user@example.com";
+"settings.submit_button" = "送信";
+"settings.submitting" = "送信中...";
+"settings.submit_success" = "ありがとうございます！確認後、アプリを追加いたします。";
+"settings.submit_failed" = "送信に失敗しました。後でもう一度お試しください。";
+"settings.app_name_required" = "アプリ名は必須です";

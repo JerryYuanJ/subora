@@ -342,3 +342,20 @@
 "days.plural" = "days";
 "times.singular" = "time";
 "times.plural" = "times";
+
+/* Submit App Info */
+"settings.submit_app_info" = "Submit App Info";
+"settings.submit_app_info_subtitle" = "Help us add missing apps";
+"settings.submit_app_info_title" = "Submit App Information";
+"settings.submit_app_info_description" = "Can't find your app in the list? Help us by submitting the app information.";
+"settings.app_name_label" = "App Name";
+"settings.app_name_placeholder" = "e.g., Netflix, Spotify";
+"settings.app_website_label" = "App Website (Optional)";
+"settings.app_website_placeholder" = "e.g., https://netflix.com";
+"settings.user_email_label" = "Your Email (Optional)";
+"settings.user_email_placeholder" = "e.g., user@example.com";
+"settings.submit_button" = "Submit";
+"settings.submitting" = "Submitting...";
+"settings.submit_success" = "Thank you! We'll review and add the app soon.";
+"settings.submit_failed" = "Failed to submit. Please try again later.";
+"settings.app_name_required" = "App name is required";

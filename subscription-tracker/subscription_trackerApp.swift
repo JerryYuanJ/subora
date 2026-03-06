@@ -16,6 +16,7 @@ struct subscription_trackerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var appSettings = AppSettings()
     @StateObject private var notificationManager = NotificationManager()
+    @Environment(\.scenePhase) private var scenePhase
     
     // 创建支持 CloudKit 的 ModelContainer
     let sharedModelContainer: ModelContainer = {
@@ -67,6 +68,9 @@ struct subscription_trackerApp: App {
                 }
         }
         .modelContainer(sharedModelContainer)
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            handleScenePhaseChange(from: oldPhase, to: newPhase)
+        }
     }
     
     /// Seed default categories on first launch
@@ -127,6 +131,16 @@ struct subscription_trackerApp: App {
     /// Clear app badge count
     private func clearBadgeCount() async {
         try? await UNUserNotificationCenter.current().setBadgeCount(0)
+    }
+    
+    /// Handle scene phase changes to verify subscription status
+    private func handleScenePhaseChange(from oldPhase: ScenePhase, to newPhase: ScenePhase) {
+        // Verify Pro status when app becomes active (from background or inactive)
+        if newPhase == .active && oldPhase != .active {
+            Task {
+                await PaywallService.shared.updateProStatus()
+            }
+        }
     }
 }
 

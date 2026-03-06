@@ -46,7 +46,12 @@ class PaywallService: ObservableObject {
     
     @Published var isProUser: Bool = false {
         didSet {
-            guard oldValue != isProUser else { return }
+            print("📝 isProUser didSet triggered: oldValue=\(oldValue), newValue=\(isProUser)")
+            guard oldValue != isProUser else {
+                print("⚠️ isProUser value unchanged, skipping update")
+                return
+            }
+            print("💾 Saving Pro status to UserDefaults and Widget...")
             UserDefaults.standard.set(isProUser, forKey: "isProUser")
             WidgetDataStore.saveProStatus(isProUser)
             // Also patch the WidgetData JSON so widget reads correct Pro status
@@ -61,6 +66,7 @@ class PaywallService: ObservableObject {
             )
             WidgetDataStore.save(updated)
             WidgetCenter.shared.reloadAllTimelines()
+            print("✅ Pro status saved successfully")
         }
     }
     @Published var availableProducts: [Product] = []
@@ -155,28 +161,43 @@ class PaywallService: ObservableObject {
     /// - Returns: True if purchase succeeded, false otherwise
     @MainActor
     func purchase(_ product: Product) async throws -> Bool {
+        print("🛒 Starting purchase for: \(product.id)")
         let result = try await product.purchase()
         
         switch result {
         case .success(let verification):
+            print("✅ Purchase successful, verifying transaction...")
             // Verify the transaction
             let transaction = try checkVerified(verification)
+            print("✅ Transaction verified: \(transaction.productID)")
             
-            // Update Pro status
+            // Finish the transaction first
+            await transaction.finish()
+            print("✅ Transaction finished")
+            
+            // Update Pro status from entitlements
             await updateProStatus()
             
-            // Finish the transaction
-            await transaction.finish()
+            // IMPORTANT: In sandbox environment, Transaction.currentEntitlements may not
+            // immediately reflect the new purchase. If updateProStatus didn't find the
+            // subscription but we just verified it, manually set Pro status.
+            if !isProUser && productIDs.contains(transaction.productID) {
+                print("⚠️ Entitlements not updated yet, manually setting Pro status")
+                isProUser = true
+            }
             
             return true
             
         case .userCancelled:
+            print("❌ Purchase cancelled by user")
             return false
             
         case .pending:
+            print("⏳ Purchase pending")
             return false
             
         @unknown default:
+            print("❓ Unknown purchase result")
             return false
         }
     }
@@ -193,18 +214,23 @@ class PaywallService: ObservableObject {
     /// Check and update Pro status based on active subscriptions
     @MainActor
     func updateProStatus() async {
+        print("🔍 Checking Pro status...")
         var hasActiveSubscription = false
         
         for await result in Transaction.currentEntitlements {
             if case .verified(let transaction) = result {
+                print("✅ Found verified transaction: \(transaction.productID)")
                 if productIDs.contains(transaction.productID) {
                     hasActiveSubscription = true
+                    print("✅ Active subscription found: \(transaction.productID)")
                     break
                 }
             }
         }
         
+        print("🔍 Pro status result: \(hasActiveSubscription)")
         isProUser = hasActiveSubscription
+        print("🔍 isProUser updated to: \(isProUser)")
     }
     
     // MARK: - Transaction Observation

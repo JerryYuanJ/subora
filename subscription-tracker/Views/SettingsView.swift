@@ -25,6 +25,7 @@ struct SettingsView: View {
     @State private var showMailUnavailableAlert = false
     @State private var toast: Toast?
     @State private var showWidgetPreview = false
+    @State private var showSubmitAppInfo = false
     
     // Computed properties for bindings
     var darkModeSelection: Binding<DarkModeOption> {
@@ -111,6 +112,11 @@ struct SettingsView: View {
                 
                 // About section
                 aboutSection
+                
+                #if DEBUG
+                // Test section (only in debug builds)
+                testSection
+                #endif
             }
             .safeAreaInset(edge: .bottom) {
                 // Version info at bottom center
@@ -145,6 +151,9 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showWidgetPreview) {
                 WidgetPreviewSheet()
+            }
+            .sheet(isPresented: $showSubmitAppInfo) {
+                SubmitAppInfoView()
             }
             .alert(L10n.NotificationContent.permissionRequired, isPresented: $showNotificationPermissionAlert) {
                 Button(L10n.Common.cancel, role: .cancel) { }
@@ -465,20 +474,7 @@ struct SettingsView: View {
                     }
                 }
 
-                // Test notification button (Pro users only)
-                if notificationManager.authorizationStatus == .authorized {
-                    Button {
-                        Task {
-                            await sendTestNotification()
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: "bell.badge.fill")
-                                .foregroundColor(.blue)
-                            Text(L10n.NotificationContent.testNotification)
-                        }
-                    }
-                }
+                // Test notification button removed from here - moved to testSection
             } else {
                 Button {
                     showPaywall = true
@@ -513,27 +509,30 @@ struct SettingsView: View {
                     }
                 }
             }
-            
-            #if DEBUG
-            // Development test button to toggle Pro status
-            Button {
-                paywallService.isProUser.toggle()
-            } label: {
-                HStack {
-                    Image(systemName: "hammer.fill")
-                        .foregroundColor(.orange)
-                    Text(L10n.Settings.devToggleProStatus)
-                    Spacer()
-                    Text(paywallService.isProUser ? L10n.Settings.devProStatusOn : L10n.Settings.devProStatusOff)
-                        .foregroundColor(.secondary)
-                }
-            }
-            #endif
         }
     }
     
     private var aboutSection: some View {
         Section(L10n.Settings.sectionAbout) {
+            // Submit App Info
+            Button {
+                showSubmitAppInfo = true
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(L10n.Settings.submitAppInfo)
+                            .foregroundColor(.primary)
+                        Text(L10n.Settings.submitAppInfoSubtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
             // Contact Us
             Button {
                 contactUs()
@@ -592,6 +591,48 @@ struct SettingsView: View {
             }
         }
     }
+    
+    #if DEBUG
+    private var testSection: some View {
+        Section("🔧 Development & Testing") {
+            // Toggle Pro Status
+            Button {
+                paywallService.isProUser.toggle()
+            } label: {
+                HStack {
+                    Image(systemName: "hammer.fill")
+                        .foregroundColor(.orange)
+                    Text(L10n.Settings.devToggleProStatus)
+                    Spacer()
+                    Text(paywallService.isProUser ? L10n.Settings.devProStatusOn : L10n.Settings.devProStatusOff)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            // Test Notification
+            if notificationManager.authorizationStatus == .authorized {
+                Button {
+                    Task {
+                        await sendTestNotification()
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "bell.badge.fill")
+                            .foregroundColor(.blue)
+                        Text(L10n.NotificationContent.testNotification)
+                    }
+                }
+            } else {
+                HStack {
+                    Image(systemName: "bell.slash.fill")
+                        .foregroundColor(.secondary)
+                    Text("Test Notification (需要通知权限)")
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+    }
+    #endif
     
     // MARK: - Helper Methods
     
