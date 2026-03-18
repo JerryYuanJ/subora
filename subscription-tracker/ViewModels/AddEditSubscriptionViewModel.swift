@@ -93,30 +93,39 @@ class AddEditSubscriptionViewModel: ObservableObject {
             validationErrors["name"] = L10n.Validation.nameTooLong
         }
 
-        // Validate amount
-        if subscription.amount <= 0 {
-            validationErrors["amount"] = L10n.Validation.amountInvalid
+        if subscription.isTrial {
+            // Trial only needs name and expiry date
+            if subscription.trialExpiryDate == nil {
+                validationErrors["trialExpiryDate"] = L10n.Validation.trialExpiryDateRequired
+            }
+        } else {
+            // Validate amount
+            if subscription.amount <= 0 {
+                validationErrors["amount"] = L10n.Validation.amountInvalid
+            }
+
+            // Validate billing cycle
+            if subscription.billingCycle <= 0 {
+                validationErrors["billingCycle"] = L10n.Validation.billingCycleInvalid
+            }
+
+            // Validate first payment date (should not be in future for new subscriptions)
+            if !isEditMode && subscription.firstPaymentDate > Date() {
+                validationErrors["firstPaymentDate"] = L10n.Validation.firstPaymentFuture
+            }
         }
 
-        // Validate billing cycle
-        if subscription.billingCycle <= 0 {
-            validationErrors["billingCycle"] = L10n.Validation.billingCycleInvalid
-        }
+        if !subscription.isTrial {
+            // Validate currency
+            let supportedCurrencies = ["USD", "CNY", "EUR", "GBP", "JPY", "HKD", "TWD"]
+            if !supportedCurrencies.contains(subscription.currency) {
+                validationErrors["currency"] = L10n.Validation.currencyUnsupported
+            }
 
-        // Validate first payment date (should not be in future for new subscriptions)
-        if !isEditMode && subscription.firstPaymentDate > Date() {
-            validationErrors["firstPaymentDate"] = L10n.Validation.firstPaymentFuture
-        }
-
-        // Validate currency
-        let supportedCurrencies = ["USD", "CNY", "EUR", "GBP", "JPY", "HKD", "TWD"]
-        if !supportedCurrencies.contains(subscription.currency) {
-            validationErrors["currency"] = L10n.Validation.currencyUnsupported
-        }
-
-        // Validate notify days before
-        if subscription.notify && subscription.notifyDaysBefore <= 0 {
-            validationErrors["notifyDaysBefore"] = L10n.Validation.notifyDaysInvalid
+            // Validate notify days before
+            if subscription.notify && subscription.notifyDaysBefore <= 0 {
+                validationErrors["notifyDaysBefore"] = L10n.Validation.notifyDaysInvalid
+            }
         }
 
         return validationErrors.isEmpty
@@ -142,8 +151,8 @@ class AddEditSubscriptionViewModel: ObservableObject {
             // Track analytics
             AnalyticsService.shared.trackSubscriptionEdited(name: subscription.name)
         } else {
-            // Create new subscription with free user limit check
-            let activeCount = subscriptionService.fetchActiveSubscriptions().count
+            // Create new subscription with free user limit check (count all including private)
+            let activeCount = subscriptionService.fetchActiveSubscriptions(includePrivate: true).count
             guard paywallService.canCreateSubscription(currentCount: activeCount) else {
                 throw AppError.subscriptionLimitReached
             }

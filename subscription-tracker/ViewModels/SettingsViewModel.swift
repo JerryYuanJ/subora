@@ -175,6 +175,23 @@ class SettingsViewModel: ObservableObject {
         }
     }
     
+    /// Update show private subscriptions setting
+    func updateShowPrivateSubscriptions(_ show: Bool) async throws {
+        guard let settings = userSettings else {
+            throw AppError.dataNotFound
+        }
+
+        do {
+            settings.showPrivateSubscriptions = show
+            settings.updatedAt = Date()
+            try modelContext.save()
+            Logger.app.info("Show private subscriptions updated to: \(show)")
+        } catch {
+            Logger.app.error("Failed to update show private subscriptions: \(error.localizedDescription)")
+            throw AppError.dataSaveFailed(reason: error.localizedDescription)
+        }
+    }
+
     /// Toggle iCloud sync on/off
     /// - Parameter enabled: Whether to enable iCloud sync
     func toggleiCloudSync(_ enabled: Bool) async throws {

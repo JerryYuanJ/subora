@@ -205,6 +205,20 @@ enum L10n {
                 return String(format: NSLocalizedString("subscription.notify_days_before", comment: "Notify days before"), days)
             }
         }
+        static let notificationTimeProHint = NSLocalizedString("subscription.notification_time_pro_hint", comment: "Hint that custom notification time requires Pro")
+        static let markAsPrivate = NSLocalizedString("subscription.mark_as_private", comment: "Mark as private toggle")
+        static let privateHint = NSLocalizedString("subscription.private_hint", comment: "Private subscription hint")
+        static let freeTrial = NSLocalizedString("subscription.free_trial", comment: "Free trial toggle")
+        static let freeTrialHint = NSLocalizedString("subscription.free_trial_hint", comment: "Free trial hint")
+        static let trialExpiryDate = NSLocalizedString("subscription.trial_expiry_date", comment: "Trial expiry date")
+        static let trialLabel = NSLocalizedString("subscription.trial_label", comment: "Trial badge label")
+        static let trialExpired = NSLocalizedString("subscription.trial_expired", comment: "Trial expired label")
+        static func trialDaysLeft(_ days: Int, _ suffix: String) -> String {
+            String(format: NSLocalizedString("subscription.trial_days_left", comment: "Trial days remaining"), days, suffix)
+        }
+        static let trialNeedsAction = NSLocalizedString("subscription.trial_needs_action", comment: "Trial needs action")
+        static let trialExpiredBanner = NSLocalizedString("subscription.trial_expired_banner", comment: "Trial expired banner text")
+        static let convertToSubscription = NSLocalizedString("subscription.convert_to_subscription", comment: "Convert trial to subscription")
         static let buttonCancel = NSLocalizedString("subscription.button_cancel", comment: "Cancel button")
         static let buttonSave = NSLocalizedString("subscription.button_save", comment: "Save button")
     }
@@ -252,28 +266,17 @@ enum L10n {
     enum Paywall {
         static let title = NSLocalizedString("paywall.title", comment: "Paywall title")
         static let subtitle = NSLocalizedString("paywall.subtitle", comment: "Paywall subtitle")
-        static let planMonthly = NSLocalizedString("paywall.plan_monthly", comment: "Monthly plan")
-        static let planYearly = NSLocalizedString("paywall.plan_yearly", comment: "Yearly plan")
-        static let planMonthlyDuration = NSLocalizedString("paywall.plan_monthly_duration", comment: "Monthly duration")
-        static let planYearlyDuration = NSLocalizedString("paywall.plan_yearly_duration", comment: "Yearly duration")
-        static let planYearlySavings = NSLocalizedString("paywall.plan_yearly_savings", comment: "Yearly savings")
-        static let planMonthlyShort = NSLocalizedString("paywall.plan_monthly_short", comment: "Monthly short")
-        static let featureUnlimitedSubscriptions = NSLocalizedString("paywall.feature_unlimited_subscriptions", comment: "Unlimited subscriptions feature")
-        static let featureUnlimitedSubscriptionsDesc = NSLocalizedString("paywall.feature_unlimited_subscriptions_desc", comment: "Unlimited subscriptions description")
-        static let featureUnlimitedCategories = NSLocalizedString("paywall.feature_unlimited_categories", comment: "Unlimited categories feature")
-        static let featureUnlimitedCategoriesDesc = NSLocalizedString("paywall.feature_unlimited_categories_desc", comment: "Unlimited categories description")
+        static let featureUnlimited = NSLocalizedString("paywall.feature_unlimited", comment: "Unlimited feature")
+        static let featureUnlimitedDesc = NSLocalizedString("paywall.feature_unlimited_desc", comment: "Unlimited description")
         static let featureWidgets = NSLocalizedString("paywall.feature_widgets", comment: "Widgets feature")
         static let featureWidgetsDesc = NSLocalizedString("paywall.feature_widgets_desc", comment: "Widgets description")
+        static let featureCustomReminder = NSLocalizedString("paywall.feature_custom_reminder", comment: "Custom reminder feature")
+        static let featureCustomReminderDesc = NSLocalizedString("paywall.feature_custom_reminder_desc", comment: "Custom reminder description")
         static let featureiCloudSync = NSLocalizedString("paywall.feature_icloud_sync", comment: "iCloud sync feature")
         static let featureiCloudSyncDesc = NSLocalizedString("paywall.feature_icloud_sync_desc", comment: "iCloud sync description")
-        static let featureSmartNotifications = NSLocalizedString("paywall.feature_smart_notifications", comment: "Smart notifications feature")
-        static let featureSmartNotificationsDesc = NSLocalizedString("paywall.feature_smart_notifications_desc", comment: "Smart notifications description")
-        static let featureAdvancedStats = NSLocalizedString("paywall.feature_advanced_stats", comment: "Advanced stats feature")
-        static let featureAdvancedStatsDesc = NSLocalizedString("paywall.feature_advanced_stats_desc", comment: "Advanced stats description")
-        static let featureThemeCustomization = NSLocalizedString("paywall.feature_theme_customization", comment: "Theme customization feature")
-        static let featureThemeCustomizationDesc = NSLocalizedString("paywall.feature_theme_customization_desc", comment: "Theme customization description")
+        static let featureInsights = NSLocalizedString("paywall.feature_insights", comment: "Insights feature")
+        static let featureInsightsDesc = NSLocalizedString("paywall.feature_insights_desc", comment: "Insights description")
         static let buttonPurchase = NSLocalizedString("paywall.button_purchase", comment: "Purchase button")
-        static let buttonSelectPlan = NSLocalizedString("paywall.button_select_plan", comment: "Select plan button")
         static let buttonRestore = NSLocalizedString("paywall.button_restore", comment: "Restore button")
         static let buttonClose = NSLocalizedString("paywall.button_close", comment: "Close button")
         static let errorNoActivePurchase = NSLocalizedString("paywall.error_no_active_purchase", comment: "No active purchase error")
@@ -307,6 +310,7 @@ enum L10n {
         static let syncSynced = NSLocalizedString("settings.sync_synced", comment: "Synced status")
         static let syncError = NSLocalizedString("settings.sync_error", comment: "Sync error status")
         static let syncDisabled = NSLocalizedString("settings.sync_disabled", comment: "Sync disabled status")
+        static let showPrivateSubscriptions = NSLocalizedString("settings.show_private_subscriptions", comment: "Show private subscriptions toggle")
         static let clearData = NSLocalizedString("settings.clear_data", comment: "Clear data button")
         static let clearDataConfirmTitle = NSLocalizedString("settings.clear_data_confirm_title", comment: "Clear data confirm title")
         static let clearDataConfirmMessage = NSLocalizedString("settings.clear_data_confirm_message", comment: "Clear data confirm message")
@@ -446,6 +450,7 @@ enum L10n {
         static let firstPaymentFuture = NSLocalizedString("validation.first_payment_future", comment: "First payment future error")
         static let currencyUnsupported = NSLocalizedString("validation.currency_unsupported", comment: "Currency unsupported error")
         static let notifyDaysInvalid = NSLocalizedString("validation.notify_days_invalid", comment: "Notify days invalid error")
+        static let trialExpiryDateRequired = NSLocalizedString("validation.trial_expiry_date_required", comment: "Trial expiry date required")
     }
     
     // MARK: - App Errors
@@ -482,6 +487,10 @@ enum L10n {
         static func body(_ name: String, _ days: Int, _ amount: String) -> String {
             String(format: NSLocalizedString("notification.body", comment: "Notification body"), name, days, amount)
         }
+        static let privateTitle = NSLocalizedString("notification.private_title", comment: "Private notification title")
+        static func privateBody(_ days: Int) -> String {
+            String(format: NSLocalizedString("notification.private_body", comment: "Private notification body"), days)
+        }
         static let permissionRequired = NSLocalizedString("notification.permission_required", comment: "Permission required")
         static let permissionMessage = NSLocalizedString("notification.permission_message", comment: "Permission message")
         static let goToSettings = NSLocalizedString("notification.go_to_settings", comment: "Go to settings")
@@ -493,6 +502,11 @@ enum L10n {
         }
         static let scheduledSuccess = NSLocalizedString("notification.scheduled_success", comment: "Scheduled success")
         static let cancelledSuccess = NSLocalizedString("notification.cancelled_success", comment: "Cancelled success")
+        static let trialTitle = NSLocalizedString("notification.trial_title", comment: "Trial notification title")
+        static func trialBody(_ name: String) -> String {
+            String(format: NSLocalizedString("notification.trial_body", comment: "Trial notification body"), name)
+        }
+        static let trialDefaultName = NSLocalizedString("notification.trial_default_name", comment: "Default name for private trial notification")
     }
     
     // MARK: - Legal

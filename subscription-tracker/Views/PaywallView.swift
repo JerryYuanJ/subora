@@ -13,7 +13,6 @@ struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var paywallService: PaywallService
     
-    @State private var selectedProduct: Product?
     @State private var isPurchasing = false
     @State private var toast: Toast?
     
@@ -151,36 +150,25 @@ struct PaywallView: View {
                             }
                             .padding(.top, 4)
                             
-                            // Subscription Plans
+                            // Lifetime Purchase
                             if paywallService.isLoadingProducts {
                                 ProgressView()
                                     .tint(.white)
                                     .padding()
-                            } else if !paywallService.availableProducts.isEmpty {
-                                VStack(spacing: 10) {
-                                    ForEach(paywallService.availableProducts, id: \.id) { product in
-                                        PremiumSubscriptionPlanCard(
-                                            product: product,
-                                            isSelected: selectedProduct?.id == product.id
-                                        ) {
-                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                                selectedProduct = product
-                                            }
-                                        }
-                                    }
-                                }
-                                .padding(.horizontal, 20)
+                            } else if let product = paywallService.availableProducts.first {
+                                LifetimePurchaseCard(product: product)
+                                    .padding(.horizontal, 20)
                             } else {
                                 // No products available
                                 VStack(spacing: 12) {
                                     Image(systemName: "exclamationmark.triangle")
                                         .font(.system(size: 32))
                                         .foregroundColor(Color(hex: "#fbbf24"))
-                                    
+
                                     Text(L10n.Paywall.productsNotAvailable)
                                         .font(.headline)
                                         .foregroundColor(.white)
-                                    
+
                                     #if DEBUG
                                     Text(L10n.Paywall.storekitConfigError)
                                         .font(.caption)
@@ -190,42 +178,36 @@ struct PaywallView: View {
                                 .padding()
                             }
                             
-                            // Features - Full version with descriptions
+                            // Features
                             VStack(spacing: 12) {
                                 PremiumFeatureRow(
                                     icon: "infinity",
-                                    title: L10n.Paywall.featureUnlimitedSubscriptions,
-                                    description: L10n.Paywall.featureUnlimitedSubscriptionsDesc
+                                    title: L10n.Paywall.featureUnlimited,
+                                    description: L10n.Paywall.featureUnlimitedDesc
                                 )
-                                
-                                PremiumFeatureRow(
-                                    icon: "folder.fill",
-                                    title: L10n.Paywall.featureUnlimitedCategories,
-                                    description: L10n.Paywall.featureUnlimitedCategoriesDesc
-                                )
-                                
+
                                 PremiumFeatureRow(
                                     icon: "square.grid.2x2.fill",
                                     title: L10n.Paywall.featureWidgets,
                                     description: L10n.Paywall.featureWidgetsDesc
                                 )
-                                
+
                                 PremiumFeatureRow(
                                     icon: "bell.fill",
-                                    title: L10n.Paywall.featureSmartNotifications,
-                                    description: L10n.Paywall.featureSmartNotificationsDesc
+                                    title: L10n.Paywall.featureCustomReminder,
+                                    description: L10n.Paywall.featureCustomReminderDesc
                                 )
-                                
+
                                 PremiumFeatureRow(
                                     icon: "icloud.fill",
                                     title: L10n.Paywall.featureiCloudSync,
                                     description: L10n.Paywall.featureiCloudSyncDesc
                                 )
-                                
+
                                 PremiumFeatureRow(
                                     icon: "chart.bar.fill",
-                                    title: L10n.Paywall.featureAdvancedStats,
-                                    description: L10n.Paywall.featureAdvancedStatsDesc
+                                    title: L10n.Paywall.featureInsights,
+                                    description: L10n.Paywall.featureInsightsDesc
                                 )
                             }
                             .padding(.horizontal, 24)
@@ -243,44 +225,32 @@ struct PaywallView: View {
                                             ProgressView()
                                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                         } else {
-                                            Text(selectedProduct != nil ? L10n.Paywall.buttonPurchase : L10n.Paywall.buttonSelectPlan)
+                                            Text(L10n.Paywall.buttonPurchase)
                                                 .font(.system(size: 17, weight: .semibold))
                                         }
                                     }
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 52)
                                     .background(
-                                        Group {
-                                            if selectedProduct != nil {
-                                                LinearGradient(
-                                                    colors: [
-                                                        Color(hex: "#fbbf24"),
-                                                        Color(hex: "#f59e0b"),
-                                                        Color(hex: "#d97706")
-                                                    ],
-                                                    startPoint: .leading,
-                                                    endPoint: .trailing
-                                                )
-                                            } else {
-                                                LinearGradient(
-                                                    colors: [Color.white.opacity(0.15), Color.white.opacity(0.1)],
-                                                    startPoint: .leading,
-                                                    endPoint: .trailing
-                                                )
-                                            }
-                                        }
+                                        LinearGradient(
+                                            colors: [
+                                                Color(hex: "#fbbf24"),
+                                                Color(hex: "#f59e0b"),
+                                                Color(hex: "#d97706")
+                                            ],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
                                     )
                                     .foregroundColor(.white)
                                     .cornerRadius(16)
                                     .shadow(
-                                        color: selectedProduct != nil ? Color(hex: "#fbbf24").opacity(0.6) : .clear,
+                                        color: Color(hex: "#fbbf24").opacity(0.6),
                                         radius: 20,
                                         y: 10
                                     )
                                 }
-                                .disabled(isPurchasing || selectedProduct == nil)
-                                .scaleEffect(selectedProduct != nil ? 1.0 : 0.98)
-                                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: selectedProduct != nil)
+                                .disabled(isPurchasing || paywallService.availableProducts.isEmpty)
                                 
                                 Button {
                                     Task {
@@ -325,12 +295,6 @@ struct PaywallView: View {
             .toast($toast)
             .task {
                 await paywallService.loadProducts()
-                // Auto-select yearly plan if available
-                if let yearlyProduct = paywallService.availableProducts.first(where: { $0.id == SubscriptionPlan.yearly.rawValue }) {
-                    selectedProduct = yearlyProduct
-                } else {
-                    selectedProduct = paywallService.availableProducts.first
-                }
             }
             .onAppear {
                 // Track paywall view with source
@@ -342,7 +306,7 @@ struct PaywallView: View {
     // MARK: - Actions
     
     private func purchasePro() async {
-        guard let product = selectedProduct else { return }
+        guard let product = paywallService.availableProducts.first else { return }
         
         // Track purchase started
         AnalyticsService.shared.trackPurchaseStarted(productId: product.id)
@@ -401,194 +365,69 @@ struct PaywallView: View {
     }
 }
 
-// MARK: - Premium Subscription Plan Card
+// MARK: - Lifetime Purchase Card
 
-private struct PremiumSubscriptionPlanCard: View {
+private struct LifetimePurchaseCard: View {
     let product: Product
-    let isSelected: Bool
-    let onSelect: () -> Void
-    
-    // Store all products to calculate savings
-    @EnvironmentObject private var paywallService: PaywallService
-    
-    private var plan: SubscriptionPlan? {
-        SubscriptionPlan(rawValue: product.id)
-    }
-    
-    private var savingsText: String? {
-        guard plan == .yearly else { return nil }
-        return calculateSavingsPercentage()
-    }
-    
-    private func calculateSavingsPercentage() -> String? {
-        // Find monthly product
-        guard let monthlyProduct = paywallService.availableProducts.first(where: { $0.id == SubscriptionPlan.monthly.rawValue }) else {
-            return L10n.Paywall.planYearlySavings // Fallback to default
-        }
-        
-        // Get prices as Decimal
-        let monthlyPrice = monthlyProduct.price
-        let yearlyPrice = product.price
-        
-        // Calculate monthly equivalent of yearly plan
-        let yearlyMonthlyEquivalent = yearlyPrice / 12
-        
-        // Calculate savings percentage
-        let savings = (monthlyPrice - yearlyMonthlyEquivalent) / monthlyPrice * 100
-        
-        // Convert to Double and round to nearest integer
-        let savingsDouble = NSDecimalNumber(decimal: savings).doubleValue
-        let roundedSavings = Int(savingsDouble.rounded())
-        
-        // Return formatted string
-        if roundedSavings > 0 {
-            let locale = Locale.current.language.languageCode?.identifier ?? "en"
-            switch locale {
-            case "zh":
-                return "节省 \(roundedSavings)%"
-            case "ja":
-                return "\(roundedSavings)% お得"
-            default:
-                return "Save \(roundedSavings)%"
-            }
-        }
-        
-        return nil
-    }
-    
+
     var body: some View {
-        Button(action: onSelect) {
-            HStack(spacing: 14) {
-                // Radio button
-                ZStack {
-                    Circle()
+        HStack(spacing: 14) {
+            Image(systemName: "star.fill")
+                .font(.system(size: 20))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [Color(hex: "#fbbf24"), Color(hex: "#f59e0b")],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            Text(product.displayName)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.white)
+
+            Spacer()
+
+            Text(product.displayPrice)
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.white, Color.white.opacity(0.9)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 14)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(hex: "#fbbf24").opacity(0.15),
+                            Color(hex: "#f59e0b").opacity(0.1)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
                         .strokeBorder(
-                            isSelected ?
                             LinearGradient(
                                 colors: [Color(hex: "#fbbf24"), Color(hex: "#f59e0b")],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
-                            ) :
-                            LinearGradient(
-                                colors: [Color.white.opacity(0.3), Color.white.opacity(0.2)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
                             ),
-                            lineWidth: 2
+                            lineWidth: 1.5
                         )
-                        .frame(width: 22, height: 22)
-                    
-                    if isSelected {
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color(hex: "#fbbf24"), Color(hex: "#f59e0b")],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 12, height: 12)
-                            .shadow(color: Color(hex: "#fbbf24").opacity(0.6), radius: 4)
-                    }
-                }
-                
-                VStack(alignment: .leading, spacing: 3) {
-                    HStack(spacing: 8) {
-                        Text(plan?.displayName ?? product.displayName)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
-                        
-                        if let savingsText = savingsText {
-                            Text(savingsText)
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(
-                                    Capsule()
-                                        .fill(
-                                            LinearGradient(
-                                                colors: [Color(hex: "#10b981"), Color(hex: "#059669")],
-                                                startPoint: .leading,
-                                                endPoint: .trailing
-                                            )
-                                        )
-                                )
-                                .shadow(color: Color(hex: "#10b981").opacity(0.4), radius: 4)
-                        }
-                    }
-                    
-                    // 只显示 duration，不显示 monthly price
-                    Text(plan?.duration ?? "")
-                        .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.5))
-                }
-                
-                Spacer()
-                
-                Text(product.displayPrice)
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.white, Color.white.opacity(0.9)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            }
-            .padding(14)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(
-                        isSelected ?
-                        LinearGradient(
-                            colors: [
-                                Color(hex: "#fbbf24").opacity(0.15),
-                                Color(hex: "#f59e0b").opacity(0.1)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ) :
-                        LinearGradient(
-                            colors: [Color.white.opacity(0.08), Color.white.opacity(0.04)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14)
-                            .strokeBorder(
-                                isSelected ?
-                                LinearGradient(
-                                    colors: [Color(hex: "#fbbf24"), Color(hex: "#f59e0b")],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ) :
-                                LinearGradient(
-                                    colors: [Color.white.opacity(0.15), Color.white.opacity(0.08)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: isSelected ? 1.5 : 1
-                            )
-                    )
-            )
-            .shadow(
-                color: isSelected ? Color(hex: "#fbbf24").opacity(0.4) : .clear,
-                radius: 16,
-                y: 8
-            )
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-    
-    private func calculateMonthlyPrice() -> String? {
-        guard let price = Decimal(string: product.price.description) else { return nil }
-        let monthlyPrice = price / 12
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = product.priceFormatStyle.locale
-        return formatter.string(from: monthlyPrice as NSDecimalNumber).map { "\($0)/\(L10n.Paywall.planMonthlyShort)" }
+                )
+        )
+        .shadow(
+            color: Color(hex: "#fbbf24").opacity(0.4),
+            radius: 16,
+            y: 8
+        )
     }
 }
 

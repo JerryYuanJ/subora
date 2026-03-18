@@ -139,6 +139,9 @@
 "subscription.notify_days_before" = "Notify %d days before";
 "subscription.notify_days_before_zero" = "Notify on renewal day";
 "subscription.notify_days_before_singular" = "Notify 1 day before";
+"subscription.notification_time_pro_hint" = "Default notification time is 9:00 AM. Upgrade to Pro to customize.";
+"subscription.mark_as_private" = "Private";
+"subscription.private_hint" = "Private subscriptions are hidden from lists and insights. Enable \"Show Private Subscriptions\" in Settings to view them.";
 "subscription.button_cancel" = "Cancel";
 "subscription.button_save" = "Save";
 
@@ -160,30 +163,19 @@
 "billing_cycle.every_x_years" = "Every %d years";
 
 /* Paywall */
-"paywall.title" = "Upgrade to Pro";
-"paywall.subtitle" = "Take control of your subscriptions";
-"paywall.plan_monthly" = "Monthly";
-"paywall.plan_yearly" = "Yearly";
-"paywall.plan_monthly_duration" = "Billed monthly";
-"paywall.plan_yearly_duration" = "Billed annually";
-"paywall.plan_yearly_savings" = "Save 20%";
-"paywall.plan_monthly_short" = "mo";
-"paywall.feature_unlimited_subscriptions" = "Unlimited Subscriptions";
-"paywall.feature_unlimited_subscriptions_desc" = "Track as many subscriptions as you want";
-"paywall.feature_unlimited_categories" = "Unlimited Categories";
-"paywall.feature_unlimited_categories_desc" = "Organize with custom categories";
+"paywall.title" = "Unlock Everything";
+"paywall.subtitle" = "One purchase, yours forever.";
+"paywall.feature_unlimited" = "Unlimited Subscriptions & Categories";
+"paywall.feature_unlimited_desc" = "No limits, manage freely";
 "paywall.feature_widgets" = "Home Screen Widgets";
-"paywall.feature_widgets_desc" = "View subscriptions at a glance";
+"paywall.feature_widgets_desc" = "Everything at a glance";
+"paywall.feature_custom_reminder" = "Custom Reminders";
+"paywall.feature_custom_reminder_desc" = "Get notified on your schedule";
 "paywall.feature_icloud_sync" = "iCloud Sync";
-"paywall.feature_icloud_sync_desc" = "Sync across all your devices";
-"paywall.feature_smart_notifications" = "Smart Notifications";
-"paywall.feature_smart_notifications_desc" = "Never miss a renewal";
-"paywall.feature_advanced_stats" = "Advanced Statistics";
-"paywall.feature_advanced_stats_desc" = "Detailed insights and trends";
-"paywall.feature_theme_customization" = "Theme Customization";
-"paywall.feature_theme_customization_desc" = "Personalize your experience";
-"paywall.button_purchase" = "Purchase";
-"paywall.button_select_plan" = "Select Plan";
+"paywall.feature_icloud_sync_desc" = "Seamless across all devices";
+"paywall.feature_insights" = "Insights";
+"paywall.feature_insights_desc" = "See where every dollar goes";
+"paywall.button_purchase" = "Unlock Now";
 "paywall.button_restore" = "Restore Purchases";
 "paywall.button_close" = "Close";
 "paywall.error_no_active_purchase" = "No active purchase found";
@@ -215,6 +207,7 @@
 "settings.sync_synced" = "Synced";
 "settings.sync_error" = "Error";
 "settings.sync_disabled" = "Disabled";
+"settings.show_private_subscriptions" = "Show Private Subscriptions";
 "settings.clear_data" = "Clear All Data";
 "settings.clear_data_confirm_title" = "Clear All Data";
 "settings.clear_data_confirm_message" = "This will delete all subscriptions and categories. This action cannot be undone.";
@@ -310,6 +303,7 @@
 "validation.first_payment_future" = "First payment date cannot be in the future";
 "validation.currency_unsupported" = "Currency not supported";
 "validation.notify_days_invalid" = "Notification days must be between 0 and 30";
+"validation.trial_expiry_date_required" = "Please set a trial expiry date";
 
 /* App Errors */
 "error.data_not_found" = "Data not found";
@@ -330,6 +324,8 @@
 /* Notifications */
 "notification.title" = "Subscription Renewal";
 "notification.body" = "%@ will renew in %d days. Amount: %@";
+"notification.private_title" = "🔒 Subscription Renewal";
+"notification.private_body" = "You have a subscription renewing in %d days.";
 "notification.permission_required" = "Permission Required";
 "notification.permission_message" = "Enable notifications to get renewal reminders";
 "notification.go_to_settings" = "Go to Settings";
@@ -338,6 +334,20 @@
 "notification.permission_denied" = "Notification permission denied. Please enable in Settings.";
 "notification.test_failed" = "Failed to send test notification: %@";
 "notification.scheduled_success" = "Notification scheduled";
+"notification.trial_title" = "Trial Ending Soon";
+"notification.trial_body" = "%@'s free trial is ending soon. Check it before you're charged!";
+"notification.trial_default_name" = "A subscription";
+
+/* Free Trial */
+"subscription.free_trial" = "Free Trial";
+"subscription.free_trial_hint" = "Track a free trial period. You'll be reminded before it expires.";
+"subscription.trial_expiry_date" = "Trial Expiry Date";
+"subscription.trial_label" = "Trial";
+"subscription.trial_expired" = "Expired";
+"subscription.trial_days_left" = "%d %@ left";
+"subscription.trial_needs_action" = "Trial expired — convert or delete";
+"subscription.trial_expired_banner" = "This trial has expired";
+"subscription.convert_to_subscription" = "Convert to Subscription";
 
 /* Days/Times */
 "days.singular" = "day";

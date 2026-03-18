@@ -139,6 +139,9 @@
 "subscription.notify_days_before" = "%d 日前に通知";
 "subscription.notify_days_before_zero" = "更新日に通知";
 "subscription.notify_days_before_singular" = "1 日前に通知";
+"subscription.notification_time_pro_hint" = "デフォルトの通知時間は午前9時です。Proにアップグレードするとカスタマイズできます。";
+"subscription.mark_as_private" = "プライベート";
+"subscription.private_hint" = "プライベートに設定すると、リストや統計に表示されなくなります。設定で「プライベートサブスクリプションを表示」をオンにすると表示されます。";
 "subscription.button_cancel" = "キャンセル";
 "subscription.button_save" = "保存";
 
@@ -160,30 +163,19 @@
 "billing_cycle.every_x_years" = "%d 年ごと";
 
 /* Paywall */
-"paywall.title" = "Pro版にアップグレード";
-"paywall.subtitle" = "サブスクリプションを管理";
-"paywall.plan_monthly" = "月額";
-"paywall.plan_yearly" = "年額";
-"paywall.plan_monthly_duration" = "月額課金";
-"paywall.plan_yearly_duration" = "年額課金";
-"paywall.plan_yearly_savings" = "20% お得";
-"paywall.plan_monthly_short" = "月";
-"paywall.feature_unlimited_subscriptions" = "無制限のサブスクリプション";
-"paywall.feature_unlimited_subscriptions_desc" = "好きなだけサブスクリプションを追跡";
-"paywall.feature_unlimited_categories" = "無制限のカテゴリ";
-"paywall.feature_unlimited_categories_desc" = "カスタムカテゴリで整理";
+"paywall.title" = "すべての機能を解放";
+"paywall.subtitle" = "一度の購入で、ずっと使える。";
+"paywall.feature_unlimited" = "無制限のサブスク＆カテゴリ";
+"paywall.feature_unlimited_desc" = "制限なし、自由に管理";
 "paywall.feature_widgets" = "ホーム画面ウィジェット";
-"paywall.feature_widgets_desc" = "一目でサブスクリプションを確認";
+"paywall.feature_widgets_desc" = "すべてをひと目で把握";
+"paywall.feature_custom_reminder" = "カスタムリマインダー";
+"paywall.feature_custom_reminder_desc" = "好きな時間に通知を受け取る";
 "paywall.feature_icloud_sync" = "iCloud 同期";
-"paywall.feature_icloud_sync_desc" = "すべてのデバイスで同期";
-"paywall.feature_smart_notifications" = "スマート通知";
-"paywall.feature_smart_notifications_desc" = "更新を見逃さない";
-"paywall.feature_advanced_stats" = "高度な統計";
-"paywall.feature_advanced_stats_desc" = "詳細なインサイトとトレンド";
-"paywall.feature_theme_customization" = "テーマのカスタマイズ";
-"paywall.feature_theme_customization_desc" = "体験をパーソナライズ";
-"paywall.button_purchase" = "購入";
-"paywall.button_select_plan" = "プランを選択";
+"paywall.feature_icloud_sync_desc" = "すべてのデバイスでシームレスに";
+"paywall.feature_insights" = "データインサイト";
+"paywall.feature_insights_desc" = "お金の流れを可視化";
+"paywall.button_purchase" = "今すぐ解放";
 "paywall.button_restore" = "購入を復元";
 "paywall.button_close" = "閉じる";
 "paywall.error_no_active_purchase" = "有効な購入が見つかりません";
@@ -215,6 +207,7 @@
 "settings.sync_synced" = "同期済み";
 "settings.sync_error" = "エラー";
 "settings.sync_disabled" = "無効";
+"settings.show_private_subscriptions" = "プライベートサブスクリプションを表示";
 "settings.clear_data" = "すべてのデータを消去";
 "settings.clear_data_confirm_title" = "すべてのデータを消去";
 "settings.clear_data_confirm_message" = "すべてのサブスクリプションとカテゴリが削除されます。この操作は元に戻せません。";
@@ -310,6 +303,7 @@
 "validation.first_payment_future" = "初回支払日は未来の日付にできません";
 "validation.currency_unsupported" = "サポートされていない通貨です";
 "validation.notify_days_invalid" = "通知日数は 0 から 30 の間である必要があります";
+"validation.trial_expiry_date_required" = "トライアル終了日を設定してください";
 
 /* App Errors */
 "error.data_not_found" = "データが見つかりません";
@@ -330,6 +324,8 @@
 /* Notifications */
 "notification.title" = "サブスクリプション更新";
 "notification.body" = "%@ は %d 日後に更新されます。金額：%@";
+"notification.private_title" = "🔒 サブスクリプション更新";
+"notification.private_body" = "サブスクリプションが %d 日後に更新されます。";
 "notification.permission_required" = "許可が必要です";
 "notification.permission_message" = "更新リマインダーを受け取るには通知を有効にしてください";
 "notification.go_to_settings" = "設定へ";
@@ -338,6 +334,20 @@
 "notification.permission_denied" = "通知の許可がありません。設定で有効にしてください。";
 "notification.test_failed" = "テスト通知の送信に失敗しました：%@";
 "notification.scheduled_success" = "通知をスケジュールしました";
+"notification.trial_title" = "トライアル期間終了間近";
+"notification.trial_body" = "%@ の無料トライアルがまもなく終了します。課金前にご確認ください！";
+"notification.trial_default_name" = "サブスクリプション";
+
+/* Free Trial */
+"subscription.free_trial" = "無料トライアル";
+"subscription.free_trial_hint" = "無料トライアル期間を追跡します。期限前にリマインダーが届きます。";
+"subscription.trial_expiry_date" = "トライアル終了日";
+"subscription.trial_label" = "トライアル";
+"subscription.trial_expired" = "期限切れ";
+"subscription.trial_days_left" = "残り %d %@";
+"subscription.trial_needs_action" = "トライアル期限切れ — 正式契約か削除してください";
+"subscription.trial_expired_banner" = "このトライアルは期限切れです";
+"subscription.convert_to_subscription" = "正式契約に変更";
 
 /* Days/Times */
 "days.singular" = "日";

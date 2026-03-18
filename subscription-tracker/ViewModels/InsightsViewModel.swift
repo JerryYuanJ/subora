@@ -199,14 +199,17 @@ class InsightsViewModel: ObservableObject {
     // MARK: - Private Helpers
     
     private func fetchFilteredSubscriptions() -> [Subscription] {
+        let subscriptions: [Subscription]
         switch filterType {
         case .active:
-            return subscriptionService.fetchActiveSubscriptions()
+            subscriptions = subscriptionService.fetchActiveSubscriptions()
         case .archived:
-            return subscriptionService.fetchArchivedSubscriptions()
+            subscriptions = subscriptionService.fetchArchivedSubscriptions()
         case .all:
-            return subscriptionService.fetchActiveSubscriptions() + subscriptionService.fetchArchivedSubscriptions()
+            subscriptions = subscriptionService.fetchActiveSubscriptions() + subscriptionService.fetchArchivedSubscriptions()
         }
+        // Exclude trial subscriptions from insights
+        return subscriptions.filter { !$0.isTrial }
     }
     
     // MARK: - Public Helpers

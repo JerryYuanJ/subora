@@ -92,6 +92,17 @@ struct SettingsView: View {
             }
         )
     }
+
+    var showPrivateSubscriptions: Binding<Bool> {
+        Binding(
+            get: { viewModel.userSettings?.showPrivateSubscriptions ?? false },
+            set: { newValue in
+                Task {
+                    try? await viewModel.updateShowPrivateSubscriptions(newValue)
+                }
+            }
+        )
+    }
     
     init(modelContext: ModelContext) {
         let syncService = SyncService(modelContext: modelContext)
@@ -320,6 +331,9 @@ struct SettingsView: View {
                 }
             }
             
+            // Show private subscriptions toggle
+            Toggle(L10n.Settings.showPrivateSubscriptions, isOn: showPrivateSubscriptions)
+
             // Clear all data button
             Button(role: .destructive) {
                 showClearDataConfirmation = true
@@ -638,8 +652,8 @@ struct SettingsView: View {
     
     private func rescheduleAllNotifications(newTime: Date) async {
         let subscriptionService = SubscriptionService(modelContext: modelContext)
-        let subscriptions = subscriptionService.fetchActiveSubscriptions()
-        
+        let subscriptions = subscriptionService.fetchActiveSubscriptions(includePrivate: true)
+
         await NotificationService.shared.rescheduleAllNotifications(
             for: subscriptions,
             notifyTime: newTime

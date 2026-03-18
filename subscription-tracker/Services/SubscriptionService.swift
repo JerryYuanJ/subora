@@ -51,9 +51,9 @@ class SubscriptionService {
     /// - Throws: AppError if limit reached or save fails
     func createSubscription(_ subscription: Subscription) async throws -> Bool {
         Logger.data.info("Creating subscription: \(subscription.name)")
-        
-        // Check free user limits
-        let activeCount = fetchActiveSubscriptions().count
+
+        // Check free user limits (count all active subscriptions including private)
+        let activeCount = fetchActiveSubscriptions(includePrivate: true).count
         guard paywallService.canCreateSubscription(currentCount: activeCount) else {
             Logger.data.warning("Subscription creation blocked: limit reached (count: \(activeCount))")
             throw AppError.subscriptionLimitReached
@@ -155,8 +155,8 @@ class SubscriptionService {
     /// - Parameter subscription: The subscription to unarchive
     /// - Throws: AppError if save fails or limit reached
     func unarchiveSubscription(_ subscription: Subscription) async throws {
-        // Check free user limits
-        let activeCount = fetchActiveSubscriptions().count
+        // Check free user limits (count all active subscriptions including private)
+        let activeCount = fetchActiveSubscriptions(includePrivate: true).count
         guard paywallService.canCreateSubscription(currentCount: activeCount) else {
             throw AppError.subscriptionLimitReached
         }
@@ -182,33 +182,57 @@ class SubscriptionService {
     
     // MARK: - Query Operations
     
+    /// Check if private subscriptions should be shown
+    private func shouldShowPrivate() -> Bool {
+        let descriptor = FetchDescriptor<UserSettings>()
+        if let settings = try? modelContext.fetch(descriptor).first {
+            return settings.showPrivateSubscriptions
+        }
+        return false
+    }
+
     /// Fetch all active (non-archived) subscriptions
+    /// - Parameter includePrivate: Override to include private subscriptions regardless of settings
     /// - Returns: Array of active subscriptions
-    func fetchActiveSubscriptions() -> [Subscription] {
+    func fetchActiveSubscriptions(includePrivate: Bool? = nil) -> [Subscription] {
         let descriptor = FetchDescriptor<Subscription>(
             predicate: #Predicate { !$0.archived }
         )
-        
+
         do {
-            let subscriptions = try modelContext.fetch(descriptor)
-            // Sort by next billing date in memory
-            return subscriptions.sorted { $0.nextBillingDate < $1.nextBillingDate }
+            var subscriptions = try modelContext.fetch(descriptor)
+            let showPrivate = includePrivate ?? shouldShowPrivate()
+            if !showPrivate {
+                subscriptions = subscriptions.filter { !$0.isPrivate }
+            }
+            // Sort by next relevant date (trial expiry for trials, next billing for regular)
+            return subscriptions.sorted {
+                let date0 = $0.isTrial ? ($0.trialExpiryDate ?? .distantFuture) : $0.nextBillingDate
+                let date1 = $1.isTrial ? ($1.trialExpiryDate ?? .distantFuture) : $1.nextBillingDate
+                return date0 < date1
+            }
         } catch {
             print("Error fetching active subscriptions: \(error)")
             return []
         }
     }
-    
+
     /// Fetch all archived subscriptions
+    /// - Parameter includePrivate: Override to include private subscriptions regardless of settings
     /// - Returns: Array of archived subscriptions
-    func fetchArchivedSubscriptions() -> [Subscription] {
+    func fetchArchivedSubscriptions(includePrivate: Bool? = nil) -> [Subscription] {
         let descriptor = FetchDescriptor<Subscription>(
             predicate: #Predicate { $0.archived },
             sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
         )
-        
+
         do {
-            return try modelContext.fetch(descriptor)
+            var subscriptions = try modelContext.fetch(descriptor)
+            let showPrivate = includePrivate ?? shouldShowPrivate()
+            if !showPrivate {
+                subscriptions = subscriptions.filter { !$0.isPrivate }
+            }
+            return subscriptions
         } catch {
             print("Error fetching archived subscriptions: \(error)")
             return []
@@ -247,8 +271,8 @@ class SubscriptionService {
     /// - Parameter currency: Currency code (e.g., "USD", "CNY")
     /// - Returns: Total monthly equivalent amount
     func calculateMonthlyTotal(currency: String) -> Decimal {
-        let subscriptions = fetchActiveSubscriptions()
-        
+        let subscriptions = fetchActiveSubscriptions().filter { !$0.isTrial }
+
         return subscriptions
             .filter { $0.currency == currency }
             .map { $0.monthlyEquivalent }
@@ -263,12 +287,12 @@ class SubscriptionService {
         let now = Date()
         var result: [MonthlyExpense] = []
         
-        // Get all active subscriptions
-        let subscriptions = fetchActiveSubscriptions()
-        
+        // Get all active subscriptions (exclude trials)
+        let subscriptions = fetchActiveSubscriptions().filter { !$0.isTrial }
+
         // Group by currency
         let currencies = Set(subscriptions.map { $0.currency })
-        
+
         // Calculate for each month
         for monthOffset in (0..<months).reversed() {
             guard let monthDate = calendar.date(byAdding: .month, value: -monthOffset, to: now) else {
@@ -322,13 +346,24 @@ class SubscriptionService {
         guard let futureDate = calendar.date(byAdding: .day, value: days, to: now) else {
             return []
         }
-        
+
         let subscriptions = fetchActiveSubscriptions()
-        
-        return subscriptions.filter { subscription in
-            let nextBilling = subscription.nextBillingDate
-            return nextBilling > now && nextBilling <= futureDate
-        }
+
+        return subscriptions
+            .filter { subscription in
+                if subscription.isTrial {
+                    guard let expiryDate = subscription.trialExpiryDate else { return false }
+                    return expiryDate > now && expiryDate <= futureDate
+                } else {
+                    let nextBilling = subscription.nextBillingDate
+                    return nextBilling > now && nextBilling <= futureDate
+                }
+            }
+            .sorted {
+                let date0 = $0.isTrial ? ($0.trialExpiryDate ?? .distantFuture) : $0.nextBillingDate
+                let date1 = $1.isTrial ? ($1.trialExpiryDate ?? .distantFuture) : $1.nextBillingDate
+                return date0 < date1
+            }
     }
     
     /// Calculate historical expense for a subscription
@@ -352,7 +387,8 @@ class SubscriptionService {
 
     /// Refresh widget data from current subscriptions and write to shared UserDefaults
     func refreshWidgetData() {
-        let subscriptions = fetchActiveSubscriptions()
+        // Exclude trial and private subscriptions from widget data
+        let subscriptions = fetchActiveSubscriptions(includePrivate: false).filter { !$0.isTrial }
 
         let items = subscriptions.map { sub in
             WidgetSubscriptionItem(

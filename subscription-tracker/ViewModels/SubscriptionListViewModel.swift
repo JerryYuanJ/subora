@@ -83,8 +83,12 @@ class SubscriptionListViewModel: ObservableObject {
             result = result.filter { $0.category?.id == category.id }
         }
         
-        // Sort by next billing date (ascending)
-        result.sort { $0.nextBillingDate < $1.nextBillingDate }
+        // Sort by next billing date (ascending), trials sort by expiry date
+        result.sort {
+            let date0 = $0.isTrial ? ($0.trialExpiryDate ?? .distantFuture) : $0.nextBillingDate
+            let date1 = $1.isTrial ? ($1.trialExpiryDate ?? .distantFuture) : $1.nextBillingDate
+            return date0 < date1
+        }
         
         filteredSubscriptions = result
     }

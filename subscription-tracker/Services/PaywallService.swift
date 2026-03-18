@@ -11,29 +11,8 @@ import Combine
 import StoreKit
 import WidgetKit
 
-/// Subscription plan type
-enum SubscriptionPlan: String, CaseIterable {
-    case monthly = "premium_monthly"
-    case yearly = "premium_yearly"
-    
-    var displayName: String {
-        switch self {
-        case .monthly:
-            return L10n.Paywall.planMonthly
-        case .yearly:
-            return L10n.Paywall.planYearly
-        }
-    }
-    
-    var duration: String {
-        switch self {
-        case .monthly:
-            return L10n.Paywall.planMonthlyDuration
-        case .yearly:
-            return L10n.Paywall.planYearlyDuration
-        }
-    }
-}
+/// Lifetime product identifier
+let lifetimeProductID = "com.subora.lifetime.pro"
 
 /// Service for managing free/Pro user limits and StoreKit purchases
 class PaywallService: ObservableObject {
@@ -78,8 +57,7 @@ class PaywallService: ObservableObject {
     private let freeCategoryLimit = 5
 
     private let productIDs: [String] = [
-        SubscriptionPlan.monthly.rawValue,
-        SubscriptionPlan.yearly.rawValue
+        lifetimeProductID
     ]
 
     private init() {
@@ -140,13 +118,7 @@ class PaywallService: ObservableObject {
         
         do {
             let products = try await Product.products(for: productIDs)
-            availableProducts = products.sorted { product1, product2 in
-                if let plan1 = SubscriptionPlan(rawValue: product1.id),
-                   let plan2 = SubscriptionPlan(rawValue: product2.id) {
-                    return plan1 == .monthly && plan2 == .yearly
-                }
-                return false
-            }
+            availableProducts = Array(products)
             print("✅ Loaded \(products.count) products from App Store Connect")
         } catch {
             print("❌ Failed to load products: \(error.localizedDescription)")
@@ -211,25 +183,25 @@ class PaywallService: ObservableObject {
         return isProUser
     }
     
-    /// Check and update Pro status based on active subscriptions
+    /// Check and update Pro status based on lifetime purchase
     @MainActor
     func updateProStatus() async {
         print("🔍 Checking Pro status...")
-        var hasActiveSubscription = false
-        
+        var hasPurchase = false
+
         for await result in Transaction.currentEntitlements {
             if case .verified(let transaction) = result {
                 print("✅ Found verified transaction: \(transaction.productID)")
                 if productIDs.contains(transaction.productID) {
-                    hasActiveSubscription = true
-                    print("✅ Active subscription found: \(transaction.productID)")
+                    hasPurchase = true
+                    print("✅ Lifetime purchase found: \(transaction.productID)")
                     break
                 }
             }
         }
-        
-        print("🔍 Pro status result: \(hasActiveSubscription)")
-        isProUser = hasActiveSubscription
+
+        print("🔍 Pro status result: \(hasPurchase)")
+        isProUser = hasPurchase
         print("🔍 isProUser updated to: \(isProUser)")
     }
     

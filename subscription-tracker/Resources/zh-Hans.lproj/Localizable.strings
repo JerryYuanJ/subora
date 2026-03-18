@@ -139,6 +139,9 @@
 "subscription.notify_days_before" = "提前 %d 天提醒";
 "subscription.notify_days_before_zero" = "续费当天提醒";
 "subscription.notify_days_before_singular" = "提前 1 天提醒";
+"subscription.notification_time_pro_hint" = "默认提醒时间为上午 9:00，升级 Pro 可自定义提醒时间。";
+"subscription.mark_as_private" = "私密";
+"subscription.private_hint" = "标记为私密后，该订阅不会显示在列表和统计中。在设置中开启「显示私密订阅」即可查看。";
 "subscription.button_cancel" = "取消";
 "subscription.button_save" = "保存";
 
@@ -160,30 +163,19 @@
 "billing_cycle.every_x_years" = "每 %d 年";
 
 /* Paywall */
-"paywall.title" = "升级到 Pro 版本";
-"paywall.subtitle" = "掌控您的订阅";
-"paywall.plan_monthly" = "月付";
-"paywall.plan_yearly" = "年付";
-"paywall.plan_monthly_duration" = "按月计费";
-"paywall.plan_yearly_duration" = "按年计费";
-"paywall.plan_yearly_savings" = "节省 20%";
-"paywall.plan_monthly_short" = "月";
-"paywall.feature_unlimited_subscriptions" = "无限订阅";
-"paywall.feature_unlimited_subscriptions_desc" = "追踪任意数量的订阅";
-"paywall.feature_unlimited_categories" = "无限分类";
-"paywall.feature_unlimited_categories_desc" = "使用自定义分类整理";
-"paywall.feature_widgets" = "主屏幕小组件";
-"paywall.feature_widgets_desc" = "一目了然查看订阅";
+"paywall.title" = "解锁全部功能";
+"paywall.subtitle" = "一次购买，永久使用。";
+"paywall.feature_unlimited" = "无限订阅与分类";
+"paywall.feature_unlimited_desc" = "不受数量限制，随心管理";
+"paywall.feature_widgets" = "桌面小组件";
+"paywall.feature_widgets_desc" = "抬手即见，掌握全局";
+"paywall.feature_custom_reminder" = "自定义提醒";
+"paywall.feature_custom_reminder_desc" = "在你想要的时间收到通知";
 "paywall.feature_icloud_sync" = "iCloud 同步";
-"paywall.feature_icloud_sync_desc" = "在所有设备间同步";
-"paywall.feature_smart_notifications" = "智能通知";
-"paywall.feature_smart_notifications_desc" = "不错过任何续费";
-"paywall.feature_advanced_stats" = "高级统计";
-"paywall.feature_advanced_stats_desc" = "详细的洞察和趋势";
-"paywall.feature_theme_customization" = "主题定制";
-"paywall.feature_theme_customization_desc" = "个性化您的体验";
-"paywall.button_purchase" = "购买";
-"paywall.button_select_plan" = "选择计划";
+"paywall.feature_icloud_sync_desc" = "多设备无缝切换";
+"paywall.feature_insights" = "数据洞察";
+"paywall.feature_insights_desc" = "看清每一笔钱花在哪";
+"paywall.button_purchase" = "立即解锁";
 "paywall.button_restore" = "恢复购买";
 "paywall.button_close" = "关闭";
 "paywall.error_no_active_purchase" = "未找到有效购买";
@@ -215,6 +207,7 @@
 "settings.sync_synced" = "已同步";
 "settings.sync_error" = "错误";
 "settings.sync_disabled" = "未启用";
+"settings.show_private_subscriptions" = "显示私密订阅";
 "settings.clear_data" = "清除所有数据";
 "settings.clear_data_confirm_title" = "清除所有数据";
 "settings.clear_data_confirm_message" = "这将删除所有订阅和分类。此操作无法撤销。";
@@ -310,6 +303,7 @@
 "validation.first_payment_future" = "首次付款日期不能是未来";
 "validation.currency_unsupported" = "不支持的货币";
 "validation.notify_days_invalid" = "通知天数必须在 0 到 30 之间";
+"validation.trial_expiry_date_required" = "请设置试用到期日";
 
 /* App Errors */
 "error.data_not_found" = "数据未找到";
@@ -330,6 +324,8 @@
 /* Notifications */
 "notification.title" = "订阅续费提醒";
 "notification.body" = "%@ 将在 %d 天后续费。金额：%@";
+"notification.private_title" = "🔒 订阅续费提醒";
+"notification.private_body" = "你有一笔订阅将在 %d 天后续费。";
 "notification.permission_required" = "需要权限";
 "notification.permission_message" = "启用通知以接收续费提醒";
 "notification.go_to_settings" = "前往设置";
@@ -338,6 +334,20 @@
 "notification.permission_denied" = "通知权限未授权，请在设置中开启";
 "notification.test_failed" = "发送测试通知失败：%@";
 "notification.scheduled_success" = "通知已安排";
+"notification.trial_title" = "试用即将到期";
+"notification.trial_body" = "%@ 的免费试用即将到期，请及时处理以免被扣费！";
+"notification.trial_default_name" = "一项订阅";
+
+/* Free Trial */
+"subscription.free_trial" = "免费试用";
+"subscription.free_trial_hint" = "追踪免费试用期，到期前会提醒你。";
+"subscription.trial_expiry_date" = "试用到期日";
+"subscription.trial_label" = "试用";
+"subscription.trial_expired" = "已过期";
+"subscription.trial_days_left" = "还剩 %d %@";
+"subscription.trial_needs_action" = "试用已过期 — 请转为正式订阅或删除";
+"subscription.trial_expired_banner" = "此试用已过期";
+"subscription.convert_to_subscription" = "转为正式订阅";
 
 /* Days/Times */
 "days.singular" = "天";

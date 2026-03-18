@@ -18,6 +18,7 @@ final class UserSettings {
     var iCloudSync: Bool = false
     var isProUser: Bool = false
     var language: String?
+    var showPrivateSubscriptions: Bool = false
     var updatedAt: Date = Date()
     var lastSyncTime: Date?  // 最后同步时间
     
@@ -29,7 +30,8 @@ final class UserSettings {
         defaultNotifyTime: Date = Calendar.current.date(from: DateComponents(hour: 9, minute: 0)) ?? Date(),
         iCloudSync: Bool = false,
         isProUser: Bool = false,
-        language: String? = nil
+        language: String? = nil,
+        showPrivateSubscriptions: Bool = false
     ) {
         self.id = id
         self.darkMode = darkMode
@@ -39,6 +41,7 @@ final class UserSettings {
         self.iCloudSync = iCloudSync
         self.isProUser = isProUser
         self.language = language
+        self.showPrivateSubscriptions = showPrivateSubscriptions
         self.updatedAt = Date()
         self.lastSyncTime = nil
     }

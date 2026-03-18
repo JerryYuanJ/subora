@@ -95,6 +95,49 @@ struct SubscriptionDetailView: View {
     
     private var viewModeContent: some View {
         VStack(spacing: 24) {
+            // Trial expired banner
+            if viewModel.subscription.isTrial && viewModel.subscription.isTrialExpired {
+                VStack(spacing: 12) {
+                    Text(L10n.Subscription.trialExpiredBanner)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .multilineTextAlignment(.center)
+
+                    HStack(spacing: 12) {
+                        Button {
+                            convertTrialToSubscription()
+                        } label: {
+                            Text(L10n.Subscription.convertToSubscription)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+
+                        Button {
+                            Task { await deleteSubscription() }
+                        } label: {
+                            Text(L10n.Common.delete)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color.red)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                    }
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.red.opacity(0.1))
+                )
+            }
+
             // App icon (if available)
             if let iconURL = viewModel.subscription.iconURL, let url = URL(string: iconURL) {
                 CachedAsyncImage(url: url) { image in
@@ -131,55 +174,79 @@ struct SubscriptionDetailView: View {
                 }
             }
             
-            // 计费信息卡片
-            infoCard {
-                VStack(alignment: .leading, spacing: 16) {
-                    InfoRow(
-                        label: L10n.SubscriptionDetail.amount,
-                        value: CurrencyFormatter.format(
-                            amount: viewModel.subscription.amount,
-                            currency: viewModel.subscription.currency
-                        )
-                    )
-                    
-                    InfoRow(
-                        label: L10n.SubscriptionDetail.billingCycle,
-                        value: formatBillingCycle()
-                    )
-                    
-                    InfoRow(
-                        label: L10n.SubscriptionDetail.firstPayment,
-                        value: formatDate(viewModel.subscription.firstPaymentDate)
-                    )
-                    
-                    InfoRow(
-                        label: L10n.SubscriptionDetail.nextRenewal,
-                        value: formatDate(viewModel.subscription.nextBillingDate)
-                    )
-                    
-                    InfoRow(
-                        label: L10n.SubscriptionDetail.daysUntil,
-                        value: "\(viewModel.daysUntilRenewal) \(L10n.SubscriptionDetail.daysSuffix(viewModel.daysUntilRenewal))",
-                        valueColor: viewModel.daysUntilRenewal <= 3 ? .red : nil
-                    )
+            if viewModel.subscription.isTrial {
+                // 试用信息卡片
+                infoCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        if let expiryDate = viewModel.subscription.trialExpiryDate {
+                            InfoRow(
+                                label: L10n.Subscription.trialExpiryDate,
+                                value: formatDate(expiryDate)
+                            )
+                        }
+
+                        if let days = viewModel.subscription.trialDaysRemaining {
+                            InfoRow(
+                                label: L10n.SubscriptionDetail.daysUntil,
+                                value: viewModel.subscription.isTrialExpired
+                                    ? L10n.Subscription.trialExpired
+                                    : "\(days) \(L10n.SubscriptionDetail.daysSuffix(days))",
+                                valueColor: viewModel.subscription.isTrialExpired || days <= 3 ? .red : nil
+                            )
+                        }
+                    }
                 }
-            }
-            
-            // 统计信息卡片
-            infoCard {
-                VStack(alignment: .leading, spacing: 16) {
-                    InfoRow(
-                        label: L10n.SubscriptionDetail.paymentCount,
-                        value: "\(viewModel.paymentCount) \(L10n.SubscriptionDetail.timesSuffix(viewModel.paymentCount))"
-                    )
-                    
-                    InfoRow(
-                        label: L10n.SubscriptionDetail.totalPaid,
-                        value: CurrencyFormatter.format(
-                            amount: viewModel.historicalTotal,
-                            currency: viewModel.subscription.currency
+            } else {
+                // 计费信息卡片
+                infoCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        InfoRow(
+                            label: L10n.SubscriptionDetail.amount,
+                            value: CurrencyFormatter.format(
+                                amount: viewModel.subscription.amount,
+                                currency: viewModel.subscription.currency
+                            )
                         )
-                    )
+
+                        InfoRow(
+                            label: L10n.SubscriptionDetail.billingCycle,
+                            value: formatBillingCycle()
+                        )
+
+                        InfoRow(
+                            label: L10n.SubscriptionDetail.firstPayment,
+                            value: formatDate(viewModel.subscription.firstPaymentDate)
+                        )
+
+                        InfoRow(
+                            label: L10n.SubscriptionDetail.nextRenewal,
+                            value: formatDate(viewModel.subscription.nextBillingDate)
+                        )
+
+                        InfoRow(
+                            label: L10n.SubscriptionDetail.daysUntil,
+                            value: "\(viewModel.daysUntilRenewal) \(L10n.SubscriptionDetail.daysSuffix(viewModel.daysUntilRenewal))",
+                            valueColor: viewModel.daysUntilRenewal <= 3 ? .red : nil
+                        )
+                    }
+                }
+
+                // 统计信息卡片
+                infoCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        InfoRow(
+                            label: L10n.SubscriptionDetail.paymentCount,
+                            value: "\(viewModel.paymentCount) \(L10n.SubscriptionDetail.timesSuffix(viewModel.paymentCount))"
+                        )
+
+                        InfoRow(
+                            label: L10n.SubscriptionDetail.totalPaid,
+                            value: CurrencyFormatter.format(
+                                amount: viewModel.historicalTotal,
+                                currency: viewModel.subscription.currency
+                            )
+                        )
+                    }
                 }
             }
             
@@ -236,82 +303,131 @@ struct SubscriptionDetailView: View {
     
     private var editModeContent: some View {
         Form {
+            // 试用开关
+            Section {
+                Toggle(L10n.Subscription.freeTrial, isOn: Binding(
+                    get: { editedSubscription.isTrial },
+                    set: { newValue in
+                        editedSubscription.isTrial = newValue
+                        if newValue {
+                            if editedSubscription.trialExpiryDate == nil {
+                                editedSubscription.trialExpiryDate = Calendar.current.date(byAdding: .day, value: 7, to: Date())
+                            }
+                            editedSubscription.notify = false
+                        }
+                    }
+                ))
+            } footer: {
+                if editedSubscription.isTrial {
+                    Text(L10n.Subscription.freeTrialHint)
+                }
+            }
+
             // 基本信息
             Section(L10n.SubscriptionDetail.sectionBasic) {
                 TextField(L10n.SubscriptionDetail.name, text: $editedSubscription.name)
-                TextField(L10n.Subscription.descriptionPlaceholder, text: Binding(
-                    get: { editedSubscription.subscriptionDescription ?? "" },
-                    set: { editedSubscription.subscriptionDescription = $0.isEmpty ? nil : $0 }
-                ))
+
+                if editedSubscription.isTrial {
+                    DatePicker(
+                        L10n.Subscription.trialExpiryDate,
+                        selection: Binding(
+                            get: { editedSubscription.trialExpiryDate ?? Date() },
+                            set: { editedSubscription.trialExpiryDate = $0 }
+                        ),
+                        displayedComponents: .date
+                    )
+                } else {
+                    TextField(L10n.Subscription.descriptionPlaceholder, text: Binding(
+                        get: { editedSubscription.subscriptionDescription ?? "" },
+                        set: { editedSubscription.subscriptionDescription = $0.isEmpty ? nil : $0 }
+                    ))
+                }
             }
-            
-            // 分类
-            Section(L10n.Subscription.sectionCategory) {
-                Picker(L10n.Subscription.categoryPicker, selection: $editedSubscription.category) {
-                    Text(L10n.Subscription.noCategory).tag(nil as Category?)
-                    ForEach(categories) { category in
-                        HStack {
-                            Circle()
-                                .fill(category.color)
-                                .frame(width: 12, height: 12)
-                            Text(category.name)
+
+            if !editedSubscription.isTrial {
+                // 分类
+                Section(L10n.Subscription.sectionCategory) {
+                    Picker(L10n.Subscription.categoryPicker, selection: $editedSubscription.category) {
+                        Text(L10n.Subscription.noCategory).tag(nil as Category?)
+                        ForEach(categories) { category in
+                            HStack {
+                                Circle()
+                                    .fill(category.color)
+                                    .frame(width: 12, height: 12)
+                                Text(category.name)
+                            }
+                            .tag(category as Category?)
                         }
-                        .tag(category as Category?)
                     }
                 }
-            }
-            
-            // 计费信息
-            Section(L10n.SubscriptionDetail.sectionBilling) {
-                DatePicker(
-                    L10n.Subscription.firstPaymentDate,
-                    selection: $editedSubscription.firstPaymentDate,
-                    displayedComponents: .date
-                )
-                
-                BillingCyclePicker(
-                    cycle: $editedSubscription.billingCycle,
-                    unit: $editedSubscription.billingCycleUnit
-                )
-                
-                HStack {
-                    Text(L10n.SubscriptionDetail.amount)
-                    Spacer()
-                    TextField("0.00", value: Binding(
-                        get: { Double(truncating: editedSubscription.amount as NSNumber) },
-                        set: { editedSubscription.amount = Decimal($0) }
-                    ), format: .number)
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: 100)
+
+                // 计费信息
+                Section(L10n.SubscriptionDetail.sectionBilling) {
+                    DatePicker(
+                        L10n.Subscription.firstPaymentDate,
+                        selection: $editedSubscription.firstPaymentDate,
+                        displayedComponents: .date
+                    )
+
+                    BillingCyclePicker(
+                        cycle: $editedSubscription.billingCycle,
+                        unit: $editedSubscription.billingCycleUnit
+                    )
+
+                    HStack {
+                        Text(L10n.SubscriptionDetail.amount)
+                        Spacer()
+                        TextField("0.00", value: Binding(
+                            get: { Double(truncating: editedSubscription.amount as NSNumber) },
+                            set: { editedSubscription.amount = Decimal($0) }
+                        ), format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 100)
+                    }
+
+                    CurrencyPicker(selectedCurrency: $editedSubscription.currency)
                 }
-                
-                CurrencyPicker(selectedCurrency: $editedSubscription.currency)
-            }
-            
-            // 提醒设置
-            Section(L10n.SubscriptionDetail.sectionNotification) {
-                if paywallService.isProUser {
+
+                // 提醒设置
+                Section {
                     Toggle(L10n.SubscriptionDetail.enableNotification, isOn: $editedSubscription.notify)
-                    
+
                     if editedSubscription.notify {
                         Stepper(value: $editedSubscription.notifyDaysBefore, in: 0...30) {
                             Text(L10n.SubscriptionDetail.notifyDaysBefore(editedSubscription.notifyDaysBefore))
                         }
-                    }
-                } else {
-                    Button {
-                        showPaywall = true
-                    } label: {
-                        HStack {
-                            Text(L10n.SubscriptionDetail.enableNotification)
-                            Spacer()
-                            Image(systemName: "crown.fill")
-                                .font(.caption)
-                                .foregroundColor(.yellow)
+
+                        if !paywallService.isProUser {
+                            Button {
+                                showPaywall = true
+                            } label: {
+                                HStack {
+                                    Text(L10n.Settings.notificationTime)
+                                    Spacer()
+                                    Text("09:00")
+                                        .foregroundColor(.secondary)
+                                    Image(systemName: "crown.fill")
+                                        .font(.caption)
+                                        .foregroundColor(.yellow)
+                                }
+                            }
                         }
                     }
+                } header: {
+                    Text(L10n.SubscriptionDetail.sectionNotification)
+                } footer: {
+                    if editedSubscription.notify && !paywallService.isProUser {
+                        Text(L10n.Subscription.notificationTimeProHint)
+                    }
                 }
+            }
+
+            // Private section
+            Section {
+                Toggle(L10n.Subscription.markAsPrivate, isOn: $editedSubscription.isPrivate)
+            } footer: {
+                Text(L10n.Subscription.privateHint)
             }
         }
     }
@@ -330,6 +446,12 @@ struct SubscriptionDetailView: View {
     
     // MARK: - Actions
     
+    private func convertTrialToSubscription() {
+        viewModel.subscription.isTrial = false
+        viewModel.subscription.trialExpiryDate = nil
+        enterEditMode()
+    }
+
     private func enterEditMode() {
         editSnapshot = SubscriptionSnapshot(from: viewModel.subscription)
         editedSubscription = viewModel.subscription
@@ -412,6 +534,9 @@ private struct SubscriptionSnapshot {
     let currency: String
     let notify: Bool
     let notifyDaysBefore: Int
+    let isTrial: Bool
+    let trialExpiryDate: Date?
+    let isPrivate: Bool
 
     init(from sub: Subscription) {
         self.name = sub.name
@@ -425,6 +550,9 @@ private struct SubscriptionSnapshot {
         self.currency = sub.currency
         self.notify = sub.notify
         self.notifyDaysBefore = sub.notifyDaysBefore
+        self.isTrial = sub.isTrial
+        self.trialExpiryDate = sub.trialExpiryDate
+        self.isPrivate = sub.isPrivate
     }
 
     func restore(to sub: Subscription) {
@@ -438,6 +566,9 @@ private struct SubscriptionSnapshot {
         sub.currency = currency
         sub.notify = notify
         sub.notifyDaysBefore = notifyDaysBefore
+        sub.isTrial = isTrial
+        sub.trialExpiryDate = trialExpiryDate
+        sub.isPrivate = isPrivate
     }
 }
 

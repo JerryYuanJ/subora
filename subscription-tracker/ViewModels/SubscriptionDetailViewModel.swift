@@ -42,17 +42,24 @@ class SubscriptionDetailViewModel: ObservableObject {
     
     /// Load subscription details including historical expense and days until renewal
     func loadDetails() {
-        // Calculate historical expense
-        let (total, count) = subscriptionService.calculateHistoricalExpense(for: subscription)
-        historicalTotal = total
-        paymentCount = count
-        
-        // Calculate days until renewal
-        daysUntilRenewal = Calendar.current.dateComponents(
-            [.day],
-            from: Date(),
-            to: subscription.nextBillingDate
-        ).day ?? 0
+        if subscription.isTrial {
+            // Trials have no payment history or billing cycle
+            historicalTotal = 0
+            paymentCount = 0
+            daysUntilRenewal = subscription.trialDaysRemaining ?? 0
+        } else {
+            // Calculate historical expense
+            let (total, count) = subscriptionService.calculateHistoricalExpense(for: subscription)
+            historicalTotal = total
+            paymentCount = count
+
+            // Calculate days until renewal
+            daysUntilRenewal = Calendar.current.dateComponents(
+                [.day],
+                from: Date(),
+                to: subscription.nextBillingDate
+            ).day ?? 0
+        }
     }
     
     // MARK: - Operations

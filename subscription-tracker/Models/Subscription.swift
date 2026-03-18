@@ -24,6 +24,9 @@ final class Subscription {
     var notifyDaysBefore: Int = 1
     var lastNotifiedDate: Date?
     var archived: Bool = false
+    var isPrivate: Bool = false
+    var isTrial: Bool = false
+    var trialExpiryDate: Date?
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
     
@@ -46,7 +49,8 @@ final class Subscription {
         currency: String,
         notify: Bool = true,
         notifyDaysBefore: Int = 1,
-        archived: Bool = false
+        archived: Bool = false,
+        isPrivate: Bool = false
     ) {
         self.id = id
         self.name = name
@@ -61,10 +65,11 @@ final class Subscription {
         self.notify = notify
         self.notifyDaysBefore = notifyDaysBefore
         self.archived = archived
+        self.isPrivate = isPrivate
         self.createdAt = Date()
         self.updatedAt = Date()
     }
-    
+
     // 提供一个无参数的初始化器供 SwiftData 使用
     init() {
         self.id = UUID()
@@ -82,7 +87,19 @@ final class Subscription {
     }
     
     // MARK: - Computed Properties
-    
+
+    /// 试用是否已过期
+    var isTrialExpired: Bool {
+        guard isTrial, let expiryDate = trialExpiryDate else { return false }
+        return expiryDate < Date()
+    }
+
+    /// 试用剩余天数
+    var trialDaysRemaining: Int? {
+        guard isTrial, let expiryDate = trialExpiryDate else { return nil }
+        return max(0, Calendar.current.dateComponents([.day], from: Date(), to: expiryDate).day ?? 0)
+    }
+
     /// 计算下次续费日期
     var nextBillingDate: Date {
         BillingCalculator.calculateNextBillingDate(

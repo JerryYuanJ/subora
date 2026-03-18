@@ -74,16 +74,27 @@ class NotificationService {
         }
         
         // Calculate notification date
-        let nextBillingDate = subscription.nextBillingDate
+        let referenceDate: Date
+        if subscription.isTrial {
+            // For trials, notify before trial expiry date
+            guard let expiryDate = subscription.trialExpiryDate else {
+                Logger.notification.warning("Trial subscription has no expiry date, skipping notification")
+                return
+            }
+            referenceDate = expiryDate
+        } else {
+            referenceDate = subscription.nextBillingDate
+        }
+
         var notificationDate = Calendar.current.date(
             byAdding: .day,
             value: -subscription.notifyDaysBefore,
-            to: nextBillingDate
-        ) ?? nextBillingDate
-        
+            to: referenceDate
+        ) ?? referenceDate
+
         // Extract time components from notifyTime
         let timeComponents = Calendar.current.dateComponents([.hour, .minute], from: notifyTime)
-        
+
         // Combine notification date with notify time
         var dateComponents = Calendar.current.dateComponents(
             [.year, .month, .day],
@@ -91,31 +102,37 @@ class NotificationService {
         )
         dateComponents.hour = timeComponents.hour
         dateComponents.minute = timeComponents.minute
-        
+
         // Create the full notification date with time
         guard var fullNotificationDate = Calendar.current.date(from: dateComponents) else {
             Logger.notification.error("Failed to create notification date")
             return
         }
-        
-        // If notification date+time is in the past, calculate next billing cycle
+
+        // If notification date+time is in the past
         if fullNotificationDate <= Date() {
+            if subscription.isTrial {
+                // Trial expiry is in the past, no need to schedule
+                Logger.notification.info("Trial expiry notification date is in the past, skipping")
+                return
+            }
+
             Logger.notification.info("Notification date+time is in the past (\(fullNotificationDate)), calculating next cycle")
-            
+
             // Calculate next billing date after current one
             let nextNextBillingDate = BillingCalculator.addBillingCycle(
-                to: nextBillingDate,
+                to: referenceDate,
                 cycle: subscription.billingCycle,
                 unit: subscription.billingCycleUnit
             )
-            
+
             // Calculate notification date for next cycle
             notificationDate = Calendar.current.date(
                 byAdding: .day,
                 value: -subscription.notifyDaysBefore,
                 to: nextNextBillingDate
             ) ?? nextNextBillingDate
-            
+
             // Recombine with time
             dateComponents = Calendar.current.dateComponents(
                 [.year, .month, .day],
@@ -123,31 +140,41 @@ class NotificationService {
             )
             dateComponents.hour = timeComponents.hour
             dateComponents.minute = timeComponents.minute
-            
+
             guard let newFullDate = Calendar.current.date(from: dateComponents) else {
                 Logger.notification.error("Failed to create next cycle notification date")
                 return
             }
-            
+
             fullNotificationDate = newFullDate
             Logger.notification.info("Rescheduled to next cycle: \(fullNotificationDate)")
         }
         
         // Create notification content with localized strings
         let content = UNMutableNotificationContent()
-        content.title = L10n.NotificationContent.title
-        content.body = L10n.NotificationContent.body(
-            subscription.name,
-            subscription.notifyDaysBefore,
-            formatAmount(subscription.amount, currency: subscription.currency)
-        )
+        if subscription.isTrial {
+            content.title = L10n.NotificationContent.trialTitle
+            content.body = L10n.NotificationContent.trialBody(
+                subscription.isPrivate ? L10n.NotificationContent.trialDefaultName : subscription.name
+            )
+        } else if subscription.isPrivate {
+            content.title = L10n.NotificationContent.privateTitle
+            content.body = L10n.NotificationContent.privateBody(subscription.notifyDaysBefore)
+        } else {
+            content.title = L10n.NotificationContent.title
+            content.body = L10n.NotificationContent.body(
+                subscription.name,
+                subscription.notifyDaysBefore,
+                formatAmount(subscription.amount, currency: subscription.currency)
+            )
+        }
         content.sound = .default
         content.badge = 1
-        
+
         // Add subscription ID to userInfo for handling notification taps
         content.userInfo = [
             "subscriptionId": subscription.id.uuidString,
-            "subscriptionName": subscription.name
+            "subscriptionName": subscription.isPrivate ? "" : subscription.name
         ]
         
         // Create trigger

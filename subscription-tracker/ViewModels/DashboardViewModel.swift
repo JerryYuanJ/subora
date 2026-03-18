@@ -47,7 +47,7 @@ class DashboardViewModel: ObservableObject {
     
     /// Average subscription cost (in primary currency)
     var averageSubscriptionCost: String {
-        let subscriptions = subscriptionService.fetchActiveSubscriptions()
+        let subscriptions = subscriptionService.fetchActiveSubscriptions().filter { !$0.isTrial }
         guard !subscriptions.isEmpty else { return "$0" }
         
         // Use the first currency found
@@ -101,7 +101,7 @@ class DashboardViewModel: ObservableObject {
     /// Calculate monthly expenses grouped by currency
     /// - Returns: Dictionary mapping currency codes to total monthly amounts
     private func calculateMonthlyExpensesByCurrency() -> [String: Decimal] {
-        let subscriptions = subscriptionService.fetchActiveSubscriptions()
+        let subscriptions = subscriptionService.fetchActiveSubscriptions().filter { !$0.isTrial }
         
         // Get all unique currencies
         let currencies = Set(subscriptions.map { $0.currency })

@@ -42,25 +42,52 @@ struct SubscriptionCard: View {
                     Spacer()
                 }
                 
-                // 金额和周期
-                Text(formatAmount())
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                
-                // 下次续费日期
-                HStack {
-                    Text(L10n.Subscriptions.nextRenewal(formatDate(subscription.nextBillingDate)))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Spacer()
-                    
-                    // 倒计时
-                    if let daysUntil = daysUntilRenewal() {
-                        let dayText = daysUntil == 1 ? L10n.Insights.daysSuffixSingular : L10n.Insights.daysSuffix
-                        Text(daysUntil > 0 ? "\(daysUntil) \(dayText)" : L10n.Subscriptions.today)
+                if subscription.isTrial {
+                    // 试用标签
+                    HStack {
+                        Text(subscription.isTrialExpired ? L10n.Subscription.trialExpired : L10n.Subscription.trialLabel)
                             .font(.caption)
-                            .foregroundColor(daysUntil <= 3 ? .red : .secondary)
+                            .fontWeight(.medium)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(subscription.isTrialExpired ? Color.red : Color.blue)
+                            .cornerRadius(4)
+                        Spacer()
+                    }
+
+                    // 试用倒计时或过期提示
+                    if let days = subscription.trialDaysRemaining, !subscription.isTrialExpired {
+                        let dayText = days == 1 ? L10n.Insights.daysSuffixSingular : L10n.Insights.daysSuffix
+                        Text(days > 0 ? L10n.Subscription.trialDaysLeft(days, dayText) : L10n.Subscriptions.today)
+                            .font(.caption)
+                            .foregroundColor(days <= 3 ? .red : .secondary)
+                    } else if subscription.isTrialExpired {
+                        Text(L10n.Subscription.trialNeedsAction)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                } else {
+                    // 金额和周期
+                    Text(formatAmount())
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+
+                    // 下次续费日期
+                    HStack {
+                        Text(L10n.Subscriptions.nextRenewal(formatDate(subscription.nextBillingDate)))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        Spacer()
+
+                        // 倒计时
+                        if let daysUntil = daysUntilRenewal() {
+                            let dayText = daysUntil == 1 ? L10n.Insights.daysSuffixSingular : L10n.Insights.daysSuffix
+                            Text(daysUntil > 0 ? "\(daysUntil) \(dayText)" : L10n.Subscriptions.today)
+                                .font(.caption)
+                                .foregroundColor(daysUntil <= 3 ? .red : .secondary)
+                        }
                     }
                 }
             }
